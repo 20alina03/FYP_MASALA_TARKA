@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Food-inspired design system with modern colors and smooth animations */
+
+@layer base {
+  :root {
+    /* Ultra-modern vibrant color palette */
+    --background: 240 20% 99%;
+    --foreground: 240 10% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+
+    /* Deep burgundy primary */
+    --primary: 1 58% 44%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 1 58% 35%;
+    --primary-dark: 1 58% 20%;
+
+    /* Soft pink secondary */
+    --secondary: 0 65% 89%;
+    --secondary-foreground: 0 0% 10%;
+
+    --muted: 240 10% 95%;
+    --muted-foreground: 240 5% 50%;
+
+    /* Vibrant coral accent */
+    --accent: 10 90% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 15% 90%;
+    --input: 240 15% 92%;
+    --ring: 348 97% 25%;
+
+    --radius: 1rem;
+
+    /* Modern gradients with burgundy color */
+    --gradient-primary: linear-gradient(135deg, hsl(348 97% 25%) 0%, hsl(0 65% 89%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(348 97% 25%) 0%, hsl(10 90% 65%) 50%, hsl(0 65% 89%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(240 20% 98%) 100%);
+    --gradient-mesh: radial-gradient(at 40% 20%, hsl(348 97% 35%) 0%, transparent 50%),
+                     radial-gradient(at 80% 0%, hsl(0 65% 89%) 0%, transparent 50%),
+                     radial-gradient(at 0% 50%, hsl(10 90% 75%) 0%, transparent 50%);
+    
+    /* Modern shadows with burgundy tints */
+    --shadow-elegant: 0 20px 60px -15px hsl(348 97% 25% / 0.25);
+    --shadow-glow: 0 0 60px hsl(348 97% 35% / 0.4);
+    --shadow-card: 0 8px 30px -8px hsl(240 10% 10% / 0.12);
+    --shadow-hover: 0 30px 60px -12px hsl(348 97% 25% / 0.35);
+    
+    /* Smooth premium animations */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .dark {
+    --background: 240 15% 8%;
+    --foreground: 240 10% 95%;
+
+    --card: 240 15% 10%;
+    --card-foreground: 240 10% 95%;
+
+    --popover: 240 15% 10%;
+    --popover-foreground: 240 10% 95%;
+
+    --primary: 348 97% 35%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 348 97% 45%;
+    --primary-dark: 348 97% 25%;
+
+    --secondary: 0 65% 25%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 10 90% 75%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 10% 20%;
+    --input: 240 10% 18%;
+    --ring: 348 97% 35%;
+
+    /* Dark mode vibrant gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(348 97% 35%) 0%, hsl(0 65% 25%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(348 97% 35%) 0%, hsl(10 90% 75%) 50%, hsl(0 65% 25%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(240 15% 10%) 0%, hsl(240 15% 12%) 100%);
+    --gradient-mesh: radial-gradient(at 40% 20%, hsl(348 97% 25%) 0%, transparent 50%),
+                     radial-gradient(at 80% 0%, hsl(0 65% 25%) 0%, transparent 50%),
+                     radial-gradient(at 0% 50%, hsl(10 90% 45%) 0%, transparent 50%);
+    
+    --shadow-elegant: 0 20px 60px -15px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 60px hsl(348 97% 35% / 0.5);
+    --shadow-card: 0 8px 30px -8px hsl(0 0% 0% / 0.6);
+    --shadow-hover: 0 30px 60px -12px hsl(348 97% 35% / 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/30;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/70;
+  }
+}
