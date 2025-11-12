@@ -31,6 +31,7 @@ export interface CommunityRecipe {
   }[];
   likes_count: number;
   dislikes_count: number;
+  comments_count?: number;
   user_like?: boolean;
   user_dislike?: boolean;
   is_saved?: boolean;
@@ -47,8 +48,9 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
   const { user } = useAuth();
   const [isLiking, setIsLiking] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [localLikes, setLocalLikes] = useState(recipe.likes_count);
-  const [localDislikes, setLocalDislikes] = useState(recipe.dislikes_count);
+  const [localLikes, setLocalLikes] = useState(recipe.likes_count || 0);
+  const [localDislikes, setLocalDislikes] = useState(recipe.dislikes_count || 0);
+  const [localCommentsCount, setLocalCommentsCount] = useState(recipe.comments_count || 0);
   const [userLike, setUserLike] = useState(recipe.user_like);
   const [userDislike, setUserDislike] = useState(recipe.user_dislike);
   const [isSaved, setIsSaved] = useState(recipe.is_saved);
@@ -61,27 +63,61 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
     
     setIsLiking(true);
     try {
+      console.log('Handling like - Recipe ID:', recipe.id);
+      console.log('User ID:', user.id);
+      console.log('Is Like:', isLike);
+      
+      // Send like/dislike directly to the POST endpoint
       const { data, error } = await mongoClient
         .from('recipe_likes')
-        .insert({ recipe_id: recipe.id, is_like: isLike });
+        .insert({
+          recipe_id: recipe.id,
+          user_id: user.id,
+          is_like: isLike
+        });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Like error:', error);
+        throw error;
+      }
 
+      console.log('Like response:', data);
+
+      // Update local state immediately for better UX
       if (isLike) {
-        setLocalLikes(prev => prev + 1);
+        if (userDislike) {
+          setLocalDislikes(prev => Math.max(0, prev - 1));
+        }
+        if (!userLike) {
+          setLocalLikes(prev => prev + 1);
+        }
         setUserLike(true);
         setUserDislike(false);
       } else {
-        setLocalDislikes(prev => prev + 1);
+        if (userLike) {
+          setLocalLikes(prev => Math.max(0, prev - 1));
+        }
+        if (!userDislike) {
+          setLocalDislikes(prev => prev + 1);
+        }
         setUserDislike(true);
         setUserLike(false);
       }
       
-      onLikeUpdate?.();
-    } catch (error) {
+      toast({
+        title: "Success",
+        description: isLike ? "Recipe liked!" : "Recipe disliked!",
+      });
+      
+      // Refresh the list if callback provided
+      if (onLikeUpdate) {
+        await onLikeUpdate();
+      }
+    } catch (error: any) {
+      console.error('Like error details:', error);
       toast({
         title: "Error",
-        description: "Failed to update like status",
+        description: error.error || error.message || "Failed to update like status",
         variant: "destructive",
       });
     } finally {
@@ -94,12 +130,37 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
     
     setIsSaving(true);
     try {
+      console.log('Handling save to book:', { userId: user.id, recipeId: recipe.id, isSaved });
+      
       if (isSaved) {
         // Remove from recipe book
-        await mongoClient
+        const { data: existingBooks, error: fetchError } = await mongoClient
           .from('recipe_books')
-          .delete()
-          .eq('recipe_id', recipe.id);
+          .select();
+        
+        if (fetchError) {
+          console.error('Fetch books error:', fetchError);
+          throw fetchError;
+        }
+
+        const userBook = existingBooks?.find(
+          (book: any) => book.recipe_id === recipe.id && book.user_id === user.id
+        );
+        
+        if (userBook) {
+          const deleteResult = await mongoClient
+            .from('recipe_books')
+            .delete();
+          
+          const { error: deleteError } = await deleteResult.eq('_id', userBook._id);
+          
+          if (deleteError) {
+            console.error('Delete book error:', deleteError);
+            throw deleteError;
+          }
+          
+          console.log('Book removed successfully');
+        }
         
         setIsSaved(false);
         toast({
@@ -110,10 +171,15 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
         // Add to recipe book
         const { error: insertError } = await mongoClient
           .from('recipe_books')
-          .insert({ recipe_id: recipe.id });
+          .insert({
+            recipe_id: recipe.id,
+            user_id: user.id,
+            added_at: new Date().toISOString(),
+          });
         
         if (insertError) {
-          if (insertError.code === '23505') {
+          console.error('Insert book error:', insertError);
+          if (insertError.error?.includes('already in book') || insertError.code === 'duplicate_key') {
             toast({
               title: "Already saved",
               description: "This recipe is already in your book",
@@ -125,16 +191,18 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
           throw insertError;
         }
         
+        console.log('Book added successfully');
         setIsSaved(true);
         toast({
           title: "Saved to recipe book",
           description: "Recipe added to your collection",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Save error:', error);
       toast({
         title: "Error",
-        description: "Failed to save recipe",
+        description: error.message || "Failed to save recipe",
         variant: "destructive",
       });
     } finally {
@@ -149,27 +217,44 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
     
     setIsDeleting(true);
     try {
-      const { error } = await mongoClient
+      console.log('Deleting recipe:', recipe.id);
+      
+      const deleteResult = await mongoClient
         .from('recipes')
-        .delete()
-        .eq('_id', recipe.id);
+        .delete();
       
-      if (error) throw error;
+      const { error } = await deleteResult.eq('_id', recipe.id);
       
+      if (error) {
+        console.error('Delete recipe error:', error);
+        throw error;
+      }
+      
+      console.log('Recipe deleted successfully');
       toast({
         title: "Recipe deleted",
         description: "Your recipe has been removed from the community",
       });
       
-      onRecipeUpdate?.();
-    } catch (error) {
+      if (onRecipeUpdate) {
+        await onRecipeUpdate();
+      }
+    } catch (error: any) {
+      console.error('Delete error:', error);
       toast({
         title: "Error",
-        description: "Failed to delete recipe",
+        description: error.message || "Failed to delete recipe",
         variant: "destructive",
       });
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleCommentAdded = () => {
+    setLocalCommentsCount(prev => prev + 1);
+    if (onRecipeUpdate) {
+      onRecipeUpdate();
     }
   };
 
@@ -287,7 +372,7 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
               onClick={() => setShowComments(!showComments)}
               title="Comments"
             >
-              💬
+              💬 {localCommentsCount}
             </Button>
             
             <Button
@@ -302,19 +387,25 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
       </CardContent>
 
       {showComments && (
-        <CardContent className="pt-0 border-t">
-          <RecipeComments recipeId={recipe.id} />
-        </CardContent>
-      )}
+  <CardContent className="pt-0 border-t">
+    <RecipeComments 
+      recipeId={recipe.id} 
+      initialCount={localCommentsCount}
+      onCommentAdded={handleCommentAdded} 
+    />
+  </CardContent>
+)}
 
       {/* Edit Modal */}
       <EditRecipeModal
         recipe={recipe}
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        onRecipeUpdate={() => {
+        onRecipeUpdate={async () => {
           setIsEditModalOpen(false);
-          onRecipeUpdate?.();
+          if (onRecipeUpdate) {
+            await onRecipeUpdate();
+          }
         }}
       />
     </Card>

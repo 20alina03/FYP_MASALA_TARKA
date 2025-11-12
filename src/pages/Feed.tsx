@@ -3,8 +3,7 @@ import { mongoClient } from '@/lib/mongodb-client';
 import { CommunityRecipeCard, CommunityRecipe } from '@/components/CommunityRecipeCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import RecipeModal from '@/components/RecipeModal';
 
@@ -23,21 +22,70 @@ const Feed = () => {
 
   const fetchRecipes = async () => {
     try {
-      const { data, error } = await mongoClient.from('recipes').select();
+      setLoading(true);
       
-      if (error) throw error;
+      // Fetch recipes with counts from backend
+      const { data: recipesData, error: recipesError } = await mongoClient.from('recipes').select();
+      
+      if (recipesError) throw recipesError;
 
-      let processedRecipes = data.map((recipe: any) => ({
-        ...recipe,
-        id: recipe._id,
-        author_id: recipe.author_id,
-        profiles: recipe.author_id,
-        likes_count: 0,
-        dislikes_count: 0,
-        user_like: false,
-        user_dislike: false,
-        is_saved: false,
-      }));
+      console.log('Fetched recipes from backend:', recipesData);
+
+      // Fetch all likes and comments to check user's status
+      const { data: likesData } = await mongoClient.from('recipe_likes').select();
+      const { data: commentsData } = await mongoClient.from('recipe_comments').select();
+      const { data: booksData } = user ? await mongoClient.from('recipe_books').select() : { data: [] };
+
+      console.log('Fetched likes:', likesData?.length);
+      console.log('Fetched comments:', commentsData?.length);
+
+      let processedRecipes = recipesData.map((recipe: any) => {
+        const recipeId = recipe._id;
+        
+        // Get user's like status for this recipe
+        const userLike = user && likesData?.find(
+          (like: any) => like.recipe_id === recipeId && like.user_id === user.id
+        );
+        
+        // Check if user saved this recipe
+        const isSaved = user && booksData?.some(
+          (book: any) => book.recipe_id === recipeId && book.user_id === user.id
+        );
+
+        // Use counts from backend or calculate them
+        const likes_count = recipe.likes_count || likesData?.filter(
+          (like: any) => like.recipe_id === recipeId && like.is_like === true
+        ).length || 0;
+        
+        const dislikes_count = recipe.dislikes_count || likesData?.filter(
+          (like: any) => like.recipe_id === recipeId && like.is_like === false
+        ).length || 0;
+
+        const comments_count = recipe.comments_count || commentsData?.filter(
+          (comment: any) => comment.recipe_id === recipeId
+        ).length || 0;
+
+        console.log(`Recipe ${recipe.title}:`, {
+          likes_count,
+          dislikes_count,
+          comments_count,
+          userLike: userLike?.is_like,
+          isSaved
+        });
+
+        return {
+          ...recipe,
+          id: recipeId,
+          author_id: recipe.author_id,
+          profiles: recipe.author_id,
+          likes_count,
+          dislikes_count,
+          comments_count,
+          user_like: userLike?.is_like === true,
+          user_dislike: userLike?.is_like === false,
+          is_saved: isSaved || false,
+        };
+      });
 
       // Apply client-side filtering
       if (searchTerm) {
@@ -59,6 +107,7 @@ const Feed = () => {
         );
       }
 
+      console.log('Final processed recipes:', processedRecipes.length);
       setRecipes(processedRecipes);
     } catch (error) {
       console.error('Error fetching recipes:', error);
