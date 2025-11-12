@@ -6,34 +6,87 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
-
+import { toast } from '@/hooks/use-toast';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, refreshUser } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      console.log('User detected in Auth, navigating to home');
+      navigate('/home', { replace: true });
     }
   }, [user, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await signIn(email, password);
-    setIsLoading(false);
+    try {
+      const result = await signIn(email, password);
+      
+      if (!result.error) {
+        // Force a refresh of user state
+        await refreshUser();
+        
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in",
+        });
+        
+        // Small delay to ensure state propagation
+        setTimeout(() => {
+          console.log('Navigating to home after sign in');
+          navigate('/home', { replace: true });
+        }, 200);
+      }
+    } catch (error: any) {
+      console.error('Sign in error:', error);
+      toast({
+        title: "Sign in failed",
+        description: error.message || "Please check your credentials",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await signUp(email, password, fullName);
-    setIsLoading(false);
+    try {
+      const result = await signUp(email, password, fullName);
+      
+      if (!result.error) {
+        // Force a refresh of user state
+        await refreshUser();
+        
+        toast({
+          title: "Account created!",
+          description: "Welcome to Recipe Community",
+        });
+        
+        // Small delay to ensure state propagation
+        setTimeout(() => {
+          console.log('Navigating to home after sign up');
+          navigate('/home', { replace: true });
+        }, 200);
+      }
+    } catch (error: any) {
+      console.error('Sign up error:', error);
+      toast({
+        title: "Sign up failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

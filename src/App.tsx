@@ -2,8 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import Landing from "./pages/Landing";
+import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Feed from "./pages/Feed";
 import RecipeBook from "./pages/RecipeBook";
@@ -11,12 +12,14 @@ import GeneratedRecipes from "./pages/GeneratedRecipes";
 import CreateRecipe from "./pages/CreateRecipe";
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
-import { useAuth } from "./hooks/useAuth";
+import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  const { loading } = useAuth();
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -26,25 +29,113 @@ const App = () => {
     );
   }
 
+  if (!user) {
+    console.log('No user found, redirecting to landing');
+    return <Navigate to="/" replace state={{ from: location }} />;
+  }
+
+  return <>{children}</>;
+};
+
+const AppRoutes = () => {
+  const { loading, user } = useAuth();
+  const location = useLocation();
+  const [isReady, setIsReady] = useState(false);
+
+  // Wait for auth to be loaded
+  useEffect(() => {
+    if (!loading) {
+      setIsReady(true);
+    }
+  }, [loading]);
+
+  // Log user state changes
+  useEffect(() => {
+    console.log('Auth state changed:', { 
+      user: user ? `${user.email} (${user.id})` : 'null', 
+      loading,
+      path: location.pathname 
+    });
+  }, [user, loading, location.pathname]);
+
+  if (!isReady || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Navigation />
+      <Routes>
+        <Route 
+          path="/" 
+          element={user ? <Navigate to="/home" replace /> : <Landing />} 
+        />
+        <Route 
+          path="/auth" 
+          element={user ? <Navigate to="/home" replace /> : <Auth />} 
+        />
+        <Route 
+          path="/home" 
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/feed" 
+          element={
+            <ProtectedRoute>
+              <Feed />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/recipe-book" 
+          element={
+            <ProtectedRoute>
+              <RecipeBook />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/generated-recipes" 
+          element={
+            <ProtectedRoute>
+              <GeneratedRecipes />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/create-recipe" 
+          element={
+            <ProtectedRoute>
+              <CreateRecipe />
+            </ProtectedRoute>
+          } 
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  );
+};
+
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Navigation />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/feed" element={<Feed />} />
-            <Route path="/recipe-book" element={<RecipeBook />} />
-            <Route path="/generated-recipes" element={<GeneratedRecipes />} />
-            <Route path="/create-recipe" element={<CreateRecipe />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };
