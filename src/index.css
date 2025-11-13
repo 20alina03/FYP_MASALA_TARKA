@@ -17,14 +17,14 @@
     --popover-foreground: 240 10% 10%;
 
     /* Deep burgundy primary */
-    --primary: 1 58% 44%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 1 58% 35%;
-    --primary-dark: 1 58% 20%;
+    --primary: 348 97% 25%; /* Changed from 1 58% 44% to match your selected color */
+    --primary-foreground: 0 0% 100%; /* This ensures white text on primary background */
+    --primary-glow: 348 97% 35%;
+    --primary-dark: 348 97% 20%;
 
     /* Soft pink secondary */
     --secondary: 0 65% 89%;
-    --secondary-foreground: 0 0% 10%;
+    --secondary-foreground: 240 10% 10%; /* Dark text on light secondary */
 
     --muted: 240 10% 95%;
     --muted-foreground: 240 5% 50%;
@@ -132,5 +132,16 @@
 
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-primary/70;
+  }
+}
+
+/* Ensure buttons with primary variant have white text */
+@layer components {
+  .bg-primary {
+    @apply text-primary-foreground;
+  }
+  
+  button[class*="bg-primary"] {
+    @apply text-white;
   }
 }

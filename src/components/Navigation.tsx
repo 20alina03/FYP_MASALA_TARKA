@@ -94,6 +94,7 @@ const Navigation = () => {
               variant={isActive('/home') ? 'default' : 'ghost'}
               size="sm"
               asChild
+              className={isActive('/home') ? 'text-white hover:text-white' : ''}
             >
               <Link to="/home" className="flex items-center space-x-2">
                 <Home className="w-4 h-4" />
@@ -105,6 +106,7 @@ const Navigation = () => {
               variant={isActive('/feed') ? 'default' : 'ghost'}
               size="sm"
               asChild
+              className={isActive('/feed') ? 'text-white hover:text-white' : ''}
             >
               <Link to="/feed" className="flex items-center space-x-2">
                 <Heart className="w-4 h-4" />
@@ -116,6 +118,7 @@ const Navigation = () => {
               variant={isActive('/recipe-book') ? 'default' : 'ghost'}
               size="sm"
               asChild
+              className={isActive('/recipe-book') ? 'text-white hover:text-white' : ''}
             >
               <Link to="/recipe-book" className="flex items-center space-x-2">
                 <BookOpen className="w-4 h-4" />
@@ -127,6 +130,7 @@ const Navigation = () => {
               variant={isActive('/generated-recipes') ? 'default' : 'ghost'}
               size="sm"
               asChild
+              className={isActive('/generated-recipes') ? 'text-white hover:text-white' : ''}
             >
               <Link to="/generated-recipes" className="flex items-center space-x-2">
                 <Sparkles className="w-4 h-4" />
@@ -138,6 +142,7 @@ const Navigation = () => {
               variant={isActive('/create-recipe') ? 'default' : 'ghost'}
               size="sm"
               asChild
+              className={isActive('/create-recipe') ? 'text-white hover:text-white' : ''}
             >
               <Link to="/create-recipe" className="flex items-center space-x-2">
                 <Plus className="w-4 h-4" />
