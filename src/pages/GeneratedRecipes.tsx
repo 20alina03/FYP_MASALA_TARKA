@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 import { mongoClient } from '@/lib/mongodb-client';
 import { useAuth } from '@/hooks/useAuth';
-import { CommunityRecipeCard, CommunityRecipe } from '@/components/CommunityRecipeCard';
+import { SimpleRecipeCard, SimpleRecipe } from '@/components/SimpleRecipeCard';
 import RecipeModal from '@/components/RecipeModal';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Sparkles, Trash2, BookOpen, Share2 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { Search, Sparkles } from 'lucide-react';
 
 const GeneratedRecipes = () => {
   const { user } = useAuth();
-  const [generatedRecipes, setGeneratedRecipes] = useState<CommunityRecipe[]>([]);
+  const [generatedRecipes, setGeneratedRecipes] = useState<SimpleRecipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,17 +28,12 @@ const GeneratedRecipes = () => {
 
       if (error) throw error;
 
-      // Transform data to match CommunityRecipe interface
+      // Transform data to match SimpleRecipe interface
       let processedRecipes = data.map((recipe: any) => ({
         ...recipe,
         id: recipe._id,
-        likes_count: 0,
-        dislikes_count: 0,
-        user_like: false,
-        user_dislike: false,
-        is_saved: false,
-        created_at: recipe.generated_at,
         author_id: recipe.user_id,
+        created_at: recipe.generated_at,
       }));
 
       // Apply client-side filtering
@@ -74,8 +68,7 @@ const GeneratedRecipes = () => {
     fetchGeneratedRecipes();
   }, [user, searchTerm, selectedCuisine, selectedDifficulty]);
 
-  const handleViewRecipe = (recipe: CommunityRecipe) => {
-    // Convert community recipe format to modal format
+  const handleViewRecipe = (recipe: SimpleRecipe) => {
     const modalRecipe = {
       id: recipe.id,
       title: recipe.title,
@@ -93,153 +86,6 @@ const GeneratedRecipes = () => {
     };
     setSelectedRecipe(modalRecipe);
     setIsModalOpen(true);
-  };
-
-  const handleAddToRecipeBook = async (recipeId: string) => {
-    if (!user) return;
-    
-    try {
-      // Get the generated recipe
-      const generatedRecipes = await mongoClient.from('generated_recipes').select();
-      const generatedRecipe = generatedRecipes.data?.find((r: any) => r._id === recipeId);
-      
-      if (!generatedRecipe) throw new Error('Recipe not found');
-
-      // Add to recipes table (community) and recipe_books
-      const recipeData = {
-        title: generatedRecipe.title,
-        description: generatedRecipe.description,
-        ingredients: generatedRecipe.ingredients,
-        instructions: generatedRecipe.instructions,
-        image_url: generatedRecipe.image_url,
-        cooking_time: generatedRecipe.cooking_time,
-        servings: generatedRecipe.servings,
-        difficulty: generatedRecipe.difficulty,
-        calories: generatedRecipe.calories,
-        cuisine: generatedRecipe.cuisine,
-      };
-
-      const { data: insertedRecipe, error: recipeError } = await mongoClient
-        .from('recipes')
-        .insert(recipeData);
-
-      if (recipeError) {
-        if (recipeError.code === '23505') {
-          toast({
-            title: "Already Shared",
-            description: "This recipe is already shared to the community",
-            variant: "destructive",
-          });
-        } else {
-          throw recipeError;
-        }
-        return;
-      }
-
-      // Add to recipe books
-      const { error: bookError } = await mongoClient
-        .from('recipe_books')
-        .insert({ recipe_id: insertedRecipe._id });
-
-      if (bookError && bookError.code === '23505') {
-        toast({
-          title: "Already in Recipe Book",
-          description: "This recipe is already in your recipe book",
-          variant: "destructive",
-        });
-        return;
-      }
-      if (bookError) throw bookError;
-
-      toast({
-        title: "Success",
-        description: "Recipe added to your recipe book",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to add recipe to book",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleShareToCommunity = async (recipeId: string) => {
-    if (!user) return;
-    
-    try {
-      // Get the generated recipe
-      const generatedRecipes = await mongoClient.from('generated_recipes').select();
-      const generatedRecipe = generatedRecipes.data?.find((r: any) => r._id === recipeId);
-      
-      if (!generatedRecipe) throw new Error('Recipe not found');
-
-      // Add to recipes table (community)
-      const recipeData = {
-        title: generatedRecipe.title,
-        description: generatedRecipe.description,
-        ingredients: generatedRecipe.ingredients,
-        instructions: generatedRecipe.instructions,
-        image_url: generatedRecipe.image_url,
-        cooking_time: generatedRecipe.cooking_time,
-        servings: generatedRecipe.servings,
-        difficulty: generatedRecipe.difficulty,
-        calories: generatedRecipe.calories,
-        cuisine: generatedRecipe.cuisine,
-      };
-
-      const { error: recipeError } = await mongoClient
-        .from('recipes')
-        .insert(recipeData);
-
-      if (recipeError) {
-        if (recipeError.code === '23505') {
-          toast({
-            title: "Already Shared",
-            description: "You've already shared this recipe to the community",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw recipeError;
-      }
-
-      toast({
-        title: "Success",
-        description: "Recipe shared to community",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to share recipe",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDeleteGenerated = async (recipeId: string) => {
-    if (!user) return;
-    
-    try {
-      const { error } = await mongoClient
-        .from('generated_recipes')
-        .delete()
-        .eq('_id', recipeId);
-
-      if (error) throw error;
-
-      setGeneratedRecipes(prev => prev.filter(recipe => recipe.id !== recipeId));
-      toast({
-        title: "Recipe deleted",
-        description: "Generated recipe deleted successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete recipe",
-        variant: "destructive",
-      });
-    }
   };
 
   const handleCloseModal = () => {
@@ -352,44 +198,14 @@ const GeneratedRecipes = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {generatedRecipes.map((recipe) => (
-            <div key={recipe.id} className="relative group">
-              <CommunityRecipeCard
-                recipe={recipe}
-                onViewRecipe={handleViewRecipe}
-                onRecipeUpdate={fetchGeneratedRecipes}
-              />
-              
-              {/* Action buttons */}
-              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  onClick={() => handleAddToRecipeBook(recipe.id)}
-                  title="Add to Recipe Book"
-                >
-                  <BookOpen className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  onClick={() => handleShareToCommunity(recipe.id)}
-                  title="Share to Community"
-                >
-                  <Share2 className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  onClick={() => handleDeleteGenerated(recipe.id)}
-                  title="Delete"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
+            <SimpleRecipeCard
+              key={recipe.id}
+              recipe={recipe}
+              onViewRecipe={handleViewRecipe}
+              onRecipeUpdate={fetchGeneratedRecipes}
+              showEditDelete={true}
+              isFromGeneratedRecipes={true}
+            />
           ))}
         </div>
       )}

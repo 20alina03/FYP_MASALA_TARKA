@@ -38,6 +38,7 @@ const Feed = () => {
 
       console.log('Fetched likes:', likesData?.length);
       console.log('Fetched comments:', commentsData?.length);
+      console.log('Current user ID:', user?.id);
 
       let processedRecipes = recipesData.map((recipe: any) => {
         const recipeId = recipe._id;
@@ -65,7 +66,14 @@ const Feed = () => {
           (comment: any) => comment.recipe_id === recipeId
         ).length || 0;
 
+        // Ensure author_id is properly set
+        const authorId = recipe.author_id?._id || recipe.author_id;
+
         console.log(`Recipe ${recipe.title}:`, {
+          recipeId,
+          authorId,
+          currentUserId: user?.id,
+          isOwner: user?.id === authorId,
           likes_count,
           dislikes_count,
           comments_count,
@@ -76,7 +84,7 @@ const Feed = () => {
         return {
           ...recipe,
           id: recipeId,
-          author_id: recipe.author_id,
+          author_id: authorId, // Ensure this is a string ID
           profiles: recipe.author_id,
           likes_count,
           dislikes_count,

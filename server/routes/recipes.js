@@ -4,6 +4,7 @@ const RecipeLike = require('../models/RecipeLike');
 const RecipeComment = require('../models/RecipeComment');
 const RecipeBook = require('../models/RecipeBook');
 const GeneratedRecipe = require('../models/GeneratedRecipe');
+const GeneratedRecipeBook = require('../models/GeneratedRecipeBook');
 const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
@@ -410,6 +411,79 @@ router.delete('/recipe_books/:id', authenticateToken, async (req, res) => {
     res.json({ message: 'Recipe removed from book' });
   } catch (error) {
     console.error('Remove from recipe book error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============= GENERATED RECIPE BOOKS =============
+
+// Get all generated recipe books
+router.get('/generated_recipe_books', authenticateToken, async (req, res) => {
+  try {
+    const books = await GeneratedRecipeBook.find({ user_id: req.user.id })
+      .populate('generated_recipe_id');
+    console.log(`Retrieved ${books.length} generated recipe books for user:`, req.user.id);
+    res.json(books);
+  } catch (error) {
+    console.error('Get generated recipe books error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Add generated recipe to book
+router.post('/generated_recipe_books', authenticateToken, async (req, res) => {
+  try {
+    const { generated_recipe_id } = req.body;
+    
+    console.log('Adding generated recipe to book:', { user_id: req.user.id, generated_recipe_id });
+
+    // Check if already exists
+    const existing = await GeneratedRecipeBook.findOne({
+      user_id: req.user.id,
+      generated_recipe_id: generated_recipe_id
+    });
+
+    if (existing) {
+      return res.status(400).json({ error: 'Generated recipe already in book', code: 'duplicate_key' });
+    }
+
+    const book = new GeneratedRecipeBook({
+      user_id: req.user.id,
+      generated_recipe_id: generated_recipe_id
+    });
+
+    await book.save();
+    console.log('Generated recipe added to book:', book._id);
+
+    await book.populate('generated_recipe_id');
+    res.status(201).json(book);
+  } catch (error) {
+    console.error('Add generated recipe to book error:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Generated recipe already in book', code: 'duplicate_key' });
+    }
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Remove generated recipe from book
+router.delete('/generated_recipe_books/:id', authenticateToken, async (req, res) => {
+  try {
+    const book = await GeneratedRecipeBook.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({ error: 'Generated recipe book entry not found' });
+    }
+    
+    // Check if user owns this entry
+    if (book.user_id.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    await book.deleteOne();
+    console.log('Generated recipe removed from book:', req.params.id);
+    res.json({ message: 'Generated recipe removed from book' });
+  } catch (error) {
+    console.error('Remove generated recipe from book error:', error);
     res.status(500).json({ error: error.message });
   }
 });

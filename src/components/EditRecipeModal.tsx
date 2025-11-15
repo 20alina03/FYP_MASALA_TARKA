@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, X, Plus, Save, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { mongoClient } from '@/lib/mongodb-client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
@@ -51,12 +50,33 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
       setCuisine(recipe.cuisine || '');
       setCalories(recipe.calories ? recipe.calories.toString() : '');
       setImagePreview(recipe.image_url || '');
+      setImageFile(null); // Reset file input
     }
   }, [recipe, isOpen]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select an image smaller than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file type",
+          description: "Please select an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -71,7 +91,9 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
   };
 
   const removeIngredient = (index: number) => {
-    setIngredients(ingredients.filter((_, i) => i !== index));
+    if (ingredients.length > 1) {
+      setIngredients(ingredients.filter((_, i) => i !== index));
+    }
   };
 
   const updateIngredient = (index: number, value: string) => {
@@ -85,7 +107,9 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
   };
 
   const removeInstruction = (index: number) => {
-    setInstructions(instructions.filter((_, i) => i !== index));
+    if (instructions.length > 1) {
+      setInstructions(instructions.filter((_, i) => i !== index));
+    }
   };
 
   const updateInstruction = (index: number, value: string) => {
@@ -94,47 +118,91 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
     setInstructions(updated);
   };
 
-  const uploadImage = async (file: File) => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${user!.id}-${Date.now()}.${fileExt}`;
-    
-    const { error: uploadError } = await supabase.storage
-      .from('recipe-images')
-      .upload(fileName, file);
-
-    if (uploadError) throw uploadError;
-
-    const { data } = supabase.storage
-      .from('recipe-images')
-      .getPublicUrl(fileName);
-
-    return data.publicUrl;
+  const convertImageToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          resolve(reader.result);
+        } else {
+          reject(new Error('Failed to convert image'));
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleSave = async () => {
     if (!user || !recipe) return;
 
+    // Validation
+    const filteredIngredients = ingredients.filter(i => i.trim());
+    const filteredInstructions = instructions.filter(i => i.trim());
+
+    if (!title.trim()) {
+      toast({
+        title: "Validation error",
+        description: "Please enter a recipe title",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (filteredIngredients.length === 0) {
+      toast({
+        title: "Validation error",
+        description: "Please add at least one ingredient",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (filteredInstructions.length === 0) {
+      toast({
+        title: "Validation error",
+        description: "Please add at least one instruction",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      let imageUrl = imagePreview;
+      let imageUrl = recipe.image_url || imagePreview;
       
+      // If user selected a new image, convert it to base64
       if (imageFile) {
-        imageUrl = await uploadImage(imageFile);
+        try {
+          imageUrl = await convertImageToBase64(imageFile);
+          console.log('Image converted to base64');
+        } catch (error) {
+          console.error('Error converting image:', error);
+          toast({
+            title: "Image upload warning",
+            description: "Proceeding without new image. Using existing image.",
+            variant: "default",
+          });
+          imageUrl = recipe.image_url;
+        }
       }
 
       const updateData = {
-        title,
-        description,
-        ingredients: ingredients.filter(i => i.trim()),
-        instructions: instructions.filter(i => i.trim()),
-        image_url: imageUrl,
+        title: title.trim(),
+        description: description.trim(),
+        ingredients: filteredIngredients,
+        instructions: filteredInstructions,
+        image_url: imageUrl || null,
         cooking_time: cookingTime ? parseInt(cookingTime) : null,
-        servings: parseInt(servings),
+        servings: servings ? parseInt(servings) : 4,
         difficulty: difficulty || null,
         cuisine: cuisine || null,
         calories: calories ? parseInt(calories) : null,
+        updated_at: new Date().toISOString(),
       };
+
+      console.log('Updating recipe with data:', updateData);
 
       const result = await mongoClient
         .from('recipes')
@@ -142,7 +210,12 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
 
       const { error } = await result.eq('_id', recipe.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Update error:', error);
+        throw error;
+      }
+
+      console.log('Recipe updated successfully');
 
       toast({
         title: "Recipe updated!",
@@ -152,9 +225,10 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
       onRecipeUpdate();
       onClose();
     } catch (error: any) {
+      console.error('Failed to update recipe:', error);
       toast({
         title: "Error updating recipe",
-        description: error.message,
+        description: error.message || "Please try again",
         variant: "destructive",
       });
     } finally {
@@ -164,7 +238,6 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
 
   const handleClose = () => {
     setImageFile(null);
-    setImagePreview('');
     onClose();
   };
 
@@ -194,7 +267,7 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
                     className="absolute top-2 right-2"
                     onClick={() => {
                       setImageFile(null);
-                      setImagePreview('');
+                      setImagePreview(recipe.image_url || '');
                     }}
                   >
                     <X className="w-4 h-4" />
@@ -218,6 +291,9 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
                       Choose Image
                     </Label>
                   </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Max 5MB • PNG, JPG, WEBP
+                  </p>
                 </div>
               )}
             </div>
@@ -226,7 +302,7 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
           {/* Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="edit-title">Recipe Title</Label>
+              <Label htmlFor="edit-title">Recipe Title *</Label>
               <Input
                 id="edit-title"
                 value={title}
@@ -253,16 +329,18 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
                 value={cookingTime}
                 onChange={(e) => setCookingTime(e.target.value)}
                 placeholder="30"
+                min="1"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Servings</Label>
+              <Label>Servings *</Label>
               <Input
                 type="number"
                 value={servings}
                 onChange={(e) => setServings(e.target.value)}
                 min="1"
+                max="50"
               />
             </div>
 
@@ -297,18 +375,29 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-2">
+              <Label>Calories (per serving)</Label>
+              <Input
+                type="number"
+                value={calories}
+                onChange={(e) => setCalories(e.target.value)}
+                placeholder="300"
+                min="0"
+              />
+            </div>
           </div>
 
           {/* Ingredients */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Ingredients</Label>
+              <Label>Ingredients *</Label>
               <Button type="button" variant="outline" size="sm" onClick={addIngredient}>
                 <Plus className="w-4 h-4 mr-1" />
                 Add
               </Button>
             </div>
-            <div className="space-y-2 max-h-32 overflow-y-auto">
+            <div className="space-y-2 max-h-48 overflow-y-auto">
               {ingredients.map((ingredient, index) => (
                 <div key={index} className="flex gap-2">
                   <Input
@@ -334,23 +423,23 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
           {/* Instructions */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Instructions</Label>
+              <Label>Instructions *</Label>
               <Button type="button" variant="outline" size="sm" onClick={addInstruction}>
                 <Plus className="w-4 h-4 mr-1" />
                 Add Step
               </Button>
             </div>
-            <div className="space-y-2 max-h-40 overflow-y-auto">
+            <div className="space-y-2 max-h-64 overflow-y-auto">
               {instructions.map((instruction, index) => (
                 <div key={index} className="flex gap-2">
-                  <div className="flex-shrink-0 w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center text-sm font-medium">
+                  <div className="flex-shrink-0 w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center text-sm font-medium mt-2">
                     {index + 1}
                   </div>
                   <Textarea
                     value={instruction}
                     onChange={(e) => updateInstruction(index, e.target.value)}
                     placeholder={`Step ${index + 1} instructions`}
-                    rows={1}
+                    rows={2}
                     className="resize-none"
                   />
                   {instructions.length > 1 && (
@@ -359,6 +448,7 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
                       variant="outline"
                       size="icon"
                       onClick={() => removeInstruction(index)}
+                      className="mt-2"
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -371,7 +461,12 @@ const EditRecipeModal = ({ recipe, isOpen, onClose, onRecipeUpdate }: EditRecipe
 
         {/* Action Buttons */}
         <div className="flex gap-3 pt-4 border-t">
-          <Button variant="outline" onClick={handleClose} className="flex-1">
+          <Button 
+            variant="outline" 
+            onClick={handleClose} 
+            className="flex-1"
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
           <Button 

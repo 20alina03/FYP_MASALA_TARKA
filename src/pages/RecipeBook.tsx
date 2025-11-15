@@ -1,20 +1,51 @@
 import { useState, useEffect } from 'react';
 import { mongoClient } from '@/lib/mongodb-client';
 import { useAuth } from '@/hooks/useAuth';
-import { CommunityRecipeCard, CommunityRecipe } from '@/components/CommunityRecipeCard';
-import RecipeModal from '@/components/RecipeModal';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search, BookOpen, Trash2, Download } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import RecipeModal from '@/components/RecipeModal';
+import EditRecipeModal from '@/components/EditRecipeModal';
+import { Input } from '@/components/ui/input';
+import { Search, BookOpen, Download, Clock, Users, Eye, Edit, Trash2, Share2, AlertCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 
+interface RecipeBookEntry {
+  _id: string;
+  recipe_id?: any;
+  generated_recipe_id?: any;
+  user_id: string;
+  added_at: string;
+}
+
+interface RecipeBookRecipe {
+  id: string;
+  bookEntryId: string;
+  title: string;
+  description: string;
+  ingredients?: any[];
+  instructions?: any[];
+  image_url?: string;
+  cooking_time?: number;
+  servings?: number;
+  difficulty?: string;
+  cuisine?: string;
+  calories?: number;
+  author_id?: string;
+  created_at?: string;
+  isEmpty?: boolean;
+  isGenerated?: boolean; // Flag to indicate if it's from generated_recipes
+}
+
 const RecipeBook = () => {
   const { user } = useAuth();
-  const [savedRecipes, setSavedRecipes] = useState<CommunityRecipe[]>([]);
+  const [savedRecipes, setSavedRecipes] = useState<RecipeBookRecipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingRecipe, setEditingRecipe] = useState<any>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCuisine, setSelectedCuisine] = useState<string>('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
@@ -26,44 +57,108 @@ const RecipeBook = () => {
     if (!user) return;
     
     try {
-      const { data, error } = await mongoClient.from('recipe_books').select();
+      console.log('Fetching saved recipes for user:', user.id);
+      
+      // Fetch from both recipe_books and generated_recipe_books
+      const [communityBooks, generatedBooks] = await Promise.all([
+        mongoClient.from('recipe_books').select(),
+        mongoClient.from('generated_recipe_books').select()
+      ]);
 
-      if (error) throw error;
+      console.log('Community books:', communityBooks.data?.length);
+      console.log('Generated books:', generatedBooks.data?.length);
 
-      // Transform data to match CommunityRecipe interface
-      let processedRecipes = data.map((item: any) => ({
-        ...item.recipe_id,
-        id: item.recipe_id?._id,
-        likes_count: 0,
-        dislikes_count: 0,
-        user_like: false,
-        user_dislike: false,
-        is_saved: true,
-      }));
+      let allRecipes: RecipeBookRecipe[] = [];
+
+      // Process community recipes
+      if (communityBooks.data) {
+        const communityRecipes = communityBooks.data.map((item: RecipeBookEntry) => {
+          const isEmptyRecipe = !item.recipe_id || Object.keys(item.recipe_id).length === 0;
+          
+          if (isEmptyRecipe) {
+            return {
+              id: item._id,
+              bookEntryId: item._id,
+              title: 'Empty Recipe Card',
+              description: 'This recipe no longer exists or was not properly saved.',
+              isEmpty: true,
+              isGenerated: false,
+            };
+          }
+
+          return {
+            ...item.recipe_id,
+            id: item.recipe_id?._id || item._id,
+            bookEntryId: item._id,
+            author_id: item.recipe_id?.author_id,
+            isEmpty: false,
+            isGenerated: false,
+          };
+        });
+        allRecipes = [...allRecipes, ...communityRecipes];
+      }
+
+      // Process generated recipes
+      if (generatedBooks.data) {
+        const generatedRecipes = generatedBooks.data.map((item: RecipeBookEntry) => {
+          const isEmptyRecipe = !item.generated_recipe_id || Object.keys(item.generated_recipe_id).length === 0;
+          
+          if (isEmptyRecipe) {
+            return {
+              id: item._id,
+              bookEntryId: item._id,
+              title: 'Empty Recipe Card',
+              description: 'This recipe no longer exists or was not properly saved.',
+              isEmpty: true,
+              isGenerated: true,
+            };
+          }
+
+          return {
+            ...item.generated_recipe_id,
+            id: item.generated_recipe_id?._id || item._id,
+            bookEntryId: item._id,
+            author_id: item.generated_recipe_id?.user_id,
+            isEmpty: false,
+            isGenerated: true,
+          };
+        });
+        allRecipes = [...allRecipes, ...generatedRecipes];
+      }
+
+      console.log('Total recipes before filtering:', allRecipes.length);
 
       // Apply client-side filtering
       if (searchTerm) {
-        processedRecipes = processedRecipes.filter((recipe: any) =>
-          recipe.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          recipe.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        allRecipes = allRecipes.filter((recipe: any) =>
+          !recipe.isEmpty && (
+            recipe.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            recipe.description?.toLowerCase().includes(searchTerm.toLowerCase())
+          )
         );
       }
 
       if (selectedCuisine) {
-        processedRecipes = processedRecipes.filter((recipe: any) =>
-          recipe.cuisine === selectedCuisine
+        allRecipes = allRecipes.filter((recipe: any) =>
+          !recipe.isEmpty && recipe.cuisine === selectedCuisine
         );
       }
 
       if (selectedDifficulty) {
-        processedRecipes = processedRecipes.filter((recipe: any) =>
-          recipe.difficulty === selectedDifficulty
+        allRecipes = allRecipes.filter((recipe: any) =>
+          !recipe.isEmpty && recipe.difficulty === selectedDifficulty
         );
       }
 
-      setSavedRecipes(processedRecipes);
+      console.log('Total recipes after filtering:', allRecipes.length);
+      setSavedRecipes(allRecipes);
     } catch (error) {
       console.error('Error fetching saved recipes:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load saved recipes",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -73,8 +168,16 @@ const RecipeBook = () => {
     fetchSavedRecipes();
   }, [user, searchTerm, selectedCuisine, selectedDifficulty]);
 
-  const handleViewRecipe = (recipe: CommunityRecipe) => {
-    // Convert community recipe format to modal format
+  const handleViewRecipe = (recipe: RecipeBookRecipe) => {
+    if (recipe.isEmpty) {
+      toast({
+        title: "Cannot view recipe",
+        description: "This recipe is empty or no longer exists",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const modalRecipe = {
       id: recipe.id,
       title: recipe.title,
@@ -87,33 +190,134 @@ const RecipeBook = () => {
       difficulty: recipe.difficulty,
       calories: recipe.calories,
       cuisine: recipe.cuisine,
-      fromDb: true,
+      fromDb: !recipe.isGenerated,
+      fromGeneratedRecipes: recipe.isGenerated,
       dbRecipeId: recipe.id,
+      generatedRecipeId: recipe.isGenerated ? recipe.id : undefined,
     };
     setSelectedRecipe(modalRecipe);
     setIsModalOpen(true);
   };
 
-  const handleRemoveFromBook = async (recipeId: string) => {
+  const handleEditRecipe = (recipe: RecipeBookRecipe) => {
+    if (recipe.isEmpty) {
+      toast({
+        title: "Cannot edit recipe",
+        description: "This recipe is empty or no longer exists",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setEditingRecipe(recipe);
+    setIsEditModalOpen(true);
+  };
+
+  const handleShareToCommunity = async (recipe: RecipeBookRecipe) => {
     if (!user) return;
+
+    if (recipe.isEmpty) {
+      toast({
+        title: "Cannot share recipe",
+        description: "This recipe is empty or no longer exists",
+        variant: "destructive",
+      });
+      return;
+    }
     
     try {
-      const { error } = await mongoClient
-        .from('recipe_books')
-        .delete()
-        .eq('recipe_id', recipeId);
+      console.log('Sharing to community:', recipe.id);
+      
+      const recipeData = {
+        title: recipe.title,
+        description: recipe.description,
+        ingredients: recipe.ingredients,
+        instructions: recipe.instructions,
+        image_url: recipe.image_url,
+        cooking_time: recipe.cooking_time,
+        servings: recipe.servings,
+        difficulty: recipe.difficulty,
+        calories: recipe.calories,
+        cuisine: recipe.cuisine,
+      };
 
-      if (error) throw error;
+      const { error: recipeError } = await mongoClient
+        .from('recipes')
+        .insert(recipeData);
 
-      setSavedRecipes(prev => prev.filter(recipe => recipe.id !== recipeId));
+      if (recipeError) {
+        if (recipeError.code === '23505' || recipeError.error?.includes('duplicate')) {
+          toast({
+            title: "Already Shared",
+            description: "This recipe is already shared to the community",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw recipeError;
+      }
+
       toast({
-        title: "Recipe removed",
-        description: "Recipe removed from your book",
+        title: "Success",
+        description: "Recipe shared to community",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Share error:', error);
       toast({
         title: "Error",
-        description: "Failed to remove recipe",
+        description: error.message || "Failed to share recipe",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteRecipe = async (recipe: RecipeBookRecipe) => {
+    if (!user) return;
+    
+    const confirmMessage = recipe.isEmpty 
+      ? 'Are you sure you want to remove this empty card from your book?'
+      : 'Are you sure you want to remove this recipe from your book?';
+    
+    if (!confirm(confirmMessage)) return;
+
+    try {
+      console.log('Deleting recipe from book:', {
+        bookEntryId: recipe.bookEntryId,
+        recipeId: recipe.id,
+        isEmpty: recipe.isEmpty,
+        isGenerated: recipe.isGenerated
+      });
+      
+      // Use the appropriate table based on recipe type
+      const tableName = recipe.isGenerated ? 'generated_recipe_books' : 'recipe_books';
+      
+      const deleteResult = await mongoClient
+        .from(tableName)
+        .delete();
+      
+      const { error } = await deleteResult.eq('_id', recipe.bookEntryId);
+
+      if (error) {
+        console.error('Delete error:', error);
+        throw error;
+      }
+
+      console.log('Successfully deleted from recipe book');
+      
+      // Remove from local state
+      setSavedRecipes(prev => prev.filter(r => r.bookEntryId !== recipe.bookEntryId));
+      
+      toast({
+        title: "Recipe removed",
+        description: recipe.isEmpty 
+          ? "Empty card removed from your book" 
+          : "Recipe removed from your book",
+      });
+    } catch (error: any) {
+      console.error('Delete error details:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to remove recipe",
         variant: "destructive",
       });
     }
@@ -125,7 +329,10 @@ const RecipeBook = () => {
   };
 
   const handleDownloadPDF = async () => {
-    if (savedRecipes.length === 0) {
+    // Filter out empty recipes for PDF generation
+    const validRecipes = savedRecipes.filter(r => !r.isEmpty);
+    
+    if (validRecipes.length === 0) {
       toast({
         title: "No recipes",
         description: "Add some recipes to your book first",
@@ -148,7 +355,7 @@ const RecipeBook = () => {
       yPosition += 15;
 
       // Add each recipe
-      savedRecipes.forEach((recipe, index) => {
+      validRecipes.forEach((recipe, index) => {
         // Check if we need a new page
         if (yPosition > pageHeight - 40) {
           pdf.addPage();
@@ -272,7 +479,7 @@ const RecipeBook = () => {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             Your Recipe Book
           </h1>
-          {savedRecipes.length > 0 && (
+          {savedRecipes.filter(r => !r.isEmpty).length > 0 && (
             <Button onClick={handleDownloadPDF} variant="outline">
               <Download className="w-4 h-4 mr-2" />
               Download PDF
@@ -339,33 +546,152 @@ const RecipeBook = () => {
           <p className="text-muted-foreground mb-4">
             {searchTerm || selectedCuisine || selectedDifficulty 
               ? 'Try adjusting your search or filters.'
-              : 'Save recipes from the community feed to access them offline later.'
+              : 'Save recipes from the community feed or generated recipes to access them here.'
             }
           </p>
           {!searchTerm && !selectedCuisine && !selectedDifficulty && (
-            <Button asChild>
-              <a href="/feed">Browse Community Recipes</a>
-            </Button>
+            <div className="flex gap-4 justify-center">
+              <Button asChild>
+                <a href="/feed">Browse Community Recipes</a>
+              </Button>
+              <Button asChild variant="outline">
+                <a href="/generated-recipes">View Generated Recipes</a>
+              </Button>
+            </div>
           )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {savedRecipes.map((recipe) => (
-            <div key={recipe.id} className="relative group">
-              <CommunityRecipeCard
-                recipe={recipe}
-                onViewRecipe={handleViewRecipe}
-                onRecipeUpdate={fetchSavedRecipes}
-              />
-              <Button
-                variant="destructive"
-                size="sm"
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => handleRemoveFromBook(recipe.id)}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
+            <Card 
+              key={recipe.bookEntryId} 
+              className={`h-full hover:shadow-lg transition-shadow ${recipe.isEmpty ? 'border-destructive/50 bg-destructive/5' : ''}`}
+            >
+              {recipe.isEmpty ? (
+                // Empty Recipe Card
+                <div className="p-6">
+                  <div className="flex items-center justify-center mb-4">
+                    <AlertCircle className="w-16 h-16 text-destructive/50" />
+                  </div>
+                  <CardHeader className="pb-2 text-center">
+                    <h3 className="font-semibold text-lg text-destructive">
+                      {recipe.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {recipe.description}
+                    </p>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteRecipe(recipe)}
+                      className="w-full"
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Remove Empty Card
+                    </Button>
+                  </CardContent>
+                </div>
+              ) : (
+                // Normal Recipe Card
+                <>
+                  {recipe.image_url && (
+                    <div className="aspect-video overflow-hidden rounded-t-lg">
+                      <img
+                        src={recipe.image_url}
+                        alt={recipe.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start gap-2">
+                      <h3 className="font-semibold text-lg line-clamp-2">{recipe.title}</h3>
+                      <div className="flex flex-col gap-1">
+                        {recipe.difficulty && (
+                          <Badge variant="secondary" className="text-xs">
+                            {recipe.difficulty}
+                          </Badge>
+                        )}
+                        {recipe.isGenerated && (
+                          <Badge variant="outline" className="text-xs">
+                            Generated
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    {recipe.description && (
+                      <p className="text-sm text-muted-foreground line-clamp-2 mt-2">
+                        {recipe.description}
+                      </p>
+                    )}
+                  </CardHeader>
+                  
+                  <CardContent className="pt-0">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                      {recipe.cooking_time && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{recipe.cooking_time} min</span>
+                        </div>
+                      )}
+                      {recipe.servings && (
+                        <div className="flex items-center gap-1">
+                          <Users className="w-4 h-4" />
+                          <span>{recipe.servings}</span>
+                        </div>
+                      )}
+                      {recipe.cuisine && (
+                        <Badge variant="outline" className="text-xs">
+                          {recipe.cuisine}
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    {/* Action Buttons - Always Visible */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditRecipe(recipe)}
+                      >
+                        <Edit className="w-4 h-4 mr-1" />
+                        Edit
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteRecipe(recipe)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleShareToCommunity(recipe)}
+                      >
+                        <Share2 className="w-4 h-4 mr-1" />
+                        Share
+                      </Button>
+                      
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => handleViewRecipe(recipe)}
+                      >
+                        <Eye className="w-4 h-4 mr-1" />
+                        View
+                      </Button>
+                    </div>
+                  </CardContent>
+                </>
+              )}
+            </Card>
           ))}
         </div>
       )}
@@ -376,6 +702,23 @@ const RecipeBook = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />
+
+      {/* Edit Modal */}
+      {editingRecipe && !editingRecipe.isEmpty && (
+        <EditRecipeModal
+          recipe={editingRecipe}
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingRecipe(null);
+          }}
+          onRecipeUpdate={async () => {
+            setIsEditModalOpen(false);
+            setEditingRecipe(null);
+            await fetchSavedRecipes();
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -58,6 +58,20 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
+  // Check if current user is the owner - with better logging
+  const isOwner = user && recipe.author_id && (
+    user.id === recipe.author_id || 
+    user.id.toString() === recipe.author_id.toString()
+  );
+
+  // Debug logging
+  console.log('Recipe Card Debug:', {
+    userId: user?.id,
+    authorId: recipe.author_id,
+    isOwner,
+    recipeTitle: recipe.title
+  });
+
   const handleLike = async (isLike: boolean) => {
     if (!user || isLiking) return;
     
@@ -211,7 +225,17 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
   };
 
   const handleDeleteRecipe = async () => {
-    if (!user || isDeleting || user.id !== recipe.author_id) return;
+    if (!user || isDeleting) return;
+    
+    // Double check ownership
+    if (user.id !== recipe.author_id && user.id.toString() !== recipe.author_id.toString()) {
+      toast({
+        title: "Not authorized",
+        description: "You can only delete your own recipes",
+        variant: "destructive",
+      });
+      return;
+    }
     
     if (!confirm('Are you sure you want to delete this recipe?')) return;
     
@@ -258,8 +282,6 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
     }
   };
 
-  const isOwner = user && user.id === recipe.author_id;
-
   return (
     <Card className="h-full hover:shadow-lg transition-shadow">
       {recipe.image_url && (
@@ -280,9 +302,16 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
             </Badge>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">
-          by {recipe.profiles?.full_name || (user?.id === recipe.author_id ? 'You' : 'Community Chef')}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            by {recipe.profiles?.full_name || (isOwner ? 'You' : 'Community Chef')}
+          </p>
+          {isOwner && (
+            <Badge variant="outline" className="text-xs bg-primary/10 text-primary">
+              Your Recipe
+            </Badge>
+          )}
+        </div>
         {recipe.description && (
           <p className="text-sm text-muted-foreground line-clamp-2 mt-2">
             {recipe.description}
@@ -332,13 +361,14 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
           </div>
           
           <div className="flex items-center gap-2">
-            {user && (
+            {user && !isOwner && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleSaveToBook}
                 disabled={isSaving}
                 className={isSaved ? 'text-primary' : ''}
+                title={isSaved ? 'Remove from recipe book' : 'Save to recipe book'}
               >
                 <BookOpen className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
               </Button>
@@ -350,7 +380,8 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsEditModalOpen(true)}
-                  className="text-primary hover:text-primary"
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  title="Edit recipe"
                 >
                   <Edit className="w-4 h-4" />
                 </Button>
@@ -359,7 +390,8 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
                   size="sm"
                   onClick={handleDeleteRecipe}
                   disabled={isDeleting}
-                  className="text-destructive hover:text-destructive"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  title="Delete recipe"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
@@ -379,6 +411,7 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
               variant="ghost"
               size="sm"
               onClick={() => onViewRecipe(recipe)}
+              title="View full recipe"
             >
               <Eye className="w-4 h-4" />
             </Button>
@@ -387,14 +420,14 @@ export const CommunityRecipeCard = ({ recipe, onViewRecipe, onLikeUpdate, onReci
       </CardContent>
 
       {showComments && (
-  <CardContent className="pt-0 border-t">
-    <RecipeComments 
-      recipeId={recipe.id} 
-      initialCount={localCommentsCount}
-      onCommentAdded={handleCommentAdded} 
-    />
-  </CardContent>
-)}
+        <CardContent className="pt-0 border-t">
+          <RecipeComments 
+            recipeId={recipe.id} 
+            initialCount={localCommentsCount}
+            onCommentAdded={handleCommentAdded} 
+          />
+        </CardContent>
+      )}
 
       {/* Edit Modal */}
       <EditRecipeModal
