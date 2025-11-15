@@ -39,9 +39,11 @@ interface RecipeBookRecipe {
     fiber: string;
   };
   author_id?: string;
+  user_id?: string;
   created_at?: string;
   isEmpty?: boolean;
   isGenerated?: boolean;
+  originalRecipeId?: string; // Add this to track the actual recipe ID
 }
 
 const RecipeBook = () => {
@@ -99,8 +101,9 @@ const RecipeBook = () => {
             ...item.recipe_id,
             id: item.recipe_id?._id || item._id,
             bookEntryId: item._id,
+            originalRecipeId: item.recipe_id?._id, // Store the actual recipe ID
             author_id: item.recipe_id?.author_id,
-            nutrition: item.recipe_id?.nutrition || null, // Include nutrition
+            nutrition: item.recipe_id?.nutrition || null,
             isEmpty: false,
             isGenerated: false,
           };
@@ -131,8 +134,10 @@ const RecipeBook = () => {
             ...item.generated_recipe_id,
             id: item.generated_recipe_id?._id || item._id,
             bookEntryId: item._id,
+            originalRecipeId: item.generated_recipe_id?._id, // Store the actual recipe ID
             author_id: item.generated_recipe_id?.user_id,
-            nutrition: item.generated_recipe_id?.nutrition || null, // Include nutrition
+            user_id: item.generated_recipe_id?.user_id,
+            nutrition: item.generated_recipe_id?.nutrition || null,
             isEmpty: false,
             isGenerated: true,
           };
@@ -196,7 +201,7 @@ const RecipeBook = () => {
     console.log('Opening modal with recipe nutrition:', recipe.nutrition);
 
     const modalRecipe = {
-      id: recipe.id,
+      id: recipe.originalRecipeId || recipe.id,
       title: recipe.title,
       description: recipe.description,
       ingredients: recipe.ingredients || [],
@@ -207,11 +212,11 @@ const RecipeBook = () => {
       difficulty: recipe.difficulty,
       calories: recipe.calories,
       cuisine: recipe.cuisine,
-      nutrition: recipe.nutrition, // Pass nutrition to modal
+      nutrition: recipe.nutrition,
       fromDb: !recipe.isGenerated,
       fromGeneratedRecipes: recipe.isGenerated,
-      dbRecipeId: recipe.id,
-      generatedRecipeId: recipe.isGenerated ? recipe.id : undefined,
+      dbRecipeId: recipe.originalRecipeId || recipe.id,
+      generatedRecipeId: recipe.isGenerated ? (recipe.originalRecipeId || recipe.id) : undefined,
     };
     
     console.log('Modal recipe object:', modalRecipe);
@@ -229,7 +234,20 @@ const RecipeBook = () => {
       return;
     }
 
-    setEditingRecipe(recipe);
+    console.log('Editing recipe:', {
+      id: recipe.originalRecipeId || recipe.id,
+      bookEntryId: recipe.bookEntryId,
+      isGenerated: recipe.isGenerated,
+      title: recipe.title
+    });
+
+    // Create a proper recipe object for editing with the ORIGINAL recipe ID
+    const recipeToEdit = {
+      ...recipe,
+      id: recipe.originalRecipeId || recipe.id, // Use the actual recipe ID, not the book entry ID
+    };
+
+    setEditingRecipe(recipeToEdit);
     setIsEditModalOpen(true);
   };
 
@@ -246,7 +264,7 @@ const RecipeBook = () => {
     }
     
     try {
-      console.log('Sharing to community:', recipe.id);
+      console.log('Sharing to community:', recipe.originalRecipeId || recipe.id);
       
       const recipeData = {
         title: recipe.title,
@@ -259,7 +277,7 @@ const RecipeBook = () => {
         difficulty: recipe.difficulty,
         calories: recipe.calories,
         cuisine: recipe.cuisine,
-        nutrition: recipe.nutrition, // Include nutrition when sharing
+        nutrition: recipe.nutrition,
       };
 
       const { error: recipeError } = await mongoClient
@@ -304,7 +322,7 @@ const RecipeBook = () => {
     try {
       console.log('Deleting recipe from book:', {
         bookEntryId: recipe.bookEntryId,
-        recipeId: recipe.id,
+        recipeId: recipe.originalRecipeId || recipe.id,
         isEmpty: recipe.isEmpty,
         isGenerated: recipe.isGenerated
       });
@@ -653,7 +671,7 @@ const RecipeBook = () => {
                           </Badge>
                         )}
                         {recipe.isGenerated && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs bg-primary/10 text-primary">
                             Generated
                           </Badge>
                         )}
@@ -741,7 +759,7 @@ const RecipeBook = () => {
         onClose={handleCloseModal}
       />
 
-      {/* Edit Modal */}
+      {/* Edit Modal - FIXED WITH SOURCE DETECTION */}
       {editingRecipe && !editingRecipe.isEmpty && (
         <EditRecipeModal
           recipe={editingRecipe}
@@ -755,6 +773,7 @@ const RecipeBook = () => {
             setEditingRecipe(null);
             await fetchSavedRecipes();
           }}
+          source={editingRecipe.isGenerated ? 'generated' : 'community'}
         />
       )}
     </div>

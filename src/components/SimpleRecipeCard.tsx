@@ -28,6 +28,8 @@ export interface SimpleRecipe {
   };
   author_id?: string;
   user_id?: string;
+  recipe_id?: string;
+  generated_recipe_id?: string;
   created_at?: string;
   generated_at?: string;
 }
@@ -38,6 +40,7 @@ interface SimpleRecipeCardProps {
   onRecipeUpdate?: () => void;
   showEditDelete?: boolean;
   isFromGeneratedRecipes?: boolean;
+  isFromRecipeBook?: boolean;
 }
 
 export const SimpleRecipeCard = ({ 
@@ -45,7 +48,8 @@ export const SimpleRecipeCard = ({
   onViewRecipe, 
   onRecipeUpdate,
   showEditDelete = true,
-  isFromGeneratedRecipes = false
+  isFromGeneratedRecipes = false,
+  isFromRecipeBook = false
 }: SimpleRecipeCardProps) => {
   const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
@@ -53,19 +57,29 @@ export const SimpleRecipeCard = ({
   const [isSharing, setIsSharing] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  // Determine the source for the edit modal
+  const getRecipeSource = () => {
+    if (isFromGeneratedRecipes) return 'generated';
+    if (isFromRecipeBook) {
+      // Check if it's from generated_recipe_books or recipe_books
+      if (recipe.generated_recipe_id) return 'generated';
+      return 'community';
+    }
+    return 'community';
+  };
+
   const handleSaveToBook = async () => {
     if (!user || isSaving) return;
     
     setIsSaving(true);
     try {
-      console.log('Saving to recipe book only:', { userId: user.id, recipeId: recipe.id, isFromGeneratedRecipes });
+      console.log('Saving to recipe book:', { userId: user.id, recipeId: recipe.id, isFromGeneratedRecipes });
       
-      if (isFromGeneratedRecipes) {
-        // Save generated recipe to generated_recipe_books
+      if (isFromGeneratedRecipes || recipe.generated_recipe_id) {
         const { error: insertError } = await mongoClient
           .from('generated_recipe_books')
           .insert({
-            generated_recipe_id: recipe.id,
+            generated_recipe_id: recipe.generated_recipe_id || recipe.id,
             user_id: user.id,
             added_at: new Date().toISOString(),
           });
@@ -78,17 +92,15 @@ export const SimpleRecipeCard = ({
               description: "This recipe is already in your book",
               variant: "destructive",
             });
-            setIsSaving(false);
             return;
           }
           throw insertError;
         }
       } else {
-        // Save community recipe to recipe_books
         const { error: insertError } = await mongoClient
           .from('recipe_books')
           .insert({
-            recipe_id: recipe.id,
+            recipe_id: recipe.recipe_id || recipe.id,
             user_id: user.id,
             added_at: new Date().toISOString(),
           });
@@ -101,7 +113,6 @@ export const SimpleRecipeCard = ({
               description: "This recipe is already in your book",
               variant: "destructive",
             });
-            setIsSaving(false);
             return;
           }
           throw insertError;
@@ -134,7 +145,7 @@ export const SimpleRecipeCard = ({
     
     setIsSharing(true);
     try {
-      console.log('Sharing to community only:', recipe.id);
+      console.log('Sharing to community:', recipe.id);
       
       const recipeData = {
         title: recipe.title,
@@ -162,7 +173,6 @@ export const SimpleRecipeCard = ({
             description: "You've already shared this recipe to the community",
             variant: "destructive",
           });
-          setIsSharing(false);
           return;
         }
         throw recipeError;
@@ -192,29 +202,45 @@ export const SimpleRecipeCard = ({
   const handleDelete = async () => {
     if (!user || isDeleting) return;
     
-    if (!confirm('Are you sure you want to delete this recipe?')) return;
+    if (!confirm('Are you sure you want to delete this recipe from your book?')) return;
     
     setIsDeleting(true);
     try {
-      console.log('Deleting recipe:', recipe.id);
+      console.log('Deleting recipe from book:', recipe.id);
       
-      const tableName = isFromGeneratedRecipes ? 'generated_recipes' : 'recipe_books';
-      
-      const deleteResult = await mongoClient
-        .from(tableName)
-        .delete();
-      
-      const { error } = await deleteResult.eq('_id', recipe.id);
-      
-      if (error) {
-        console.error('Delete error:', error);
-        throw error;
+      // For recipe book, delete from the book tables, not the recipe itself
+      if (isFromRecipeBook) {
+        if (recipe.generated_recipe_id) {
+          // Delete from generated_recipe_books
+          const { error } = await mongoClient
+            .from('generated_recipe_books')
+            .delete()
+            .eq('_id', recipe.id);
+          
+          if (error) throw error;
+        } else {
+          // Delete from recipe_books
+          const { error } = await mongoClient
+            .from('recipe_books')
+            .delete()
+            .eq('_id', recipe.id);
+          
+          if (error) throw error;
+        }
+      } else if (isFromGeneratedRecipes) {
+        // Delete the actual generated recipe
+        const { error } = await mongoClient
+          .from('generated_recipes')
+          .delete()
+          .eq('_id', recipe.id);
+        
+        if (error) throw error;
       }
       
       console.log('Recipe deleted successfully');
       toast({
-        title: "Recipe deleted",
-        description: "Recipe has been removed",
+        title: "Recipe removed",
+        description: isFromRecipeBook ? "Recipe removed from your book" : "Recipe deleted",
       });
       
       if (onRecipeUpdate) {
@@ -282,24 +308,24 @@ export const SimpleRecipeCard = ({
           </div>
           
           {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSaveToBook}
-              disabled={isSaving}
-              className="flex-1"
-            >
-              <BookOpen className="w-4 h-4 mr-1" />
-              {isSaving ? 'Saving...' : 'Save'}
-            </Button>
+          <div className="grid grid-cols-2 gap-2">
+            {!isFromRecipeBook && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSaveToBook}
+                disabled={isSaving}
+              >
+                <BookOpen className="w-4 h-4 mr-1" />
+                {isSaving ? 'Saving...' : 'Save'}
+              </Button>
+            )}
             
             {showEditDelete && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsEditModalOpen(true)}
-                className="flex-1"
               >
                 <Edit className="w-4 h-4 mr-1" />
                 Edit
@@ -312,20 +338,19 @@ export const SimpleRecipeCard = ({
                 size="sm"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="flex-1 text-destructive hover:text-destructive"
+                className="text-destructive hover:text-destructive"
               >
                 <Trash2 className="w-4 h-4 mr-1" />
                 {isDeleting ? 'Deleting...' : 'Delete'}
               </Button>
             )}
             
-            {isFromGeneratedRecipes && (
+            {(isFromGeneratedRecipes || recipe.generated_recipe_id) && !isFromRecipeBook && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleShareToCommunity}
                 disabled={isSharing}
-                className="flex-1"
               >
                 <Share2 className="w-4 h-4 mr-1" />
                 {isSharing ? 'Sharing...' : 'Share'}
@@ -336,7 +361,7 @@ export const SimpleRecipeCard = ({
               variant="default"
               size="sm"
               onClick={() => onViewRecipe(recipe)}
-              className="flex-1"
+              className={isFromRecipeBook ? 'col-span-2' : ''}
             >
               <Eye className="w-4 h-4 mr-1" />
               View
@@ -345,7 +370,7 @@ export const SimpleRecipeCard = ({
         </CardContent>
       </Card>
 
-      {/* Edit Modal */}
+      {/* Edit Modal - Now works for all recipe sources */}
       {showEditDelete && (
         <EditRecipeModal
           recipe={recipe}
@@ -357,6 +382,7 @@ export const SimpleRecipeCard = ({
               await onRecipeUpdate();
             }
           }}
+          source={getRecipeSource()}
         />
       )}
     </>

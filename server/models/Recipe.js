@@ -34,6 +34,11 @@ const recipeSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  original_recipe_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Recipe',
+    default: null
+  },
   created_at: {
     type: Date,
     default: Date.now
@@ -44,7 +49,8 @@ const recipeSchema = new mongoose.Schema({
   }
 });
 
-// Create unique index to prevent duplicate shares
-recipeSchema.index({ author_id: 1, title: 1, description: 1 }, { unique: true });
+// REMOVE any compound unique indexes
+// If you have this line, remove it:
+// recipeSchema.index({ author_id: 1, title: 1, description: 1 }, { unique: true });
 
 module.exports = mongoose.model('Recipe', recipeSchema);
