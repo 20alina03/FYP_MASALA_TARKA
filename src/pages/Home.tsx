@@ -40,6 +40,7 @@ const Home = () => {
           difficulty: recipe.difficulty,
           cuisine: recipe.cuisine,
           calories: recipe.calories,
+          nutrition: recipe.nutrition,
         }));
 
         for (const recipe of recipesToInsert) {

@@ -20,6 +20,12 @@ export interface SimpleRecipe {
   difficulty?: string;
   cuisine?: string;
   calories?: number;
+  nutrition?: {
+    protein: string;
+    carbs: string;
+    fat: string;
+    fiber: string;
+  };
   author_id?: string;
   user_id?: string;
   created_at?: string;
@@ -141,6 +147,7 @@ export const SimpleRecipeCard = ({
         difficulty: recipe.difficulty,
         calories: recipe.calories,
         cuisine: recipe.cuisine,
+        nutrition: recipe.nutrition,
       };
 
       const { error: recipeError } = await mongoClient

@@ -24,14 +24,12 @@ const Feed = () => {
     try {
       setLoading(true);
       
-      // Fetch recipes with counts from backend
       const { data: recipesData, error: recipesError } = await mongoClient.from('recipes').select();
       
       if (recipesError) throw recipesError;
 
       console.log('Fetched recipes from backend:', recipesData);
 
-      // Fetch all likes and comments to check user's status
       const { data: likesData } = await mongoClient.from('recipe_likes').select();
       const { data: commentsData } = await mongoClient.from('recipe_comments').select();
       const { data: booksData } = user ? await mongoClient.from('recipe_books').select() : { data: [] };
@@ -43,17 +41,14 @@ const Feed = () => {
       let processedRecipes = recipesData.map((recipe: any) => {
         const recipeId = recipe._id;
         
-        // Get user's like status for this recipe
         const userLike = user && likesData?.find(
           (like: any) => like.recipe_id === recipeId && like.user_id === user.id
         );
         
-        // Check if user saved this recipe
         const isSaved = user && booksData?.some(
           (book: any) => book.recipe_id === recipeId && book.user_id === user.id
         );
 
-        // Use counts from backend or calculate them
         const likes_count = recipe.likes_count || likesData?.filter(
           (like: any) => like.recipe_id === recipeId && like.is_like === true
         ).length || 0;
@@ -66,7 +61,6 @@ const Feed = () => {
           (comment: any) => comment.recipe_id === recipeId
         ).length || 0;
 
-        // Ensure author_id is properly set
         const authorId = recipe.author_id?._id || recipe.author_id;
 
         console.log(`Recipe ${recipe.title}:`, {
@@ -78,13 +72,14 @@ const Feed = () => {
           dislikes_count,
           comments_count,
           userLike: userLike?.is_like,
-          isSaved
+          isSaved,
+          nutrition: recipe.nutrition
         });
 
         return {
           ...recipe,
           id: recipeId,
-          author_id: authorId, // Ensure this is a string ID
+          author_id: authorId,
           profiles: recipe.author_id,
           likes_count,
           dislikes_count,
@@ -142,6 +137,7 @@ const Feed = () => {
       difficulty: recipe.difficulty,
       calories: recipe.calories,
       cuisine: recipe.cuisine,
+      nutrition: recipe.nutrition,
       fromDb: true,
       dbRecipeId: recipe.id,
     };

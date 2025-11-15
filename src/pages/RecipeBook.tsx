@@ -32,10 +32,16 @@ interface RecipeBookRecipe {
   difficulty?: string;
   cuisine?: string;
   calories?: number;
+  nutrition?: {
+    protein: string;
+    carbs: string;
+    fat: string;
+    fiber: string;
+  };
   author_id?: string;
   created_at?: string;
   isEmpty?: boolean;
-  isGenerated?: boolean; // Flag to indicate if it's from generated_recipes
+  isGenerated?: boolean;
 }
 
 const RecipeBook = () => {
@@ -86,11 +92,15 @@ const RecipeBook = () => {
             };
           }
 
+          // Log nutrition data for debugging
+          console.log(`Community recipe ${item.recipe_id?.title} nutrition:`, item.recipe_id?.nutrition);
+
           return {
             ...item.recipe_id,
             id: item.recipe_id?._id || item._id,
             bookEntryId: item._id,
             author_id: item.recipe_id?.author_id,
+            nutrition: item.recipe_id?.nutrition || null, // Include nutrition
             isEmpty: false,
             isGenerated: false,
           };
@@ -114,11 +124,15 @@ const RecipeBook = () => {
             };
           }
 
+          // Log nutrition data for debugging
+          console.log(`Generated recipe ${item.generated_recipe_id?.title} nutrition:`, item.generated_recipe_id?.nutrition);
+
           return {
             ...item.generated_recipe_id,
             id: item.generated_recipe_id?._id || item._id,
             bookEntryId: item._id,
             author_id: item.generated_recipe_id?.user_id,
+            nutrition: item.generated_recipe_id?.nutrition || null, // Include nutrition
             isEmpty: false,
             isGenerated: true,
           };
@@ -127,6 +141,7 @@ const RecipeBook = () => {
       }
 
       console.log('Total recipes before filtering:', allRecipes.length);
+      console.log('Recipes with nutrition:', allRecipes.filter(r => !r.isEmpty && r.nutrition).length);
 
       // Apply client-side filtering
       if (searchTerm) {
@@ -178,6 +193,8 @@ const RecipeBook = () => {
       return;
     }
 
+    console.log('Opening modal with recipe nutrition:', recipe.nutrition);
+
     const modalRecipe = {
       id: recipe.id,
       title: recipe.title,
@@ -190,11 +207,14 @@ const RecipeBook = () => {
       difficulty: recipe.difficulty,
       calories: recipe.calories,
       cuisine: recipe.cuisine,
+      nutrition: recipe.nutrition, // Pass nutrition to modal
       fromDb: !recipe.isGenerated,
       fromGeneratedRecipes: recipe.isGenerated,
       dbRecipeId: recipe.id,
       generatedRecipeId: recipe.isGenerated ? recipe.id : undefined,
     };
+    
+    console.log('Modal recipe object:', modalRecipe);
     setSelectedRecipe(modalRecipe);
     setIsModalOpen(true);
   };
@@ -239,6 +259,7 @@ const RecipeBook = () => {
         difficulty: recipe.difficulty,
         calories: recipe.calories,
         cuisine: recipe.cuisine,
+        nutrition: recipe.nutrition, // Include nutrition when sharing
       };
 
       const { error: recipeError } = await mongoClient
@@ -383,7 +404,24 @@ const RecipeBook = () => {
           if (recipe.cooking_time) details.push(`Time: ${recipe.cooking_time} min`);
           if (recipe.servings) details.push(`Servings: ${recipe.servings}`);
           if (recipe.difficulty) details.push(`Difficulty: ${recipe.difficulty}`);
+          if (recipe.calories) details.push(`Calories: ${recipe.calories}`);
           pdf.text(details.join(' | '), margin, yPosition);
+          yPosition += 7;
+        }
+
+        // Nutrition info (if available)
+        if (recipe.nutrition) {
+          pdf.setFont('helvetica', 'bold');
+          pdf.text('Nutrition per serving:', margin, yPosition);
+          yPosition += 5;
+          pdf.setFont('helvetica', 'normal');
+          const nutritionInfo = [
+            `Protein: ${recipe.nutrition.protein}`,
+            `Carbs: ${recipe.nutrition.carbs}`,
+            `Fat: ${recipe.nutrition.fat}`,
+            `Fiber: ${recipe.nutrition.fiber}`
+          ].join(' | ');
+          pdf.text(nutritionInfo, margin + 5, yPosition);
           yPosition += 7;
         }
 

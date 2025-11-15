@@ -2,13 +2,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Clock, Users, ChefHat, Flame, CheckCircle2, Minus, Plus, Upload, BookMarked, Share2 } from "lucide-react";
+import { Clock, Users, ChefHat, Flame, CheckCircle2, Minus, Plus } from "lucide-react";
 import { Recipe } from "@/components/RecipeCard";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
 
 interface RecipeModalProps {
   recipe: (Recipe & { 
@@ -32,14 +29,9 @@ const getDifficultyColor = (difficulty: string) => {
   }
 };
 
-export default function RecipeModal({ recipe, isOpen, onClose, onSaveToBook }: RecipeModalProps) {
-  const { user } = useAuth();
+export default function RecipeModal({ recipe, isOpen, onClose }: RecipeModalProps) {
   const [currentServings, setCurrentServings] = useState(recipe?.servings || 1);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
-  const [isSharing, setIsSharing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-
-  console.log('RecipeModal props:', { recipe, user, onSaveToBook });
 
   if (!recipe) return null;
 
@@ -61,242 +53,11 @@ export default function RecipeModal({ recipe, isOpen, onClose, onSaveToBook }: R
   };
 
   const formatIngredientAmount = (ingredient: string) => {
-    // Simple regex to find numbers in ingredients and multiply them
     return ingredient.replace(/(\d+(?:\.\d+)?)/g, (match) => {
       const number = parseFloat(match);
       const adjusted = (number * servingMultiplier).toFixed(1);
       return adjusted.endsWith('.0') ? adjusted.slice(0, -2) : adjusted;
     });
-  };
-
-  const saveToRecipeBook = async () => {
-    if (!user || isSaving) return;
-    
-    setIsSaving(true);
-    try {
-      // First save recipe to database if it's not already there
-      let recipeId = recipe.dbRecipeId;
-      
-      if (!recipe.fromDb) {
-        const { data: newRecipe, error: insertError } = await supabase
-          .from('recipes')
-          .insert({
-            title: recipe.title,
-            description: recipe.description,
-            ingredients: recipe.ingredients,
-            instructions: recipe.instructions,
-            cooking_time: recipe.cookingTime,
-            servings: recipe.servings,
-            difficulty: recipe.difficulty,
-            cuisine: recipe.cuisine,
-            calories: recipe.calories,
-            author_id: user.id,
-          })
-          .select('id')
-          .single();
-
-        if (insertError) throw insertError;
-        recipeId = newRecipe.id;
-      }
-
-      // Save to recipe book
-      const { error } = await supabase
-        .from('recipe_books')
-        .insert({
-          user_id: user.id,
-          recipe_id: recipeId
-        });
-
-      if (error) {
-        if (error.code === '23505') { // Unique constraint violation
-          toast({
-            title: "Already saved",
-            description: "This recipe is already in your recipe book",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw error;
-      }
-
-      toast({
-        title: "Saved to recipe book",
-        description: "Recipe saved for offline access",
-      });
-      
-      onSaveToBook?.();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to save recipe to book",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const saveToRecipeBookFromGenerated = async () => {
-    if (!user || isSaving || !recipe.generatedRecipeId) return;
-    
-    setIsSaving(true);
-    try {
-      // Get the generated recipe
-      const { data: generatedRecipe, error: fetchError } = await supabase
-        .from('generated_recipes')
-        .select('*')
-        .eq('id', recipe.generatedRecipeId)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      // Add to recipes table (community)
-      const { data: insertedRecipe, error: recipeError } = await supabase
-        .from('recipes')
-        .insert({
-          title: generatedRecipe.title,
-          description: generatedRecipe.description,
-          ingredients: generatedRecipe.ingredients,
-          instructions: generatedRecipe.instructions,
-          image_url: generatedRecipe.image_url,
-          cooking_time: generatedRecipe.cooking_time,
-          servings: generatedRecipe.servings,
-          difficulty: generatedRecipe.difficulty,
-          calories: generatedRecipe.calories,
-          cuisine: generatedRecipe.cuisine,
-          author_id: user.id,
-        })
-        .select()
-        .single();
-
-      if (recipeError) throw recipeError;
-
-      // Add to recipe_books
-      const { error: bookError } = await supabase
-        .from('recipe_books')
-        .insert({
-          user_id: user.id,
-          recipe_id: insertedRecipe.id,
-        });
-
-      if (bookError) {
-        if (bookError.code === '23505') { // Unique constraint violation
-          toast({
-            title: "Already saved",
-            description: "This recipe is already in your recipe book",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw bookError;
-      }
-
-      toast({
-        title: "Saved to recipe book",
-        description: "Recipe saved for offline access",
-      });
-      
-      onSaveToBook?.();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to save recipe to book",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const shareToCommunitFromGenerated = async () => {
-    if (!user || isSharing || !recipe.generatedRecipeId) return;
-    
-    setIsSharing(true);
-    try {
-      // Get the generated recipe
-      const { data: generatedRecipe, error: fetchError } = await supabase
-        .from('generated_recipes')
-        .select('*')
-        .eq('id', recipe.generatedRecipeId)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      // Add to recipes table (community)
-      const { error } = await supabase
-        .from('recipes')
-        .insert({
-          title: generatedRecipe.title,
-          description: generatedRecipe.description,
-          ingredients: generatedRecipe.ingredients,
-          instructions: generatedRecipe.instructions,
-          image_url: generatedRecipe.image_url,
-          cooking_time: generatedRecipe.cooking_time,
-          servings: generatedRecipe.servings,
-          difficulty: generatedRecipe.difficulty,
-          calories: generatedRecipe.calories,
-          cuisine: generatedRecipe.cuisine,
-          author_id: user.id,
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Shared to community",
-        description: "Your recipe is now available to the community",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to share recipe",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSharing(false);
-    }
-  };
-
-  const shareToCommnunity = async () => {
-    if (!user || isSharing) return;
-    
-    console.log('Sharing recipe to community:', recipe.title);
-    setIsSharing(true);
-    try {
-      const { error } = await supabase
-        .from('recipes')
-        .insert({
-          title: recipe.title,
-          description: recipe.description,
-          ingredients: recipe.ingredients,
-          instructions: recipe.instructions,
-          cooking_time: recipe.cookingTime,
-          servings: recipe.servings,
-          difficulty: recipe.difficulty,
-          cuisine: recipe.cuisine,
-          calories: recipe.calories,
-          author_id: user.id,
-        });
-
-      if (error) {
-        console.error('Error sharing recipe:', error);
-        throw error;
-      }
-
-      console.log('Recipe shared successfully');
-      toast({
-        title: "Shared to community",
-        description: "Your recipe is now available to the community",
-      });
-    } catch (error: any) {
-      console.error('Failed to share recipe:', error);
-      toast({
-        title: "Error",
-        description: "Failed to share recipe",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSharing(false);
-    }
   };
 
   return (
@@ -432,7 +193,7 @@ export default function RecipeModal({ recipe, isOpen, onClose, onSaveToBook }: R
             </div>
           </div>
 
-          {/* Nutrition Info */}
+          {/* Nutrition Info - Always show if available */}
           {recipe.nutrition && (
             <div className="p-4 rounded-lg bg-muted/30">
               <h3 className="text-lg font-semibold mb-3">Nutrition per serving</h3>
@@ -459,61 +220,14 @@ export default function RecipeModal({ recipe, isOpen, onClose, onSaveToBook }: R
 
           <Separator />
 
+          {/* Only Close Button */}
           <div className="flex justify-between items-center">
             <div className="text-sm text-muted-foreground">
               Recipe adjusted for {currentServings} serving{currentServings !== 1 ? 's' : ''}
             </div>
-            <div className="flex gap-2">
-              {user && (
-                <>
-                  {recipe.fromGeneratedRecipes && (
-                    <>
-                      <Button 
-                        variant="outline" 
-                        onClick={saveToRecipeBookFromGenerated}
-                        disabled={isSaving}
-                      >
-                        <BookMarked className="mr-2 h-4 w-4" />
-                        {isSaving ? 'Adding to Book...' : 'Add to Recipe Book'}
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={shareToCommunitFromGenerated}
-                        disabled={isSharing}
-                      >
-                        <Share2 className="mr-2 h-4 w-4" />
-                        {isSharing ? 'Sharing...' : 'Share to Community'}
-                      </Button>
-                    </>
-                  )}
-                  
-                  {!recipe.fromDb && !recipe.fromGeneratedRecipes && (
-                    <Button 
-                      variant="outline" 
-                      onClick={saveToRecipeBook}
-                      disabled={isSaving}
-                    >
-                      <BookMarked className="mr-2 h-4 w-4" />
-                      {isSaving ? 'Saving...' : 'Save to Book'}
-                    </Button>
-                  )}
-                  
-                  {!recipe.fromGeneratedRecipes && (
-                    <Button 
-                      variant="outline" 
-                      onClick={shareToCommnunity}
-                      disabled={isSharing}
-                    >
-                      <Upload className="mr-2 h-4 w-4" />
-                      {isSharing ? 'Sharing...' : 'Share to Community'}
-                    </Button>
-                  )}
-                </>
-              )}
-              <Button variant="outline" onClick={onClose}>
-                Close Recipe
-              </Button>
-            </div>
+            <Button variant="outline" onClick={onClose}>
+              Close Recipe
+            </Button>
           </div>
         </div>
       </DialogContent>

@@ -22,6 +22,12 @@ const generatedRecipeSchema = new mongoose.Schema({
   difficulty: String,
   cuisine: String,
   calories: Number,
+  nutrition: {
+    protein: String,
+    carbs: String,
+    fat: String,
+    fiber: String
+  },
   image_url: String,
   user_id: {
     type: mongoose.Schema.Types.ObjectId,

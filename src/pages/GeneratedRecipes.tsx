@@ -81,6 +81,7 @@ const GeneratedRecipes = () => {
       difficulty: recipe.difficulty,
       calories: recipe.calories,
       cuisine: recipe.cuisine,
+      nutrition: recipe.nutrition,
       fromGeneratedRecipes: true,
       generatedRecipeId: recipe.id,
     };

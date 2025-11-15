@@ -21,6 +21,12 @@ export interface CommunityRecipe {
   difficulty?: string;
   cuisine?: string;
   calories?: number;
+  nutrition?: {
+    protein: string;
+    carbs: string;
+    fat: string;
+    fiber: string;
+  };
   author_id: string;
   created_at: string;
   profiles?: {
