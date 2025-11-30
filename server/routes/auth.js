@@ -1,55 +1,46 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const Profile = require('../models/Profile');
-const UserRole = require('../models/UserRole');
+const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Sign up
+// Sign Up
 router.post('/signup', async (req, res) => {
   try {
     const { email, password, full_name } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ error: 'Email already registered' });
     }
 
-    // Create user
-    const user = new User({ email, password, full_name });
+    const user = new User({
+      email,
+      password,
+      full_name,
+    });
+
     await user.save();
 
-    // Create profile
-    const profile = new Profile({
-      user_id: user._id,
-      email: user.email,
-      full_name: user.full_name
-    });
-    await profile.save();
-
-    // Create user role
-    const userRole = new UserRole({
-      user_id: user._id,
-      role: 'user'
-    });
-    await userRole.save();
-
-    // Create token
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { 
+        id: user._id.toString(), 
+        email: user.email,
+        full_name: user.full_name
+      },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
 
     res.status(201).json({
       user: {
-        id: user._id,
+        id: user._id.toString(),
         email: user.email,
-        full_name: user.full_name
+        full_name: user.full_name,
       },
-      token
+      token,
     });
   } catch (error) {
     console.error('Signup error:', error);
@@ -57,37 +48,38 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Sign in
+// Sign In
 router.post('/signin', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Create token
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { 
+        id: user._id.toString(), 
+        email: user.email,
+        full_name: user.full_name
+      },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
 
     res.json({
       user: {
-        id: user._id,
+        id: user._id.toString(),
         email: user.email,
-        full_name: user.full_name
+        full_name: user.full_name,
       },
-      token
+      token,
     });
   } catch (error) {
     console.error('Signin error:', error);
@@ -95,35 +87,29 @@ router.post('/signin', async (req, res) => {
   }
 });
 
-// Get user session
-router.get('/session', async (req, res) => {
+// Get Session (verify token)
+router.get('/session', authenticateToken, async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    const user = await User.findById(req.user.id).select('-password');
     
-    if (!token) {
-      return res.status(401).json({ error: 'No token provided' });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-    const user = await User.findById(decoded.id).select('-password');
-
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     res.json({
       user: {
-        id: user._id,
+        id: user._id.toString(),
         email: user.email,
-        full_name: user.full_name
-      }
+        full_name: user.full_name,
+      },
     });
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+    console.error('Session error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Sign out
+// Sign Out
 router.post('/signout', (req, res) => {
   res.json({ message: 'Signed out successfully' });
 });

@@ -17,6 +17,7 @@ class MongoDBClient {
   clearToken() {
     this.token = null;
     localStorage.removeItem('mongodb_token');
+    localStorage.removeItem('mongodb_user');
   }
 
   private getHeaders() {
@@ -57,7 +58,11 @@ class MongoDBClient {
         body: JSON.stringify({ email, password, full_name }),
       });
       this.setToken(data.token);
-      return data;
+      
+      // Store user info
+      localStorage.setItem('mongodb_user', JSON.stringify(data.user));
+      
+      return { user: data.user, error: null };
     },
 
     signIn: async (email: string, password: string) => {
@@ -66,20 +71,61 @@ class MongoDBClient {
         body: JSON.stringify({ email, password }),
       });
       this.setToken(data.token);
-      return data;
+      
+      // Store user info
+      localStorage.setItem('mongodb_user', JSON.stringify(data.user));
+      
+      return { user: data.user, error: null };
+    },
+
+    signInWithGoogle: async (credential: string) => {
+      const data = await this.request('/auth/google', {
+        method: 'POST',
+        body: JSON.stringify({ credential }),
+      });
+      this.setToken(data.token);
+      
+      // Store user info
+      localStorage.setItem('mongodb_user', JSON.stringify(data.user));
+      
+      return { user: data.user, error: null };
     },
 
     getSession: async () => {
       try {
-        return await this.request('/auth/session');
+        // Check if we have a token
+        if (!this.token) {
+          return { user: null };
+        }
+
+        // Try to get user from localStorage first (faster)
+        const userStr = localStorage.getItem('mongodb_user');
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            return { user };
+          } catch {
+            // If parsing fails, continue to API call
+          }
+        }
+
+        // Fallback to API call to validate session
+        const data = await this.request('/auth/session');
+        return { user: data.user };
       } catch {
+        this.clearToken();
         return { user: null };
       }
     },
 
     signOut: async () => {
-      await this.request('/auth/signout', { method: 'POST' });
-      this.clearToken();
+      try {
+        await this.request('/auth/signout', { method: 'POST' });
+      } catch (error) {
+        console.error('Signout error:', error);
+      } finally {
+        this.clearToken();
+      }
     },
   };
 
@@ -87,8 +133,12 @@ class MongoDBClient {
   from(table: string) {
     return {
       select: async (columns = '*') => {
-        const data = await this.request(`/${table}`);
-        return { data, error: null };
+        try {
+          const data = await this.request(`/${table}`);
+          return { data, error: null };
+        } catch (error: any) {
+          return { data: null, error };
+        }
       },
 
       insert: async (values: any) => {
@@ -103,7 +153,7 @@ class MongoDBClient {
         }
       },
 
-      update: async (values: any) => {
+      update: (values: any) => {
         return {
           eq: async (column: string, value: any) => {
             try {

@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  google_id: {
+    type: String,
+    sparse: true,
+    unique: true
+  },
   created_at: {
     type: Date,
     default: Date.now
@@ -27,11 +32,17 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Hash password before saving
+// Hash password before saving (skip for Google users)
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     return next();
   }
+  
+  // Don't hash already hashed passwords for Google users
+  if (this.password.startsWith('google_')) {
+    return next();
+  }
+  
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();
@@ -39,6 +50,10 @@ userSchema.pre('save', async function(next) {
 
 // Method to compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
+  // Google users can't sign in with password
+  if (this.password.startsWith('google_')) {
+    return false;
+  }
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
