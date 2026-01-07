@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChefHat, Sparkles, BookOpen, Clock, Users, Zap } from "lucide-react";
+import { ChefHat, Sparkles, BookOpen, Clock, Users, Zap, X } from "lucide-react";
 import RecipeCard, { Recipe } from "@/components/RecipeCard";
 import RecipeModal from "@/components/RecipeModal";
 import { sampleRecipes } from "@/services/geminiAPI";
@@ -20,9 +19,17 @@ const Landing = () => {
   };
 
   const loadSampleRecipe = () => {
-    const sample = { ...sampleRecipes[0], id: Date.now().toString() };
-    setRecipes(prev => [sample, ...prev]);
-    toast.success("Sample recipe loaded!");
+    const samplesWithIds = sampleRecipes.map((recipe, index) => ({
+      ...recipe,
+      id: `${Date.now()}-${index}`
+    }));
+    setRecipes(samplesWithIds);
+    toast.success(`${sampleRecipes.length} sample recipes loaded!`);
+  };
+
+  const closeRecipes = () => {
+    setRecipes([]);
+    toast.info("Recipes closed");
   };
 
   return (
@@ -83,7 +90,7 @@ const Landing = () => {
               Transform your ingredients into <span className="text-accent font-bold">multiple amazing dishes</span> with AI-powered recipe generation
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm: flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg"
                 className="bg-white text-primary hover:bg-white/90 hover:scale-110 shadow-glow hover:shadow-hover transition-all duration-500 px-8 py-6 text-lg font-bold"
@@ -111,7 +118,7 @@ const Landing = () => {
         <section className="py-20 bg-muted/10">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-6 text-foreground">Sample Recipe</h2>
+              <h2 className="text-4xl font-bold mb-6 text-foreground">Sample Recipes</h2>
               <div className="flex items-center justify-center gap-4 text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
@@ -123,11 +130,24 @@ const Landing = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
               {recipes.map((recipe) => (
                 <RecipeCard 
-                  key={recipe.id}
+                  key={recipe. id}
                   recipe={recipe}
                   onViewDetails={handleViewRecipe}
                 />
               ))}
+            </div>
+
+            {/* Close Recipes Button */}
+            <div className="flex justify-center mt-12">
+              <Button 
+                size="lg"
+                variant="destructive"
+                className="hover:scale-110 transition-all duration-300 px-8 py-6 text-lg font-bold"
+                onClick={closeRecipes}
+              >
+                <X className="mr-2 h-6 w-6" />
+                Close Recipes
+              </Button>
             </div>
           </div>
         </section>
@@ -145,7 +165,7 @@ const Landing = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Card className="p-8 text-center border hover:shadow-md transition-all duration-300 group">
-              <div className="p-3 rounded-full bg-primary/10 w-fit mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="p-3 rounded-full bg-primary/10 w-fit mx-auto mb-6 group-hover: scale-110 transition-transform duration-300">
                 <Zap className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">AI Powered</h3>
@@ -155,7 +175,7 @@ const Landing = () => {
             </Card>
             
             <Card className="p-8 text-center border hover:shadow-md transition-all duration-300 group">
-              <div className="p-3 rounded-full bg-secondary/10 w-fit mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="p-3 rounded-full bg-secondary/10 w-fit mx-auto mb-6 group-hover: scale-110 transition-transform duration-300">
                 <Clock className="h-8 w-8 text-secondary" />
               </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">Save Time</h3>

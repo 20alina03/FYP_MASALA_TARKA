@@ -50,7 +50,6 @@ userSchema.pre('save', async function(next) {
 
 // Method to compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  // Google users can't sign in with password
   if (this.password.startsWith('google_')) {
     return false;
   }

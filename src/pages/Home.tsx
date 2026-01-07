@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ChefHat, Sparkles, BookOpen, Clock, Users, Zap } from "lucide-react";
+import { ChefHat, Sparkles, BookOpen, Clock, Users, Zap, AlertTriangle, X } from "lucide-react";
 import RecipeGenerator from "@/components/RecipeGenerator";
 import RecipeCard, { Recipe } from "@/components/RecipeCard";
 import RecipeModal from "@/components/RecipeModal";
@@ -11,54 +11,103 @@ import { supabase } from "@/integrations/supabase/client";
 import { mongoClient } from "@/lib/mongodb-client";
 import { useAuth } from "@/hooks/useAuth";
 import heroImage from "@/assets/hero-image.jpg";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Home = () => {
   const { user } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [validationWarning, setValidationWarning] = useState<string | null>(null);
 
   const handleRecipeGenerate = async (params: any) => {
     setIsGenerating(true);
+    setValidationWarning(null);
+    
     try {
-      const { data: functionData, error: functionError } = await supabase.functions.invoke('generate-recipe', {
+      const { data:  functionData, error: functionError } = await supabase. functions.invoke('generate-recipe', {
         body: params
       });
 
-      if (functionError) throw functionError;
+      if (functionError) {
+        console.error("Function error:", functionError);
+        throw functionError;
+      }
+
+      // Check for validation errors
+      if (functionData.error) {
+        if (functionData.invalidIngredients && functionData.invalidIngredients.length > 0) {
+          toast.error(functionData.error, {
+            description: `Invalid: ${functionData.invalidIngredients.join(", ")}`,
+            duration: 6000,
+          });
+        } else {
+          toast.error(functionData. error, {
+            duration: 5000,
+          });
+        }
+        setIsGenerating(false);
+        return;
+      }
+
+      // Check for warnings (some ingredients excluded)
+      if (functionData.warning) {
+        setValidationWarning(functionData.warning);
+        toast.warning("Recipes Generated with Valid Ingredients Only", {
+          description: `Excluded: ${functionData.excludedIngredients.join(", ")}`,
+          duration: 6000,
+        });
+      }
 
       const generatedRecipes = functionData.recipes || [functionData.recipe];
       
       if (user && generatedRecipes.length > 0) {
         const recipesToInsert = generatedRecipes.map((recipe: Recipe) => ({
-          title: recipe.title,
+          title:  recipe.title,
           description: recipe.description,
           ingredients: recipe.ingredients,
           instructions: recipe.instructions,
           cooking_time: recipe.cookingTime,
           servings: recipe.servings,
-          difficulty: recipe.difficulty,
-          cuisine: recipe.cuisine,
-          calories: recipe.calories,
-          nutrition: recipe.nutrition,
+          difficulty: recipe. difficulty,
+          cuisine: recipe. cuisine,
+          calories: recipe. calories,
+          nutrition: recipe. nutrition,
         }));
 
         for (const recipe of recipesToInsert) {
-          await mongoClient.from('generated_recipes').insert(recipe);
+          try {
+            await mongoClient.from('generated_recipes').insert(recipe);
+          } catch (dbError) {
+            console.error("Database save error:", dbError);
+            // Continue even if DB save fails
+          }
         }
       }
       
-      setRecipes(prev => [...generatedRecipes, ...prev]);
-      toast.success(
-        generatedRecipes.length > 1 
-          ? `${generatedRecipes.length} recipes generated and saved!` 
-          : "Recipe generated and saved!"
-      );
-    } catch (error) {
+      setRecipes(prev => [...generatedRecipes, ... prev]);
+      
+      const successMessage = generatedRecipes.length > 1 
+        ? `${generatedRecipes.length} recipes generated successfully!` 
+        : "Recipe generated successfully!";
+      
+      if (! functionData.warning) {
+        toast.success(successMessage);
+      }
+    } catch (error: any) {
       console.error("Recipe generation failed:", error);
-      toast.error("Failed to generate recipe. Please try again.");
-      const sampleRecipe = { ...sampleRecipes[0], id: Date.now().toString() };
-      setRecipes(prev => [sampleRecipe, ...prev]);
+      
+      let errorMessage = "Failed to generate recipe.  Please try again.";
+      
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage, {
+        description: "Please check your ingredients and try again.",
+        duration: 5000,
+      });
+      
     } finally {
       setIsGenerating(false);
     }
@@ -72,10 +121,18 @@ const Home = () => {
     // This will trigger a re-fetch if needed
   };
 
-  const loadSampleRecipe = () => {
-    const sample = { ...sampleRecipes[0], id: Date.now().toString() };
-    setRecipes(prev => [sample, ...prev]);
-    toast.success("Sample recipe loaded!");
+  const loadSampleRecipes = () => {
+    const samplesWithIds = sampleRecipes.map((recipe, index) => ({
+      ...recipe,
+      id: `${Date.now()}-${index}`
+    }));
+    setRecipes(prev => [...samplesWithIds, ...prev]);
+    toast.success(`${sampleRecipes.length} sample recipes loaded!`);
+  };
+
+  const closeRecipes = () => {
+    setRecipes([]);
+    toast.info("Recipes closed");
   };
 
   return (
@@ -103,7 +160,7 @@ const Home = () => {
               </span>
             </h1>
             
-            <p className="text-xl md:text-3xl mb-8 text-white/95 leading-relaxed font-medium">
+            <p className="text-xl md: text-3xl mb-8 text-white/95 leading-relaxed font-medium">
               Transform your ingredients into <span className="text-accent font-bold">multiple amazing dishes</span> with AI-powered recipe generation
             </p>
             
@@ -120,10 +177,10 @@ const Home = () => {
                 size="lg"
                 variant="outline"
                 className="border-2 border-white text-white bg-black/30 hover:bg-white/20 backdrop-blur-sm hover:scale-110 transition-all duration-500 px-8 py-6 text-lg font-bold shadow-xl"
-                onClick={loadSampleRecipe}
+                onClick={loadSampleRecipes}
               >
                 <BookOpen className="mr-2 h-6 w-6" />
-                Try Sample Recipe
+                Try Sample Recipes
               </Button>
             </div>
           </div>
@@ -143,6 +200,15 @@ const Home = () => {
               </p>
             </div>
             
+            {validationWarning && (
+              <Alert className="mb-6 border-amber-500 bg-amber-50">
+                <AlertTriangle className="h-5 w-5 text-amber-600" />
+                <AlertDescription className="text-amber-900">
+                  {validationWarning}
+                </AlertDescription>
+              </Alert>
+            )}
+            
             <RecipeGenerator 
               onRecipeGenerate={handleRecipeGenerate}
               isLoading={isGenerating}
@@ -160,7 +226,7 @@ const Home = () => {
               <div className="flex items-center justify-center gap-4 text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
-                  <span>{recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}</span>
+                  <span>{recipes. length} {recipes.length === 1 ?  'recipe' : 'recipes'}</span>
                 </div>
               </div>
             </div>
@@ -173,6 +239,19 @@ const Home = () => {
                   onViewDetails={handleViewRecipe}
                 />
               ))}
+            </div>
+
+            {/* Close Recipes Button */}
+            <div className="flex justify-center mt-12">
+              <Button 
+                size="lg"
+                variant="destructive"
+                className="hover:scale-110 transition-all duration-300 px-8 py-6 text-lg font-bold"
+                onClick={closeRecipes}
+              >
+                <X className="mr-2 h-6 w-6" />
+                Close Recipes
+              </Button>
             </div>
           </div>
         </section>
@@ -226,7 +305,7 @@ const Home = () => {
       <section className="py-16 bg-muted/20">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6 text-foreground">
-            Ready to Transform Your Cooking?
+            Ready to Transform Your Cooking? 
           </h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Start generating amazing recipes with the ingredients you have today

@@ -147,24 +147,12 @@ const AuthContent = () => {
             <TabsContent value="signin">
               <div className="space-y-4">
                 {/* Google Sign In Button */}
-                <div className="flex flex-col items-center space-y-2">
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleError}
-                    useOneTap={false}
-                    theme="outline"
-                    size="large"
-                    text="signin_with"
-                    shape="rectangular"
-                    width="100%"
-                  />
-                </div>
 
                 <div className="relative">
                   <Separator className="my-4" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="bg-card px-2 text-sm text-muted-foreground">
-                      Or sign in with email
+                     sign in with email
                     </span>
                   </div>
                 </div>
@@ -195,6 +183,20 @@ const AuthContent = () => {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Signing in...' : 'Sign in'}
                   </Button>
+
+                  <div className="flex flex-col items-center space-y-2">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    useOneTap={false}
+                    theme="outline"
+                    size="large"
+                    text="signin_with"
+                    shape="rectangular"
+                    width="100%"
+                  />
+                </div>
+
                 </form>
               </div>
             </TabsContent>
@@ -202,24 +204,12 @@ const AuthContent = () => {
             <TabsContent value="signup">
               <div className="space-y-4">
                 {/* Google Sign Up Button */}
-                <div className="flex flex-col items-center space-y-2">
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleError}
-                    useOneTap={false}
-                    theme="outline"
-                    size="large"
-                    text="signup_with"
-                    shape="rectangular"
-                    width="100%"
-                  />
-                </div>
 
                 <div className="relative">
                   <Separator className="my-4" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="bg-card px-2 text-sm text-muted-foreground">
-                      Or sign up with email
+                      sign up with email
                     </span>
                   </div>
                 </div>
@@ -262,6 +252,18 @@ const AuthContent = () => {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Creating account...' : 'Sign up'}
                   </Button>
+                  <div className="flex flex-col items-center space-y-2">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    useOneTap={false}
+                    theme="outline"
+                    size="large"
+                    text="signup_with"
+                    shape="rectangular"
+                    width="100%"
+                  />
+                </div>
                 </form>
               </div>
             </TabsContent>
