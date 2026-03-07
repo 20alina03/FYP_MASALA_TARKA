@@ -2,18 +2,21 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main":  "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test":  "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "import-csv": "node scripts/importRestaurantsFromCSV.js"
   },
   "keywords": [],
-  "author": "",
+  "author":  "",
   "license": "ISC",
   "type": "commonjs",
-  "dependencies": {
+  "dependencies":  {
     "@react-oauth/google": "^0.12.2",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "google-auth-library": "^10.5.0",

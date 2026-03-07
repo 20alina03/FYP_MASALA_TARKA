@@ -1,0 +1,527 @@
+id,code,name,rating,review_number,address_line2,latitude,longitude,minimum_order_amount,minimum_delivery_fee,hero_listing_image,distance,url_key
+71255,xcph,Go Sushi,4.5,430,,31.5069829,74.3535164,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xcph-listing.jpg,1.569,go-sushi
+105030,x4fw,Savour Foods - Gulberg,4.9,5998,,31.5054136,74.3322369,249,99,https://images.deliveryhero.io/image/fd-pk/LH/x4fw-listing.jpg,3.014,savour-foods-gulberg
+109755,s5y7,Chips and chopsticks - Gulberg,4.7,418,,31.5054136,74.3322369,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s5y7-listing.jpg,3.014,chips-and-chopsticks-gulberg
+98263,fjlt,Hen n' Bun - Gulberg,4.9,4693,,31.5054136,74.3322369,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fjlt-listing.jpg,3.014,hen-n-bun-gulberg
+104077,q2n0,Sultan Shawarma - Gulberg,4.7,2023,,31.5054136,74.3322369,249,99,https://images.deliveryhero.io/image/fd-pk/LH/q2n0-listing.jpg,3.014,sultan-shawarma-gulberg
+98578,hmye,Artisan Coffee Roaster - Mini Market,4.7,172,,31.5230903,74.3530197,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hmye-listing.jpg,0.622,artisan-coffee-roaster-mini-market
+113366,hsmi,Chips & Chopsticks,4.8,50,,31.5077218,74.3543567,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hsmi-listing.jpg,1.467,chips-and-chopsticks-hsmi
+95048,ayie,NorthlandZ- Gaddafi Stadium,4.8,1377,,31.5114422,74.3308263,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ayie-listing.jpg,2.827,northlandz-gaddafi-stadium
+85230,xnsd,Ranchers - Gulberg,4.7,3784,,31.5186034,74.3458691,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xnsd-listing.jpg,1.236,ranchers-gulberg
+6483,s3cw,Rina's Kitchenette - Gulberg,4.8,5565,"64 A Fountain Avenue, Main Boulevard Gulberg Lahore",31.52728271,74.35044861,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s3cw-listing.jpg,1.1,rinas-kitchenette-gulberg
+55244,p5xl,Layers Bakeshop  - M.M Alam,5,4627,,31.50979415,74.35067185,249,99,https://images.deliveryhero.io/image/fd-pk/LH/p5xl-listing.jpg,1.403,layers-bakeshop-m-m-alam
+97145,b0al,SPREAD,4.9,939,,31.5303197,74.3730255,249,99,https://images.deliveryhero.io/image/fd-pk/LH/b0al-listing.jpg,1.748,spread
+97704,alrm,Johnny & Jugnu - Gulberg,4.9,16968,,31.5100442,74.3265534,249,99,https://images.deliveryhero.io/image/fd-pk/LH/alrm-listing.jpg,3.261,johnny-and-jugnu-gulberg
+91119,w0t9,McDonald's - 1-K Gulberg,4.7,6200,,31.5254344,74.34950475,249,99,https://images.deliveryhero.io/image/fd-pk/LH/w0t9-listing.jpg,1.041,mcdonalds-1-k-gulberg
+103300,qrti,Kababjees Fried Chicken Mall of Lahore,4.8,2178,,31.5291169,74.378645,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qrti-listing.jpg,2.122,kababjees-fried-chicken-mall-of-lahore
+17220,u6mp,Biryani King - Shadman,4.8,17962,"Shop # 19, Plaza # 47, Opp HBL Bank ,Shadman Market, Lahore",31.538414,74.331124,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u6mp-listing.jpg,3.299,biryani-king-shadman-u6mp
+98188,cxhm,Kababjees Fried Chicken - Gulberg,4.6,18149,,31.51006625,74.3264625,249,99,https://images.deliveryhero.io/image/fd-pk/LH/cxhm-listing.jpg,3.268,kababjees-fried-chicken-gulberg
+3302,s7pl,Domino's Pizza - MM Alam Road,4.6,7131,Blue mall plot 96-B2 main mm alam road Lahore,31.50860214,74.3507843,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s7pl-listing.jpg,1.511,dominos-pizza-mm-alam-road
+93727,h4vg,Nando's Gulberg,4.8,2378,,31.5075867,74.3547804,249,99,https://images.deliveryhero.io/image/fd-pk/LH/h4vg-listing.jpg,1.47,nandos-gulberg
+86676,arns,Sweet Creme - Gulberg,4.9,4019,,31.50753265,74.34743085,249,99,https://images.deliveryhero.io/image/fd-pk/LH/arns-listing.jpg,1.786,sweet-creme-gulberg
+2713,s8sp,Hardee's - Kasuri,4.6,14188,"(NTN 3131982-3, STRN 03-00-2100-025-91) Hardees, M M Alam Road",31.5074656,74.35635875,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s8sp-listing.jpg,1.453,hardees-kasuri
+92396,x97o,Biryani Master -Gulberg,4.8,2340,,31.52357315,74.3474022,249,99,https://images.deliveryhero.io/image/fd-pk/LH/x97o-listing.jpg,1.133,biryani-master-gulberg
+6953,s7le,Broadway Pizza - MM Alam Road,4.4,11620,Plot # 59 block-3 Gulberg III,31.50681755,74.3500839,249,99,https://images.deliveryhero.io/image/fd-pk/LH/cq0db-listing.jpg,1.716,broadway-pizza-mm-alam-road
+106423,ib8l,Kruncheese,4.7,1741,,31.5072245,74.34867045,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ib8l-listing.jpg,1.746,kruncheese
+110667,tvbr,Bonbird - Gulberg,4.8,597,,31.53009475,74.35068555,249,99,https://images.deliveryhero.io/image/fd-pk/LH/tvbr-listing.jpg,1.324,bonbird-gulberg
+108303,ctj3,Wafir - Cantt,4.9,492,,31.5210508,74.3802715,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ctj3-listing.jpg,2.042,wafir-cantt
+81613,sd39,Daily Deli CO - Cantt,4.9,4130,,31.5416677,74.37696215,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sd39-listing.jpg,2.931,daily-deli-co-cantt
+21129,n6cj,Papa Johns - MM Alam Road,4.3,7669,"3A Block C-3, Noor Jahan Road, Hussain Chowk, Gulberg 3. Lahore",31.5167773,74.35232535,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n6cj-listing.jpg,0.728,papa-johns-mm-alam-road
+95757,iis7,Khan Chapli Kabab and Fish Corner,4.9,2976,,31.52486814,74.34689186,249,99,https://images.deliveryhero.io/image/fd-pk/LH/iis7-listing.jpg,1.23,khan-chapli-kabab-and-fish-corner
+7713,t1by,Rizwan Burger - Main Market,4.9,20040,"Gulberg ,13 Zanjani Road",31.5239661,74.3453302,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t1by-listing.jpg,1.333,rizwan-burger-main-market
+93255,ymhq,Tofu Chinese & Thai Food,4.8,1798,,31.5119049,74.3540941,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ymhq-listing.jpg,1.039,tofu-chinese-and-thai-food-ymhq
+109013,tzsu,Shahenshah Sajji and Grill - Gulberg,4.8,573,,31.52052457,74.35203117,249,99,https://images.deliveryhero.io/image/fd-pk/LH/tzsu-listing.jpg,0.637,shahenshah-sajji-and-grill-gulberg
+90547,d3rr,The Pantry - Mall 1,4.9,1555,,31.5187509,74.3459751,249,99,https://images.deliveryhero.io/image/fd-pk/LH/d3rr-listing.jpg,1.224,the-pantry-mall-1
+95007,n32f,BRIM Burgers,4.8,2109,,31.5186967,74.3460697,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n32f-listing.jpg,1.216,brim-burgers
+111121,fmj1,Baked - Gulberg,4.7,125,,31.52759425,74.3489523,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fmj1-listing.jpg,1.228,baked-gulberg
+9536,t7dj,The Hotspot Cafe - GULBERG,4.9,1998,"Shop # 9, Ground Floor, Al-Hafeez Heights Ghalib Road, Lahore",31.51424145,74.3447991,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t7dj-listing.jpg,1.487,the-hotspot-cafe-gulberg
+101224,sfvv,XO Chinese Chips - Cantt,4.9,1417,,31.51833545,74.38171085,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sfvv-listing.jpg,2.188,xo-chinese-chips-cantt
+69235,ohax,Golden Restaurant,4.9,5885,,31.52383655,74.34490335,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ohax-listing.jpg,1.368,golden-restaurant
+94582,hkoy,ZERO Degree,5,1681,,31.50743175,74.34736095,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hkoy-listing.jpg,1.799,zero-degree
+106162,xz78,Ishaq Yakhni Pulao - Gulberg,4.8,388,,31.5280045,74.3598897,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xz78-listing.jpg,0.856,ishaq-yakhni-pulao-gulberg
+89710,dh3u,SMASH - Gulberg,4.8,2249,,31.5202297,74.3518767,249,99,https://images.deliveryhero.io/image/fd-pk/LH/dh3u-listing.jpg,0.651,smash-gulberg
+15743,u6co,Paola’s Cosa Nostra,4.8,1703,"23 A, Block H, Gulberg II",31.5270537,74.35150505,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u6co-listing.jpg,1.012,paolas-cosa-nostra
+84815,rz0y,ICE LAND Fresh Juices & Dry Fruit - Gulberg Hussain Chowk,4.7,4998,,31.50703455,74.35004145,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rz0y-listing.jpg,1.697,ice-land-fresh-juices-and-dry-fruit-gulberg-hussain-chowk
+107025,fuei,MEG - Gulberg,4.8,804,,31.5186598,74.34643815,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fuei-listing.jpg,1.182,meg-gulberg
+114317,n2z4,Sweet Creme - Kalma Chowk,4.7,154,,31.5054136,74.3322369,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n2z4-listing.jpg,3.014,sweet-creme-kalma-chowk
+76986,qgju,The Cheese Factor - Gulberg,4.8,3702,,31.51429695,74.34472717,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qgju-listing.jpg,1.491,the-cheese-factor-gulberg
+112715,x3t6,Keprek Smashed Chicken,4.7,148,,31.5219004,74.3510661,249,99,https://images.deliveryhero.io/image/fd-pk/LH/x3t6-listing.jpg,0.748,keprek-smashed-chicken
+83436,m98s,Cafe Tandoori,4.8,2406,,31.5129135,74.3538544,249,99,https://images.deliveryhero.io/image/fd-pk/LH/m98s-listing.jpg,0.95,cafe-tandoori
+88505,bhe0,Chick on Fire,4.7,5219,,31.5014911,74.3621287,249,99,https://images.deliveryhero.io/image/fd-pk/LH/bhe0-listing.jpg,2.124,chick-on-fire
+106604,awcr,Ambassador Zhen,4.7,634,,31.5152333,74.3442883,249,99,https://images.deliveryhero.io/image/fd-pk/LH/awcr-listing.jpg,1.485,ambassador-zhen
+106604,awcr,Ambassador Zhen,4.7,634,,31.5152333,74.3442883,249,99,https://images.deliveryhero.io/image/fd-pk/LH/awcr-listing.jpg,1.485,ambassador-zhen
+112902,unsd,HOUSE - Specialty Coffee,4.8,107,,31.53028635,74.3732681,249,99,https://images.deliveryhero.io/image/fd-pk/LH/unsd-listing.jpg,1.764,house-specialty-coffee
+63805,mmth,Sureela Tikka Corner,4.8,1670,,31.54572955,74.3772839,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mmth-listing.JPG,3.322,sureela-tikka-corner
+4346,s1xv,What a Paratha - Gulberg,4.8,17543,"Shop # 3/4, Ashrafi Height, Main Market, Gulberg 2 Block F Lahore.",31.5236393,74.3473351,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s1xv-listing.jpg,1.141,what-a-paratha-gulberg
+80082,sq75,Fri-Chiks - Gulberg,4.9,3073,,31.5238115,74.3476864,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sq75-listing.jpg,1.116,fri-chiks-gulberg-sq75
+101743,e32n,Crust Culture,4.8,1130,,31.50741165,74.3472936,249,99,https://images.deliveryhero.io/image/fd-pk/LH/e32n-listing.jpg,1.804,crust-culture
+93737,kcnc,Howdy - MM Alam Road,4.8,896,,31.5107813,74.3502534,249,99,https://images.deliveryhero.io/image/fd-pk/LH/kcnc-listing.jpg,1.336,howdy-mm-alam-road
+106223,aod7,Zaitoon - House of Shawarma,4.8,451,,31.52872974,74.37888272,249,99,https://images.deliveryhero.io/image/fd-pk/LH/aod7-listing.jpg,2.123,zaitoon-house-of-shawarma
+82992,du7l,K7 CHINESE RESTAURANT,4.7,1192,,31.50058225,74.3487183,249,99,https://images.deliveryhero.io/image/fd-pk/LH/du7l-listing.jpg,2.397,k7-chinese-restaurant
+64355,epkv,GB CHINESE,4.9,2716,,31.51926721,74.32296603,249,99,https://images.deliveryhero.io/image/fd-pk/LH/epkv-listing.jpg,3.394,gb-chinese
+79182,lyl2,Jalal Sons - Main Market,4.7,1603,,31.52371655,74.34550295,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lyl2-listing.jpg,1.309,jalal-sons-main-market
+110958,xs11,The Reema's Kitchen,4.9,395,,31.52945095,74.35588,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xs11-listing.jpg,1.046,the-reemas-kitchen
+15800,u8dt,Bundu Khan Restaurant - Fortress,4.9,1904,"peshawar block, fortress stadium lahore cantt",31.53449925,74.3642326,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u8dt-listing.jpg,1.655,bundu-khan-restaurant-fortress
+16389,u3hd,Paradise Restaurant,4.8,1230,"Liberty Market, Gulberg 3, Lahore",31.5088423,74.3455412,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u3hd-listing.jpg,1.792,paradise-restaurant
+4052,s4ls,Karachi Red Rock - Gulberg,4.8,20493,"Shop no 12,13 5 C-3 Ahad arcade near hussain chowk lahore",31.50727555,74.3474664,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s4ls-listing.jpg,1.807,karachi-red-rock-gulberg
+93157,yg7m,Jay Bee's - Gulberg,4.8,944,,31.5076661,74.3475385,249,99,https://images.deliveryhero.io/image/fd-pk/LH/yg7m-listing.jpg,1.768,jay-bees-gulberg-yg7m
+7723,t5gt,Rizwan Biryani,4.9,5889,"14-E, Main Market, Gulberg 2, Lahore",31.52396355,74.3453103,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t5gt-listing.jpg,1.335,rizwan-biryani
+113232,zc9w,XO Chinese Chips - Gulberg,4.5,107,,31.5100442,74.3265534,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zc9w-listing.jpg,3.261,xo-chinese-chips-gulberg
+95391,qzvb,Yumto - The House Of Arabic Mandi - Gulberg,4.8,571,,31.5203785,74.3520983,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qzvb-listing.jpg,0.63,yumto-the-house-of-arabic-mandi-gulberg
+108897,z41f,Double Shot - Gulberg,4.8,387,,31.5138723,74.3430872,249,99,https://images.deliveryhero.io/image/fd-pk/LH/z41f-listing.jpg,1.651,double-shot-gulberg
+103607,lwwd,Karachi Paratha Roll BAR B.Q,4.9,534,,31.50937505,74.3573423,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lwwd-listing.jpg,1.23,karachi-paratha-roll-bar-b-q
+26224,n3qk,Bamboo Union - Gulberg,4.8,2510,"95B-D/1, Main Boulevard, Gulberg III, Lahore",31.5187989,74.3507867,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n3qk-listing.jpg,0.775,bamboo-union-gulberg-n3qk
+66223,auw4,Bannu Beef Pulao - Turab Foods - Main Market,3.7,3761,,31.5228118,74.3471157,249,99,https://images.deliveryhero.io/image/fd-pk/LH/auw4-listing.jpg,1.135,bannu-beef-pulao-turab-foods-main-market
+23411,n4ze,NY 212 - Gulberg,4.7,5503,"Shop# 7, 9C Mall, MM Alam Road, Gulberg-III Lahore",31.51050015,74.35006075,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n4ze-listing.jpg,1.372,ny-212-gulberg
+108097,ak9e,Dough Joe - Gulberg,4.9,404,,31.518656,74.3458762,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ak9e-listing.jpg,1.235,dough-joe-gulberg
+36122,w8tn,Happy Burger - Liberty,4.7,3910,"3 Expo Center Rd, Block H 3 Phase 2 Johar Town, Lahore",31.5104811,74.34323485,249,99,https://images.deliveryhero.io/image/fd-pk/LH/w8tn-listing.jpg,1.836,happy-burger-liberty
+101448,fyey,Karachi Paratha Roll,4.9,840,,31.5094117,74.3573522,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fyey-listing.jpg,1.226,karachi-paratha-roll-fyey
+111964,bewf,Polymath,4.9,84,,31.5152689,74.3443114,249,99,https://images.deliveryhero.io/image/fd-pk/LH/bewf-listing.jpg,1.481,polymath
+8155,t9pp,CP Five Star - Shadman,4.9,9195,"Shop 18, Agro Square, Shadman market, Lahore",31.5388,74.33083,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t9pp-listing.jpg,3.347,cp-five-star-shadman
+39530,w8go,Karachi Pratha Roll & Fast Food,4.5,10759,"Block C3, Liberty Gulberg, Lahore",31.508569,74.344884,249,99,https://images.deliveryhero.io/image/fd-pk/LH/w8go-listing.jpg,1.857,karachi-pratha-roll-and-fast-food
+114630,xh9v,Substation,4.8,29,,31.5163414,74.3515528,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xh9v-listing.jpg,0.816,substation
+91528,fgaw,Dera Restaurant - Cavalry Ground,4.6,1285,,31.5021331,74.3742771,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fgaw-listing.jpg,2.506,dera-restaurant-cavalry-ground
+107263,x8l5,A1 Tasty Halal Cart - Gulberg,4.8,557,,31.5152817,74.3443132,249,99,https://images.deliveryhero.io/image/fd-pk/LH/x8l5-listing.jpg,1.481,a1-tasty-halal-cart-gulberg
+66726,rtvr,Ahmad Dahi Bhallay - Cavalry Ground,4.9,2928,,31.4992017,74.36610215,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rtvr-listing.jpg,2.455,ahmad-dahi-bhallay-cavalry-ground
+109245,v96t,BIRYANI MASTER GULBARG,4.8,220,,31.5150233,74.3435234,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v96t-listing.jpg,1.561,biryani-master-gulbarg
+98327,rvot,Arcadian Cafe - Gulberg,4.8,415,,31.5225715,74.3494249,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rvot-listing.jpg,0.917,arcadian-cafe-gulberg-rvot
+114923,a34d,Burger Lab – Gulberg LHR,4.4,106,,31.5054136,74.3322369,249,99,https://images.deliveryhero.io/image/fd-pk/LH/a34d-listing.jpg,3.014,burger-lab-gulberg-lhr
+9309,t0nq,Vip Sabir Daal Chawal & Chicken Biryani,4.4,6636,,31.52353035,74.34555665,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t0nq-listing.jpg,1.299,vip-sabir-daal-chawal-and-chicken-biryani
+81081,jk6f,Nafees Dahi Bhallay - Barket Market,4.8,2933,,31.4989396,74.3206185,249,99,https://images.deliveryhero.io/image/fd-pk/LH/jk6f-listing.jpg,4.329,nafees-dahi-bhallay-barket-market
+90757,ujwo,Subway - Gulberg II,4.5,940,,31.50764015,74.35433765,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ujwo-listing.jpg,1.476,subway-gulberg-ii-ujwo
+15898,u3bg,Novu Pan Asian - Gulberg,4.7,2893,"C-3 Gulberg III Noor Jehan Road، Near Hussain Chowk, Block C 3 Gulberg III, Lahore",31.50701875,74.3486238,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u3bg-listing.jpg,1.768,novu-pan-asian-gulberg
+97542,kyrl,Xo Pan Asian Cuisine,4.8,721,,31.4882789,74.37882265,249,99,https://images.deliveryhero.io/image/fd-pk/LH/kyrl-listing.jpg,4.044,xo-pan-asian-cuisine
+106784,uue9,ZORO Burger - Gulberg,4.8,307,,31.5307461,74.3522663,249,99,https://images.deliveryhero.io/image/fd-pk/LH/uue9-listing.jpg,1.307,zoro-burger-gulberg
+83618,mjo8,DELISH PIZZA BAR - Cantt,4.8,1111,,31.5218296,74.3793411,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mjo8-listing.jpg,1.959,delish-pizza-bar-cantt
+101223,y0v9,Salt'n Pepper Express - Fortress Stadium,4.6,237,,31.5340819,74.363944,249,99,https://images.deliveryhero.io/image/fd-pk/LH/y0v9-listing.jpg,1.602,saltn-pepper-express-fortress-stadium
+68575,r3rz,Mastani - Gulberg,4.7,1021,,31.518628,74.35149375,249,99,https://images.deliveryhero.io/image/fd-pk/LH/r3rz-listing.jpg,0.714,mastani-gulberg
+4058,s6kf,OPTP - Fortress,4.4,2179,THE POTATO FACTORY INTERNATIONAL ,31.53261735,74.3632779,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s6kf-listing.jpg,1.428,optp-fortress
+52924,m0el,Pickadeli,4.1,6779,,31.50441865,74.33931784,249,99,https://images.deliveryhero.io/image/fd-pk/LH/m0el-listing.jpg,2.557,pickadeli
+65300,qpig,Kitchen Cuisine - M.M Alam,4.9,1584,,31.52174203,74.35125432,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qpig-listing.jpg,0.726,kitchen-cuisine-m-m-alam
+92845,r0i0,Tim Hortons - Mall 1,4.8,1493,,31.5187509,74.3459751,249,99,https://images.deliveryhero.io/image/fd-pk/LH/r0i0-listing.jpg,1.224,tim-hortons-mall-1
+98327,rvot,Arcadian Cafe - Gulberg,4.8,415,,31.5225715,74.3494249,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rvot-listing.jpg,0.917,arcadian-cafe-gulberg-rvot
+83618,mjo8,DELISH PIZZA BAR - Cantt,4.8,1111,,31.5218296,74.3793411,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mjo8-listing.jpg,1.959,delish-pizza-bar-cantt
+15898,u3bg,Novu Pan Asian - Gulberg,4.7,2893,"C-3 Gulberg III Noor Jehan Road، Near Hussain Chowk, Block C 3 Gulberg III, Lahore",31.50701875,74.3486238,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u3bg-listing.jpg,1.768,novu-pan-asian-gulberg
+55340,x4fc,Cock 'N' Bull - BAR B Q,4.6,1969,,31.5075666,74.3474513,249,99,https://images.deliveryhero.io/image/fd-pk/LH/x4fc-listing.jpg,1.781,cock-n-bull-bar-b-q
+105227,dw5e,Hico Dairy Ice Cream,5,277,,31.5255837,74.3571099,249,99,https://images.deliveryhero.io/image/fd-pk/LH/dw5e-listing.jpg,0.6,hico-dairy-ice-cream
+115060,mujv,Baba Jamal Tikka Shop - Cantt,2.8,11,,31.5283058,74.3785189,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mujv-listing.jpg,2.071,baba-jamal-tikka-shop-cantt
+114923,a34d,Burger Lab – Gulberg LHR,4.4,106,,31.5054136,74.3322369,249,99,https://images.deliveryhero.io/image/fd-pk/LH/a34d-listing.jpg,3.014,burger-lab-gulberg-lhr
+6187,s8df,Biryani King & Burgers,4.6,3472,14-civic center bakat market near cakes and bakes new garden town,31.499368,74.321848,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s8df-listing.jpg,4.206,biryani-king-and-burgers
+103985,l6zz,Pret Brasserie,4.9,249,,31.5167383,74.3524897,249,99,https://images.deliveryhero.io/image/fd-pk/LH/l6zz-listing.jpg,0.718,pret-brasserie
+11062,t5xl,The Coffee Bean & Tea Leaf - Gulberg,4.9,2720,"64-A, Unit # 3,4, Fountain Avenue, Main Boulevard, Gulberg, Lahore",31.52739,74.35051,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t5xl-listing.JPG,1.104,the-coffee-bean-and-tea-leaf-gulberg
+103567,f0ua,Karachi Hot N Spicy - Cantt,4.4,920,,31.543413,74.4236883,249,99,https://images.deliveryhero.io/image/fd-pk/LH/f0ua-listing.jpg,6.667,karachi-hot-n-spicy-cantt-f0ua
+64960,wrez,Malik Fast Food,3.8,336,,31.5283591,74.3600205,249,99,https://images.deliveryhero.io/image/fd-pk/LH/wrez-listing.jpg,0.897,malik-fast-food-wrez
+73164,hmnj,Special Chinese Food Corner,4.9,783,,31.5005925,74.34870365,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hmnj-listing.jpg,2.396,special-chinese-food-corner
+111964,bewf,Polymath,4.9,84,,31.5152689,74.3443114,249,99,https://images.deliveryhero.io/image/fd-pk/LH/bewf-listing.jpg,1.481,polymath
+100051,ypbj,Ashraf Fresh Tikka Shop,4.8,396,,31.5235666,74.3458383,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ypbj-listing.jpg,1.274,ashraf-fresh-tikka-shop
+56186,x1z3,Moosa Bar B Q-Cantt,4.7,530,,31.5289478,74.378485,249,99,https://images.deliveryhero.io/image/fd-pk/LH/x1z3-listing.jpg,2.1,moosa-bar-b-q-cantt
+23964,n2es,Karachi Zam Zam Biryani & Murgh Pulao,4.6,4875,"Liberty Market, Opp. Liberty Burger",31.5107631,74.343405,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n2es-listing.jpg,1.804,karachi-zam-zam-biryani-and-murgh-pulao-n2es
+12399,t2ri,Cafe Beirut,4.7,1296,"Opposite, Mall 1, Gulberg, Lahore",31.51932225,74.34607225,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t2ri-listing.jpg,1.207,cafe-beirut
+110450,q9em,The Grill Workshop,4.9,387,,31.5258697,74.3191937,249,99,https://images.deliveryhero.io/image/fd-pk/LH/q9em-listing.jpg,3.799,the-grill-workshop
+106812,giz4,Degi Dum,4.5,330,,31.51443544,74.32246231,249,99,https://images.deliveryhero.io/image/fd-pk/LH/giz4-listing.jpg,3.502,degi-dum-giz4
+33105,v3ij,Capri Restaurant,4.7,8617,34 Liberty Market Gulberg 3 Lahore,31.51027695,74.34309335,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v3ij-listing.jpg,1.86,capri-restaurant
+63309,ynry,Sultan Hotel,4.4,3701,,31.4995134,74.3496459,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ynry-listing.jpg,2.474,sultan-hotel
+64192,pu3m,Azaan Burger & Pizza,4.8,4383,,31.51953398,74.31984815,249,99,https://images.deliveryhero.io/image/fd-pk/LH/pu3m-listing.jpg,3.688,azaan-burger-and-pizza
+22571,n3us,Hong Kong Xpress,4.9,4210,7 T annexe Gulberg 2 Near St. Mary'S High School Lahore,31.519449,74.352931,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n3us-listing.jpg,0.561,hong-kong-xpress
+81885,q7zj,Stevie's Haka Chinese & Thai,4.8,731,,31.52035195,74.3521698,249,99,https://images.deliveryhero.io/image/fd-pk/LH/q7zj-listing.jpg,0.623,stevies-haka-chinese-and-thai
+47068,m9zq,Yousaf Falooda - Qazzafi,4.4,1815,,31.5074163,74.3475726,249,99,https://images.deliveryhero.io/image/fd-pk/LH/m9zq-listing.jpg,1.788,yousaf-falooda-qazzafi
+100610,mgoe,Taste Tester's,4.5,1233,,31.51939165,74.3222015,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mgoe-listing.jpg,3.466,taste-testers
+102846,mf6b,Madni Restaurant,4.6,1339,,31.5193685,74.3221648,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mf6b-listing.jpg,3.469,madni-restaurant
+90197,p8sc,California Pizza - Fortress,3.9,703,,31.53250115,74.36319,249,99,https://images.deliveryhero.io/image/fd-pk/LH/p8sc-listing.jpg,1.413,california-pizza-fortress
+5391,s6or,Pizza City - Gulberg 3,4.3,2644,"Shop # 1, Opposite Raheem Pack, Makkah Colony Gulberg 3, Lahore",31.49904251,74.35708618,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s6or-listing.jpg,2.377,pizza-city-gulberg-3
+109755,s5y7,Chips and chopsticks - Gulberg,4.7,418,,31.5054136,74.3322369,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s5y7-listing.jpg,3.014,chips-and-chopsticks-gulberg
+107896,dwi9,Yum Bao,4.8,371,,31.4884249,74.3262129,249,99,https://images.deliveryhero.io/image/fd-pk/LH/dwi9-listing.jpg,4.704,yum-bao
+25578,n3zh,Baba Sheikh Machli Walay (Grill & BBQ),4.8,2115,12 - A  Ahmed Munir Shaheed Road Rehmanpura Ichra Lahore,31.526203,74.317216,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n3zh-listing.jpg,3.99,baba-sheikh-machli-walay-grill-and-bbq
+74328,fuwt,Ishaque Tasty Yakhni Pulao,4.8,824,,31.52446725,74.3445222,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fuwt-listing.jpg,1.423,ishaque-tasty-yakhni-pulao
+106755,kg4f,Crosta,4.7,96,,31.53037665,74.3734601,249,99,https://images.deliveryhero.io/image/fd-pk/LH/kg4f-listing.jpg,1.784,crosta
+67694,sz13,Tattle Teahouse - Gulberg,4.9,1058,,31.53063895,74.35053025,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sz13-listing.jpg,1.382,tattle-teahouse-gulberg
+79630,uzue,Mandarin Kitchen - Gulberg,4.9,286,,31.5198637,74.3498892,249,99,https://images.deliveryhero.io/image/fd-pk/LH/uzue-listing.jpg,0.842,mandarin-kitchen-gulberg-uzue
+104325,abxc,Grains & Greens,4.4,126,,31.50337465,74.34918575,249,99,https://images.deliveryhero.io/image/fd-pk/LH/abxc-listing.jpg,2.096,grains-and-greens
+81642,sxbe,Lush Crush - Cantt,5,325,Shami road lahore cantt shell petrol pump,31.5297849,74.3771504,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sxbe-listing.jpg,2.034,lush-crush-cantt
+106328,sg01,Ice Land - Main Market Gulberg,4.8,193,,31.5242487,74.3466033,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sg01-listing.jpg,1.229,ice-land-main-market-gulberg
+89306,y2i6,Hina's Cook Studio,4.9,1967,,31.526,74.3287937,249,99,https://images.deliveryhero.io/image/fd-pk/LH/y2i6-listing.jpg,2.907,hinas-cook-studio
+96566,l5wt,Pie In The Sky - MM Alam Road,4.8,1166,,31.50906391,74.35053909,249,99,https://images.deliveryhero.io/image/fd-pk/LH/l5wt-listing.jpg,1.478,pie-in-the-sky-mm-alam-road
+89172,agpz,Jawa Karai,4.8,564,,31.52399,74.3232445,249,99,https://images.deliveryhero.io/image/fd-pk/LH/agpz-listing.jpg,3.389,jawa-karai
+94179,zj4p,Rameen Kitchen,4.8,404,,31.5260217,74.3288129,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zj4p-listing.jpg,2.906,rameen-kitchen
+46617,k1fw,Ice Food - Girja Chowk,4.9,1371,,31.52186475,74.37905995,249,99,https://images.deliveryhero.io/image/fd-pk/LH/k1fw-listing.jpg,1.933,ice-food-girja-chowk
+101982,t203,Pehlwan Bannu Beef Pulao & Chicken Biryani,4.6,366,,31.5237422,74.3462047,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t203-listing.jpg,1.247,pehlwan-bannu-beef-pulao-and-chicken-biryani
+9537,t8wl,Pizza Domeno Hut - Gulburg III,4.4,2325,"LGF - 2, Century Tower, Kalma Chowk, Lahore",31.50506755,74.3322573,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t8wl-listing.jpg,3.033,pizza-domeno-hut-gulburg-iii
+99903,aa6o,House of Rice-Gulberg,4.8,267,,31.5148925,74.3443371,249,99,https://images.deliveryhero.io/image/fd-pk/LH/aa6o-listing.jpg,1.496,house-of-rice-gulberg
+113577,hjes,Kababjees Express - Gulberg,4.2,92,,31.5100442,74.3265534,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hjes-listing.jpg,3.261,kababjees-express-gulberg
+89978,h0a8,Pulao House & Restaurant,4.8,785,,31.5237965,74.3448716,249,99,https://images.deliveryhero.io/image/fd-pk/LH/h0a8-listing.jpg,1.369,pulao-house-and-restaurant
+4921,s6pl,New Beijing,4.6,5629,"Shop # 175 Raja centre,Opp: City Tower  Main Boulevard Gulberg 3, Lahore.",31.52275055,74.3470852,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s6pl-listing.jpg,1.137,new-beijing
+91969,znyj,Bismillah Naan Shop - Cantt,4.5,523,,31.5484183,74.3634101,249,99,https://images.deliveryhero.io/image/fd-pk/LH/znyj-listing.jpg,3.15,bismillah-naan-shop-cantt
+28913,v7kl,Liu's Kim Mun Chinese By Hsin Kuang,4.6,1242,"9 G Raja Centre, Block A Gulberg 2, Lahore",31.5230487,74.347344,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v7kl-listing.jpg,1.121,lius-kim-mun-chinese-by-hsin-kuang
+107532,mwxi,Dynamite Chow - Cantt,4.7,64,,31.5207432,74.3803717,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mwxi-listing.jpg,2.05,dynamite-chow-cantt
+95375,dr2w,Iceland & Juice Corner - Gulberg,4.8,1012,,31.5013593,74.366899,249,99,https://images.deliveryhero.io/image/fd-pk/LH/dr2w-listing.jpg,2.251,iceland-and-juice-corner-gulberg
+104782,ds7f,Rahat Bakers,4.7,295,,31.52956205,74.37726785,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ds7f-listing.jpg,2.031,rahat-bakers-ds7f
+44894,o5ip,P.F Chang's - Gulberg,4.9,763,"17 - C1 MM Alam Rd, Block C1 Block C 1 Gulberg III, Lahore",31.51596575,74.3515954,249,99,https://images.deliveryhero.io/image/fd-pk/LH/o5ip-listing.jpg,0.836,p-f-changs-gulberg
+102819,no5p,The Cakery - Cantt,4.9,162,,31.51918145,74.3818079,249,99,https://images.deliveryhero.io/image/fd-pk/LH/no5p-listing.jpg,2.19,the-cakery-cantt
+103153,au8r,Ice Land - Ghalib Market,4.8,284,,31.51297625,74.35407125,249,99,https://images.deliveryhero.io/image/fd-pk/LH/au8r-listing.jpg,0.934,ice-land-ghalib-market
+109989,jpc9,Biryani Master - Wahdat Road,4.9,206,,31.5205872,74.3233198,249,99,https://images.deliveryhero.io/image/fd-pk/LH/jpc9-listing.jpg,3.358,biryani-master-wahdat-road-jpc9
+58662,zf66,Ziafat BBQ,4.8,398,,31.5302665,74.3733915,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zf66-listing.jpg,1.771,ziafat-bbq
+36707,w8iv,Baltistan Chinese Food Corner,4.4,3085,"7 A Block Rehmanpura Colony, Lahore",31.5251634,74.3189326,249,99,https://images.deliveryhero.io/image/fd-pk/LH/w8iv-listing.jpg,3.811,baltistan-chinese-food-corner
+89306,y2i6,Hina's Cook Studio,4.9,1967,,31.526,74.3287937,249,99,https://images.deliveryhero.io/image/fd-pk/LH/y2i6-listing.jpg,2.907,hinas-cook-studio
+72846,ix0t,Pizza Hot - Cavalry Ground,4.5,968,,31.4926185,74.3631277,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ix0t-listing.jpg,3.114,pizza-hot-cavalry-ground
+94179,zj4p,Rameen Kitchen,4.8,404,,31.5260217,74.3288129,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zj4p-listing.jpg,2.906,rameen-kitchen
+109776,zxuk,GRUB SHACK,5,113,,31.5114264,74.3401576,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zxuk-listing.jpg,2.023,grub-shack
+105652,e6sw,Taxali - The Gates Special,4.1,131,,31.52083595,74.3802802,249,99,https://images.deliveryhero.io/image/fd-pk/LH/e6sw-listing.jpg,2.042,taxali-the-gates-special
+94317,p0fz,Baskin Robbins - Gulberg lll,4.8,362,,31.518754,74.346299,249,99,https://images.deliveryhero.io/image/fd-pk/LH/p0fz-listing.jpg,1.194,baskin-robbins-gulberg-lll
+127563,qmwa,A taste of home,4.6,10,,31.4891744,74.3741317,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qmwa-listing.jpg,3.763,a-taste-of-home-qmwa
+38080,w1zj,Tandoori Tea & Co.,4.8,904,"Mian Mehmood Ali Kasoori Road, Block A3 Block A 3 Gulberg III, Lahore",31.5066572,74.3554924,249,99,https://images.deliveryhero.io/image/fd-pk/LH/w1zj-listing.jpg,1.556,tandoori-tea-and-co
+113368,eiij,Ping Pong,4.7,49,,31.5077127,74.3546353,249,99,https://images.deliveryhero.io/image/fd-pk/LH/eiij-listing.jpg,1.46,ping-pong-eiij
+101062,i99a,Deliverance By FRED,4.8,238,,31.51526965,74.3443165,249,99,https://images.deliveryhero.io/image/fd-pk/LH/i99a-listing.jpg,1.481,deliverance-by-fred
+71255,xcph,Go Sushi,4.5,430,,31.5069829,74.3535164,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xcph-listing.jpg,1.569,go-sushi
+98215,lxll,WOK Rock Chinese,4.4,1151,,31.50709334,74.3581643,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lxll-listing.jpg,1.477,wok-rock-chinese
+110186,zymn,Beijing Noodles,4.4,150,,31.49493074,74.36992417,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zymn-listing.jpg,3.021,beijing-noodles
+124200,omca,Mian Hotel and Naan Shop,0,0,,31.51896825,74.31976785,249,99,https://images.deliveryhero.io/image/fd-pk/LH/omca-listing.jpg,3.698,mian-hotel-and-naan-shop
+108085,zz1l,Dunkin Donuts - Hussain Chowk,4.3,111,,31.5065448,74.3499785,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zz1l-listing.jpg,1.748,dunkin-donuts-hussain-chowk
+52018,j6ba,Siddique Bhaiya Kabab  - Model town,4.9,1987,,31.48966857,74.31933381,249,99,https://images.deliveryhero.io/image/fd-pk/LH/j6ba-listing.jpg,5.061,siddique-bhaiya-kabab-model-town
+65718,rhfx,Eggspectation Cafe & Restaurant - Gulberg,4.8,985,,31.53057335,74.3507597,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rhfx-listing.jpg,1.364,eggspectation-cafe-and-restaurant-gulberg
+114548,mwmc,Quetta Khan Cafe - Gulberg,4.8,40,,31.51133465,74.34184615,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mwmc-listing.jpg,1.891,quetta-khan-cafe-gulberg
+114075,lb7i,Flipsee Gulberg,4.2,46,,31.5071823,74.3472544,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lb7i-listing.jpg,1.827,flipsee-gulberg
+23920,n6bw,Shahanshah Dahi Bhallay ( R ),4.8,1518,6B2 ghalib Market Gulberg 3 Opposite to umer tower button corner,31.51221605,74.35403603,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n6bw-listing.jpg,1.011,shahanshah-dahi-bhallay-r
+90585,i67r,Tuscany Courtyard,4.8,365,,31.5163414,74.3515528,249,99,https://images.deliveryhero.io/image/fd-pk/LH/i67r-listing.jpg,0.816,tuscany-courtyard-i67r
+88347,gjqu,Bells and Peppers,4.7,1197,,31.52591933,74.32880497,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gjqu-listing.jpg,2.904,bells-and-peppers
+64556,us4f,Tasty Yakhni Pulao,4.8,3218,,31.4981259,74.35692915,249,99,https://images.deliveryhero.io/image/fd-pk/LH/us4f-listing.jpg,2.479,tasty-yakhni-pulao
+5832,s6bb,Karachi Biryani - Barkat Market,3.8,31509,"7G,Lahore Tower Barkat Market, New Garden Town, Lahore",31.50066975,74.3214053,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s6bb-listing.jpg,4.163,karachi-biryani-barkat-market
+20333,u9pd,Karachi Biryani Hearts - Walton,4.7,1616,"E-81, Opp Fine Store Korey Stop Defence Chowk, Main Walton Road, Cantt, Lahore",31.493707,74.372628,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u9pd-listing.jpg,3.244,karachi-biryani-hearts-walton
+10397,t5jc,Yum Chinese - Gulberg,4.8,612,"Sir Syed Rd, Gulberg 2، Block K Gulberg 2, Lahore",31.521537,74.348785,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t5jc-listing.jpg,0.953,yum-chinese-gulberg
+107430,hoo7,Shezan Restaurant - Fortress,4.9,72,,31.5316491,74.3653083,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hoo7-listing.jpg,1.4,shezan-restaurant-fortress
+98775,f9t0,The Mad Italian,4.8,200,,31.51380205,74.34055735,249,99,https://images.deliveryhero.io/image/fd-pk/LH/f9t0-listing.jpg,1.873,the-mad-italian
+65385,mhb8,New Beijing Express Chinese Restaurant,4.7,3947,,31.5228089,74.3472037,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mhb8-listing.jpg,1.127,new-beijing-express-chinese-restaurant
+45460,i4hz,Anmool Nan shop,4.7,2352,"Anmool Nan Shop, Link 1, New Super Town Lahore",31.494232,74.375832,249,99,https://images.deliveryhero.io/image/fd-pk/LH/i4hz-listing.jpg,3.327,anmool-nan-shop
+29037,v1el,Bundu Khan Bakery - Gulberg,4.9,2095,"Mehmood Qasoori Road, Gulberg III, Lahore",31.506978,74.354956,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v1el-listing.jpg,1.532,bundu-khan-bakery-gulberg
+12757,t3uw,Lebanese Corner,4.8,1135,,31.507415,74.347655,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t3uw-listing.jpg,1.783,lebanese-corner
+114427,ucnl,K Tikka House,2.6,17,,31.4959212,74.3568541,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ucnl-listing.jpg,2.724,k-tikka-house
+100918,jftg,Duck Donuts,4.8,447,,31.52244745,74.35023125,249,99,https://images.deliveryhero.io/image/fd-pk/LH/jftg-listing.jpg,0.84,duck-donuts
+65047,wfmv,Lush Crush - MM Alam,4.9,513,,31.5056236,74.3489808,249,99,https://images.deliveryhero.io/image/fd-pk/LH/wfmv-listing.jpg,1.883,lush-crush-mm-alam
+70153,qu0e,Lahore Broast – Wahdat Road,4.2,2008,,31.5178633,74.3176298,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qu0e-listing.jpg,3.907,lahore-broast-wahdat-road
+93991,nqg4,Steak Away - Gulberg,4.7,271,,31.51926325,74.3450939,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nqg4-listing.jpg,1.3,steak-away-gulberg
+71895,b0bd,Malik Naan Shop,4.9,1053,,31.529552,74.3164667,249,99,https://images.deliveryhero.io/image/fd-pk/LH/b0bd-listing.jpg,4.136,malik-naan-shop
+9263,t0wi,Karachi Golden BBQ & Paratha Roll,4.7,2264,"Noor Jehan Road, Liberty Market, Lahore",31.508347,74.344908,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t0wi-listing.jpg,1.873,karachi-golden-bbq-and-paratha-roll-t0wi
+71895,b0bd,Malik Naan Shop,4.9,1053,,31.529552,74.3164667,249,99,https://images.deliveryhero.io/image/fd-pk/LH/b0bd-listing.jpg,4.136,malik-naan-shop
+90264,nhs3,Klap,4.8,384,,31.5208282,74.3804247,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nhs3-listing.jpg,2.055,klap
+104193,ez0o,Extraction Coffee,4.9,190,,31.5241036,74.3518537,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ez0o-listing.jpg,0.774,extraction-coffee
+104349,o5gi,Karachi Naseeb Biryani - Walton,4.4,29,,31.4931875,74.3720625,249,99,https://images.deliveryhero.io/image/fd-pk/LH/o5gi-listing.jpg,3.276,karachi-naseeb-biryani-walton
+109842,y1z1,Waffle Wala,4.7,83,,31.5076011,74.3477094,249,99,https://images.deliveryhero.io/image/fd-pk/LH/y1z1-listing.jpg,1.764,waffle-wala
+84299,mjth,"Karachi Naseeb Biryani,Murgh Pulao & Pakwan Center",3.9,590,,31.5113094,74.3139634,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mjth-listing.jpg,4.363,karachi-naseeb-biryani-murgh-pulao-and-pakwan-center-mjth
+65047,wfmv,Lush Crush - MM Alam,4.9,513,,31.5056236,74.3489808,249,99,https://images.deliveryhero.io/image/fd-pk/LH/wfmv-listing.jpg,1.883,lush-crush-mm-alam
+91168,fwx6,Gulzar Yakhni Pulao,2.9,1518,,31.52702155,74.3584916,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fwx6-listing.jpg,0.74,gulzar-yakhni-pulao
+91969,znyj,Bismillah Naan Shop - Cantt,4.5,523,,31.5484183,74.3634101,249,99,https://images.deliveryhero.io/image/fd-pk/LH/znyj-listing.jpg,3.15,bismillah-naan-shop-cantt
+21544,n3su,Student Special Chinese,4.6,4964,Rehmanpura opposite to gourmet bakery,31.5251678,74.31891785,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n3su-listing.jpg,3.813,student-special-chinese
+112970,acgr,Glemo Ice Cream,4.7,35,,31.49477739,74.37025621,249,99,https://images.deliveryhero.io/image/fd-pk/LH/acgr-listing.jpg,3.048,glemo-ice-cream
+93991,nqg4,Steak Away - Gulberg,4.7,271,,31.51926325,74.3450939,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nqg4-listing.jpg,1.3,steak-away-gulberg
+126589,d4or,The Lavender Cup,4.8,12,,31.50667288,74.34996609,249,99,https://images.deliveryhero.io/image/fd-pk/LH/d4or-listing.jpg,1.736,the-lavender-cup-d4or
+103873,xdzx,Karachi Fast Food & Chinese - Gulberg,4.4,860,,31.5014911,74.3621287,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xdzx-listing.jpg,2.124,karachi-fast-food-and-chinese-gulberg
+112810,i125,Dezato,4.3,67,,31.5054084,74.3497795,249,99,https://images.deliveryhero.io/image/fd-pk/LH/i125-listing.jpg,1.868,dezato
+104492,wucj,Food For Foodies,4.9,380,,31.4977065,74.3597295,249,99,https://images.deliveryhero.io/image/fd-pk/LH/wucj-listing.jpg,2.522,food-for-foodies-wucj
+107762,qgb1,Ajwa Biryani - Mall Road,4.3,493,,31.5435333,74.3584209,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qgb1-listing.jpg,2.576,ajwa-biryani-mall-road
+94924,u87z,SOLO INDULGENCES,4.4,731,,31.5035717,74.3571317,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u87z-listing.jpg,1.874,solo-indulgences
+127800,sq54,KHAN BABA TAWA PIECE,0,0,,31.4995734,74.3215327,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sq54-listing.jpg,4.218,khan-baba-tawa-piece-sq54
+104043,tw7w,MAD - Mighty & Delicious (Gulberg),4.6,124,,31.523235,74.3456827,249,99,https://images.deliveryhero.io/image/fd-pk/LH/tw7w-listing.jpg,1.279,mad-mighty-and-delicious-gulberg
+111145,t0m4,Seoul Snack 서울스낵,4.1,42,,31.5199113,74.3575518,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t0m4-listing.jpg,0.124,seoul-snack-seoulseunaeg
+63158,pshl,Bannu Beef Pulao - Barkat Market,3.1,3120,,31.5005521,74.32132445,249,99,https://images.deliveryhero.io/image/fd-pk/LH/pshl-listing.jpg,4.176,bannu-beef-pulao-barkat-market
+74108,txzj,i Kitchen,4.4,3119,,31.4906548,74.3428336,249,99,https://images.deliveryhero.io/image/fd-pk/LH/txzj-listing.jpg,3.632,i-kitchen
+85080,itry,Fancy Dahi Bhallay,4.6,673,,31.498987,74.3206184,249,99,https://images.deliveryhero.io/image/fd-pk/LH/itry-listing.jpg,4.326,fancy-dahi-bhallay-itry
+99374,gq13,Burning Desire,4.9,658,,31.52221955,74.3508372,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gq13-listing.jpg,0.777,burning-desire
+96921,wk6k,Feeha's,4.7,687,,31.5014911,74.3621287,249,99,https://images.deliveryhero.io/image/fd-pk/LH/wk6k-listing.jpg,2.124,feehas
+104448,g6x3,AL-QASIM HOME KITCHEN,4.6,397,,31.51937305,74.32220765,249,99,https://images.deliveryhero.io/image/fd-pk/LH/g6x3-listing.jpg,3.465,al-qasim-home-kitchen
+107043,g34l,Cheese Please!,4.9,118,,31.5252667,74.3469325,249,99,https://images.deliveryhero.io/image/fd-pk/LH/g34l-listing.jpg,1.245,cheese-please-g34l
+104055,e3a7,Saira Home Kitchen,4.3,149,,31.51933515,74.32220165,249,99,https://images.deliveryhero.io/image/fd-pk/LH/e3a7-listing.jpg,3.466,saira-home-kitchen
+107696,vkz0,Farah's Kitchen,4.9,419,,31.49297025,74.36938735,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vkz0-listing.jpg,3.209,farahs-kitchen-vkz0
+98775,f9t0,The Mad Italian,4.8,200,,31.51380205,74.34055735,249,99,https://images.deliveryhero.io/image/fd-pk/LH/f9t0-listing.jpg,1.873,the-mad-italian
+85920,sbck,Baranh,4.6,394,,31.5316453,74.3515712,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sbck-listing.jpg,1.426,baranh
+82587,ujn6,Stop for Meal,4.8,842,,31.51451335,74.343555,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ujn6-listing.jpg,1.58,stop-for-meal
+110402,ggdy,Karachi Waffles,4.7,126,,31.49503443,74.36980532,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ggdy-listing.jpg,3.006,karachi-waffles
+30172,v9fk,The Sweet Rack,4.9,1012,"63 Tippu Block Place 61 Tipu Street, Tipu Block Commercial Area Tipu Block Garden Town, Lahore",31.5012925,74.32828955,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v9fk-listing.jpg,3.583,the-sweet-rack
+113366,hsmi,Chips & Chopsticks,4.8,50,,31.5077218,74.3543567,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hsmi-listing.jpg,1.467,chips-and-chopsticks-hsmi
+69009,oxkq,Mithaas - Gulberg,4.8,389,,31.5224519,74.350661,249,99,https://images.deliveryhero.io/image/fd-pk/LH/oxkq-listing.jpg,0.801,mithaas-gulberg
+102774,yg3s,OTTO - The Burger Shack,4.9,161,,31.5276861,74.3506666,249,99,https://images.deliveryhero.io/image/fd-pk/LH/yg3s-listing.jpg,1.117,otto-the-burger-shack
+5509,s3zz,My Burger - Barket Market,4.2,3580,"Shop # 9, Lahore Tower, Garden Town, Barket Market, Lahore",31.50045075,74.32138305,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s3zz-listing.jpg,4.178,my-burger-barket-market
+102173,hpna,Bhully shah restaurant,4.5,712,,31.51935065,74.32222895,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hpna-listing.jpg,3.463,bhully-shah-restaurant
+114548,mwmc,Quetta Khan Cafe - Gulberg,4.8,40,,31.51133465,74.34184615,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mwmc-listing.jpg,1.891,quetta-khan-cafe-gulberg
+103496,mf1n,Lo-Kal Bites (Cavalry-LHR),4.7,170,,31.4954784,74.3657632,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mf1n-listing.jpg,2.847,lo-kal-bites-cavalry-lhr
+56697,evfa,Karachi Hot Bite Paratha Roll & Bar B Q,4.8,868,,31.5232599,74.3173381,249,99,https://images.deliveryhero.io/image/fd-pk/LH/evfa-listing.jpg,3.938,karachi-hot-bite-paratha-roll-and-bar-b-q-evfa
+109542,n95s,Captain Cook,4.8,86,,31.49456917,74.36101932,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n95s-listing.jpg,2.877,captain-cook-n95s
+77826,gnpb,New Ahmad Dahi Bhallay & Special Bar.B.Q,4.6,2718,,31.49443179,74.38735648,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gnpb-listing.jpg,3.959,new-ahmad-dahi-bhallay-and-special-bar-b-q
+23799,n8np,Shahi Murg Chanay,4.5,5407,Walton Road Bank Stop Lahore,31.4876832,74.3669618,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n8np-listing.jpg,3.717,shahi-murg-chanay
+67880,ruly,Sweet Affairs - Gulberg,4.8,732,,31.5214213,74.349199,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ruly-listing.jpg,0.913,sweet-affairs-gulberg
+80175,dhpe,Lush Crush - Model Town,5,388,,31.48226,74.330499,249,99,https://images.deliveryhero.io/image/fd-pk/LH/dhpe-listing.jpg,5.013,lush-crush-model-town
+109006,v53i,Iran Zameen,4.2,79,,31.5225002,74.3564792,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v53i-listing.jpg,0.32,iran-zameen
+5884,s2ot,Cafe Aylanto - Gulberg 3,4.9,348,"12 C1 MM Alam Rd, Block C1 Block C 1 Gulberg III, Lahore",31.5175638,74.35176445,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s2ot-listing.jpg,0.732,cafe-aylanto-gulberg-3
+42151,r4oo,Lahore Yakhni Pulao,4.8,3582,"Shop # 17, Main Shadman Market Road, Shadman 1 Shadman, Lahore",31.538838,74.330843,249,99,https://images.deliveryhero.io/image/fd-pk/LH/r4oo-listing.jpg,3.348,lahore-yakhni-pulao
+103334,obr0,BROSTO BY BIRYANI KING,4.6,497,,31.538501,74.331179,249,99,https://images.deliveryhero.io/image/fd-pk/LH/obr0-listing.jpg,3.3,brosto-by-biryani-king
+95575,gcqy,Grill Tikka & BBQ - Gulberg,4.6,419,,31.510269,74.343164,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gcqy-listing.jpg,1.856,grill-tikka-and-bbq-gulberg
+109542,n95s,Captain Cook,4.8,86,,31.49456917,74.36101932,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n95s-listing.jpg,2.877,captain-cook-n95s
+95110,p6bp,Third Culture Coffee,4.8,551,,31.52147165,74.34736905,249,99,https://images.deliveryhero.io/image/fd-pk/LH/p6bp-listing.jpg,1.085,third-culture-coffee
+46592,m6ph,Jumbo Gyro - Cavalry,4.7,532,,31.4990974,74.3670728,249,99,https://images.deliveryhero.io/image/fd-pk/LH/m6ph-listing.jpg,2.494,jumbo-gyro-cavalry-m6ph
+55004,x3pz,AlKuwait Shawarma Point,3.4,1789,,31.5270411,74.35977695,249,99,https://images.deliveryhero.io/image/fd-pk/LH/x3pz-listing.jpg,0.748,alkuwait-shawarma-point
+113409,m50d,Spicy Dip - Fortress Stadium,3.7,34,,31.5348883,74.3639782,249,99,https://images.deliveryhero.io/image/fd-pk/LH/m50d-listing.jpg,1.689,spicy-dip-fortress-stadium
+22547,n7co,Bon Ton - Model Town,4.9,3032,C Block Bank Square Market,31.48880365,74.32567615,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n7co-listing.jpg,4.706,bon-ton-model-town
+103165,un2r,Iceland fresh juice & Dry fruits Cavalry ground,4.8,306,,31.50129275,74.36701465,249,99,https://images.deliveryhero.io/image/fd-pk/LH/un2r-listing.jpg,2.261,iceland-fresh-juice-and-dry-fruits-cavalry-ground
+20655,u5km,Sunny Tikka Restaurant,4.7,1302,"387 Block G ,Rama road near tanki wala chowk rehman pura Lahore",31.522624,74.31539,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u5km-listing.jpg,4.117,sunny-tikka-restaurant
+99770,zkkb,Bismillah Homechef,2.6,281,,31.5271224,74.3584015,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zkkb-listing.jpg,0.752,bismillah-homechef
+103926,rg5l,Damn! Burgers- Gulberg,4.4,222,,31.52326855,74.34568255,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rg5l-listing.jpg,1.28,damn-burgers-gulberg-rg5l
+51646,i2ql,Butt Sweets & Bakers - Walton,4.5,1740,,31.49245178,74.37125436,249,99,https://images.deliveryhero.io/image/fd-pk/LH/i2ql-listing.jpg,3.323,butt-sweets-and-bakers-walton
+8981,t0ux,Mei Kong - Barkat Market,4.6,1901,"21-Civic center, Barkat Market new garden town",31.499883,74.321752,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t0ux-listing.jpg,4.182,mei-kong-barkat-market
+91899,vyqw,AHMAD HOME CHEF,2.9,759,,31.52703615,74.35852895,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vyqw-listing.jpg,0.742,ahmad-home-chef
+111900,lzym,Azam Burger,4.9,34,,31.48449323,74.36475543,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lzym-listing.jpg,4.03,azam-burger
+11173,t1ol,Taoyuan Chinese,4.8,942,"9-G , Ijaz Centre, Gulberg 3, Lahore",31.51518415,74.3440532,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t1ol-listing.jpg,1.508,taoyuan-chinese
+72122,g4aw,Butt Karahi - Fortress Stadium,4.5,197,,31.5338173,74.3638954,249,99,https://images.deliveryhero.io/image/fd-pk/LH/g4aw-listing.jpg,1.573,butt-karahi-fortress-stadium
+16132,u6ob,Cathay Kitchen by Hsin Kuang,4.6,673,"LG Floor, Gulberg Tower, Gulberg 3, Lahore",31.5150068,74.34416715,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u6ob-listing.jpg,1.505,cathay-kitchen-by-hsin-kuang
+101519,j2a8,Spice Kitchen,4.3,526,,31.5194057,74.3221376,249,99,https://images.deliveryhero.io/image/fd-pk/LH/j2a8-listing.jpg,3.472,spice-kitchen-j2a8
+92446,nfri,Nisa Sultan - Gulberg,4.5,229,,31.5263179,74.3555508,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nfri-listing.jpg,0.728,nisa-sultan-gulberg
+17600,u6wu,Bholli Juice & Dry Fruit - Barkat Market,2.6,2801,"14-civic center bakat market Garden town Barkat, Market Lahore",31.50022715,74.32147655,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u6wu-listing.jpg,4.183,bholli-juice-and-dry-fruit-barkat-market
+100054,ae10,London Courtyard - Gulberg,4.7,51,,31.52029484,74.35058874,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ae10-listing.jpg,0.773,london-courtyard-gulberg
+107324,zxiv,SmogyIce,4.3,68,,31.48644782,74.3666455,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zxiv-listing.jpg,3.846,smogyice
+42824,p1yh,Its BBC Time,4.8,551,"Bukhari Market Rehmanpura, Opposite Doce Bakers Link Wahdat Road",31.521552,74.315556,249,99,https://images.deliveryhero.io/image/fd-pk/LH/p1yh-listing.jpg,4.096,its-bbc-time
+70305,t81g,Fresh Ice land & Dry Fruits - Gulberg,4.9,1079,,31.5070183,74.3499908,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t81g-listing.jpg,1.701,fresh-ice-land-and-dry-fruits-gulberg
+36558,w5qn,Arabian Delights,4.8,798,"Ahmed Arcade, G-1, 161 Ferozepur Road, Near Canal Metro Station, Fazlia Colony, Lahore",31.520283,74.326148,249,99,https://images.deliveryhero.io/image/fd-pk/LH/w5qn-listing.jpg,3.09,arabian-delights
+111090,i0qr,Pro Kitchen,3.9,450,,31.48963061,74.37378882,249,99,https://images.deliveryhero.io/image/fd-pk/LH/i0qr-listing.jpg,3.704,pro-kitchen
+20480,u3cb,Al Saudia Shawarma & Juice Corner,4.7,658,105 Abu Bakar Block Raja Market New Garden Town Lahore,31.510124,74.32652,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u3cb-listing.jpg,3.26,al-saudia-shawarma-and-juice-corner
+104231,aucz,Diet by Design - Gulberg,4.9,78,,31.50571335,74.34902515,249,99,https://images.deliveryhero.io/image/fd-pk/LH/aucz-listing.jpg,1.872,diet-by-design-gulberg
+45446,c4nu,Bilal Chinese Foods,2.5,328,"3 Gulberg Road, Millat Colony, Lahore",31.5270694,74.358436,249,99,https://images.deliveryhero.io/image/fd-pk/LH/c4nu-listing.jpg,0.746,bilal-chinese-foods
+91715,p6ay,Manae's,4.9,1800,,31.5423617,74.3338666,249,99,https://images.deliveryhero.io/image/fd-pk/LH/p6ay-listing.jpg,3.397,manaes
+83931,ag59,IHOP - GULBERG,4.7,1517,,31.5199313,74.350796,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ag59-listing.jpg,0.755,ihop-gulberg
+7024,s2pu,Haji Sardar Machli Farosh,4.6,1826,"Shop #1, Walton Plaza, Walton Road, Lahore",31.48969,74.368886,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s2pu-listing.jpg,3.544,haji-sardar-machli-farosh
+111401,c2r3,Lasani Burger - Shadman,3.6,86,,31.5386343,74.3306554,249,99,https://images.deliveryhero.io/image/fd-pk/LH/c2r3-listing.jpg,3.349,lasani-burger-shadman
+114464,vh6y,Farah's kitchen,2.2,23,,31.4947353,74.3760995,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vh6y-listing.jpg,3.291,farahs-kitchen-vh6y
+113448,ron4,Cake A Lot Bake Shop-Zahoor Elahi Road,4.9,23,,31.5255449,74.3346423,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ron4-listing.jpg,2.356,cake-a-lot-bake-shop-zahoor-elahi-road
+111352,efkp,CUE Cinemas,4.9,16,,31.53020095,74.35060945,249,99,https://images.deliveryhero.io/image/fd-pk/LH/efkp-listing.jpg,1.338,cue-cinemas
+56697,evfa,Karachi Hot Bite Paratha Roll & Bar B Q,4.8,868,,31.5232599,74.3173381,249,99,https://images.deliveryhero.io/image/fd-pk/LH/evfa-listing.jpg,3.938,karachi-hot-bite-paratha-roll-and-bar-b-q-evfa
+102961,oyto,Baba Kasuri Kulfi,4.1,381,,31.52137835,74.3251308,249,99,https://images.deliveryhero.io/image/fd-pk/LH/oyto-listing.jpg,3.188,baba-kasuri-kulfi
+107619,xdjl,Asian Chinese Food,4.7,96,,31.5192728,74.3228373,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xdjl-listing.jpg,3.406,asian-chinese-food-xdjl
+698,s1ia,Pizza Heart,4.8,1421,"Plot E3, Walton Road, Koray Stop, cantt Lahore. near fine medical store",31.492966,74.372765,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s1ia-listing.jpg,3.324,pizza-heart
+107709,iehy,Pazookie - Cantt,4.5,125,,31.5017045,74.37484,249,99,https://images.deliveryhero.io/image/fd-pk/LH/iehy-listing.jpg,2.576,pazookie-cantt
+98578,hmye,Artisan Coffee Roaster - Mini Market,4.7,172,,31.5230903,74.3530197,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hmye-listing.jpg,0.622,artisan-coffee-roaster-mini-market
+69467,gurf,Rab Rakha Tikka Shop,4.5,451,,31.5201257,74.3233702,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gurf-listing.jpg,3.353,rab-rakha-tikka-shop
+89844,g3w6,Quetta Paratha Chai,3.2,675,,31.50078182,74.32130878,249,99,https://images.deliveryhero.io/image/fd-pk/LH/g3w6-listing.jpg,4.164,quetta-paratha-chai
+91514,usbq,NA's Butlery,4.9,935,,31.49553404,74.36565637,249,99,https://images.deliveryhero.io/image/fd-pk/LH/usbq-listing.jpg,2.838,nas-butlery
+97452,sxs9,M Pizzeria,4.7,184,,31.5406835,74.3768677,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sxs9-listing.jpg,2.838,m-pizzeria
+69467,gurf,Rab Rakha Tikka Shop,4.5,451,,31.5201257,74.3233702,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gurf-listing.jpg,3.353,rab-rakha-tikka-shop
+17600,u6wu,Bholli Juice & Dry Fruit - Barkat Market,2.6,2801,"14-civic center bakat market Garden town Barkat, Market Lahore",31.50022715,74.32147655,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u6wu-listing.jpg,4.183,bholli-juice-and-dry-fruit-barkat-market
+91514,usbq,NA's Butlery,4.9,935,,31.49553404,74.36565637,249,99,https://images.deliveryhero.io/image/fd-pk/LH/usbq-listing.jpg,2.838,nas-butlery
+97452,sxs9,M Pizzeria,4.7,184,,31.5406835,74.3768677,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sxs9-listing.jpg,2.838,m-pizzeria
+56804,xvnn,SHANGRILA Chinese Restaurant,4.8,1498,,31.5191819,74.32276,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xvnn-listing.jpg,3.414,shangrila-chinese-restaurant
+100570,txqs,Costa Coffee Gulberg III,4.8,368,,31.51907185,74.34604235,249,99,https://images.deliveryhero.io/image/fd-pk/LH/txqs-listing.jpg,1.213,costa-coffee-gulberg-iii
+114464,vh6y,Farah's kitchen,2.2,23,,31.4947353,74.3760995,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vh6y-listing.jpg,3.291,farahs-kitchen-vh6y
+73468,yyx6,Coco Cubano,4.7,308,,31.5169558,74.35136,249,99,https://images.deliveryhero.io/image/fd-pk/LH/yyx6-listing.jpg,0.797,coco-cubano
+113409,m50d,Spicy Dip - Fortress Stadium,3.7,34,,31.5348883,74.3639782,249,99,https://images.deliveryhero.io/image/fd-pk/LH/m50d-listing.jpg,1.689,spicy-dip-fortress-stadium
+111074,ay0o,Mala Pan Asian Cuisine,4.6,25,,31.5299679,74.3569159,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ay0o-listing.jpg,1.081,mala-pan-asian-cuisine
+104231,aucz,Diet by Design - Gulberg,4.9,78,,31.50571335,74.34902515,249,99,https://images.deliveryhero.io/image/fd-pk/LH/aucz-listing.jpg,1.872,diet-by-design-gulberg
+105693,ng77,Al Madina Naan Hut,4.7,24,,31.49558949,74.3525583,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ng77-listing.jpg,2.817,al-madina-naan-hut-ng77
+112213,qx61,Hina's kitchen,4.8,86,,31.4924556,74.3597862,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qx61-listing.jpg,3.105,hinas-kitchen-qx61
+107709,iehy,Pazookie - Cantt,4.5,125,,31.5017045,74.37484,249,99,https://images.deliveryhero.io/image/fd-pk/LH/iehy-listing.jpg,2.576,pazookie-cantt
+51185,g9kn,Big Fat Rolls,4.9,806,,31.5091324,74.3602709,249,99,https://images.deliveryhero.io/image/fd-pk/LH/g9kn-listing.jpg,1.258,big-fat-rolls
+113050,zh4y,The Bombobar,4.2,7,,31.5208073,74.3803504,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zh4y-listing.jpg,2.048,the-bombobar
+103388,nzdc,Bismillah Yakhni Pulao,1.4,70,,31.5270325,74.3585067,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nzdc-listing.jpg,0.741,bismillah-yakhni-pulao-nzdc
+42824,p1yh,Its BBC Time,4.8,551,"Bukhari Market Rehmanpura, Opposite Doce Bakers Link Wahdat Road",31.521552,74.315556,249,99,https://images.deliveryhero.io/image/fd-pk/LH/p1yh-listing.jpg,4.096,its-bbc-time
+110409,egzx,Asian Flavors,4.7,67,,31.5033821,74.3830846,249,99,https://images.deliveryhero.io/image/fd-pk/LH/egzx-listing.jpg,2.982,asian-flavors
+126693,mvt5,Chick City,0,0,,31.50766678,74.34778281,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mvt5-listing.jpg,1.754,chick-city
+15770,u4hh,Wasabi - Gulberg,4.7,589,"98(A) B-1 Gulberg-III, MM Alam Road, Lahore. Lahore",31.5166759,74.35262495,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u4hh-listing.jpg,0.711,wasabi-gulberg
+32064,v3gs,Phulka Cuisine,4.9,1039,"432 A-1 Gulberg 3, Gurumangant Road, Lahore",31.51413775,74.35755405,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v3gs-listing.jpg,0.702,phulka-cuisine
+43970,f6hx,Ghous Pak Restaurant,4.5,1796,"82B, Street 2, Model Colony, Gulberg, Lahore",31.4995547,74.34959595,249,99,https://images.deliveryhero.io/image/fd-pk/LH/f6hx-listing.jpg,2.472,ghous-pak-restaurant
+100470,qi3m,Coffee Nerds,4.6,27,,31.5287023,74.3787808,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qi3m-listing.jpg,2.113,coffee-nerds
+113855,iha9,Burger Heaven,3.3,67,,31.4960557,74.3555764,249,99,https://images.deliveryhero.io/image/fd-pk/LH/iha9-listing.jpg,2.72,burger-heaven-iha9
+74733,vhm8,Lahore Broast – Ichra Branch,4.6,641,,31.5341242,74.32036235,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vhm8-listing.jpg,3.947,lahore-broast-ichra-branch
+71246,q5qa,Bismarck Bakeshop,4.6,910,,31.5014589,74.323211,249,99,https://images.deliveryhero.io/image/fd-pk/LH/q5qa-listing.jpg,3.971,bismarck-bakeshop
+108546,s6p5,The Traditions Table,4.5,97,,31.519365,74.3221933,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s6p5-listing.jpg,3.467,the-traditions-table
+6748,s2ao,Second Cup Coffee Company - Gulberg,4.5,1266,,31.519116,74.346007,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s2ao-listing.jpg,1.216,second-cup-coffee-company-gulberg
+102973,gnwf,Sweet-O!,4.3,148,,31.5073778,74.3471982,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gnwf-listing.jpg,1.813,sweet-o-gnwf
+98222,bt1m,Yashfa's Cuisine,4.8,611,,31.49498125,74.36060495,249,99,https://images.deliveryhero.io/image/fd-pk/LH/bt1m-listing.jpg,2.829,yashfas-cuisine
+44758,c4jg,Multani Goll Gappay,4.8,242,"6 - Wahdat Link Road, Rehmanpura Colony, Lahore",31.521558,74.315529,249,99,https://images.deliveryhero.io/image/fd-pk/LH/c4jg-listing.jpg,4.099,multani-goll-gappay
+28896,v9kv,Uncle Juice Corner,4.1,1114,Barkat market 13 civic center near lasani burger Lahore,31.49926245,74.321486,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v9kv-listing.jpg,4.241,uncle-juice-corner
+98814,imkd,Fine Foods Co.,4.5,41,,31.5174757,74.3518567,249,99,https://images.deliveryhero.io/image/fd-pk/LH/imkd-listing.jpg,0.728,fine-foods-co
+79384,ho2i,Zain Chinese & Fast Food,4.3,996,,31.5382917,74.3306868,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ho2i-listing.jpg,3.323,zain-chinese-and-fast-food
+698,s1ia,Pizza Heart,4.8,1421,"Plot E3, Walton Road, Koray Stop, cantt Lahore. near fine medical store",31.492966,74.372765,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s1ia-listing.jpg,3.324,pizza-heart
+107324,zxiv,SmogyIce,4.3,68,,31.48644782,74.3666455,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zxiv-listing.jpg,3.846,smogyice
+108324,palz,Brew Bar,4.9,71,,31.5032538,74.3494203,249,99,https://images.deliveryhero.io/image/fd-pk/LH/palz-listing.jpg,2.099,brew-bar
+113495,x8h9,Koko Broast,4.6,67,,31.4880471,74.32614615,249,99,https://images.deliveryhero.io/image/fd-pk/LH/x8h9-listing.jpg,4.74,koko-broast
+112047,o8js,Kite | Specialty Coffee & Kitchen,4.5,73,,31.5112345,74.3401003,249,99,https://images.deliveryhero.io/image/fd-pk/LH/o8js-listing.jpg,2.039,kite-specialty-coffee-and-kitchen
+90601,gl9o,Quetta Paratha - 111,3.5,723,,31.49927799,74.36670932,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gl9o-listing.jpg,2.464,quetta-paratha-111
+101685,f235,Culinary Corner,4.3,606,,31.5194057,74.3221376,249,99,https://images.deliveryhero.io/image/fd-pk/LH/f235-listing.jpg,3.472,culinary-corner
+99908,nx5b,New AA Burger & Pizza,4.9,441,,31.5193105,74.321511,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nx5b-listing.jpg,3.532,new-aa-burger-and-pizza
+104008,t73a,The Observatory,4.7,46,,31.5152062,74.34432,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t73a-listing.jpg,1.483,the-observatory
+79982,zndt,Lasani Grill & Chinese- Barkat Market,4.1,860,,31.49927805,74.32155775,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zndt-listing.jpg,4.234,lasani-grill-and-chinese-barkat-market
+96599,jnq8,Karachi Halwa puri - Gulberg,4.7,637,,31.510269,74.343164,249,99,https://images.deliveryhero.io/image/fd-pk/LH/jnq8-listing.jpg,1.856,karachi-halwa-puri-gulberg
+107036,lqqv,Basilico By Sara,4.4,43,,31.5185794,74.3568883,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lqqv-listing.jpg,0.266,basilico-by-sara
+30793,v7bw,Gustoso The Donut Shop,4.8,468,"Bank Square Market Model Town, Lahore",31.488796,74.32664,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v7bw-listing.jpg,4.647,gustoso-the-donut-shop
+102606,n76d,19B Chinese & Thai,4.2,82,,31.4939655,74.3728318,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n76d-listing.jpg,3.225,19b-chinese-and-thai
+110573,pe3u,Momos and dumplings by N,4.6,47,,31.5491437,74.3580717,249,99,https://images.deliveryhero.io/image/fd-pk/LH/pe3u-listing.jpg,3.2,momos-and-dumplings-by-n
+107036,lqqv,Basilico By Sara,4.4,43,,31.5185794,74.3568883,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lqqv-listing.jpg,0.266,basilico-by-sara
+90601,gl9o,Quetta Paratha - 111,3.5,723,,31.49927799,74.36670932,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gl9o-listing.jpg,2.464,quetta-paratha-111
+100807,p1mi,Karachi Paratha Roll and Fast Food,4.9,112,,31.52321628,74.31732955,249,99,https://images.deliveryhero.io/image/fd-pk/LH/p1mi-listing.jpg,3.939,karachi-paratha-roll-and-fast-food
+110573,pe3u,Momos and dumplings by N,4.6,47,,31.5491437,74.3580717,249,99,https://images.deliveryhero.io/image/fd-pk/LH/pe3u-listing.jpg,3.2,momos-and-dumplings-by-n
+110409,egzx,Asian Flavors,4.7,67,,31.5033821,74.3830846,249,99,https://images.deliveryhero.io/image/fd-pk/LH/egzx-listing.jpg,2.982,asian-flavors
+110759,oljy,Baba Kulfi,4.8,89,,31.5205551,74.3247998,249,99,https://images.deliveryhero.io/image/fd-pk/LH/oljy-listing.jpg,3.218,baba-kulfi
+103700,y6z4,Master Karachi Paratha Roll - Iqbal Town,4.9,270,,31.5232599,74.3173381,249,99,https://images.deliveryhero.io/image/fd-pk/LH/y6z4-listing.jpg,3.938,master-karachi-paratha-roll-iqbal-town
+92538,iwom,Sichuan Chinese Restaurant - Gulberg,4.8,76,,31.5221208,74.35411785,249,99,https://images.deliveryhero.io/image/fd-pk/LH/iwom-listing.jpg,0.48,sichuan-chinese-restaurant-gulberg
+79982,zndt,Lasani Grill & Chinese- Barkat Market,4.1,860,,31.49927805,74.32155775,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zndt-listing.jpg,4.234,lasani-grill-and-chinese-barkat-market
+22650,n0wk,China Cook Restaurant,4.5,583,"Nishat More, Main Bazar Nishat Colony Near DHA 1",31.4943759,74.3874591,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n0wk-listing.jpg,3.97,china-cook-restaurant
+129011,ka84,Shangla Akhtar Cafe,0,0,,31.5030703,74.34826315,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ka84-listing.jpg,2.165,shangla-akhtar-cafe
+94240,b5ra,Cafe Delice,4.8,243,,31.48881795,74.3255733,249,99,https://images.deliveryhero.io/image/fd-pk/LH/cd5qo-listing.jpg,4.712,cafe-delice
+105958,m91j,Broast Junction,4.8,70,,31.4884146,74.3789651,249,99,https://images.deliveryhero.io/image/fd-pk/LH/m91j-listing.jpg,4.037,broast-junction
+98196,ho0x,IceLand,4.7,476,,31.51959195,74.32036105,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ho0x-listing.jpg,3.64,iceland
+110765,vvi3,BABA KULFI-MUSLIM TOWN MORE,4.9,37,,31.5205349,74.3247528,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vvi3-listing.jpg,3.222,baba-kulfi-muslim-town-more
+92607,duzn,Rafayel By Rafayel,4.4,926,,31.5065673,74.3499156,249,99,https://images.deliveryhero.io/image/fd-pk/LH/duzn-listing.jpg,1.748,rafayel-by-rafayel
+109721,kmqd,STAX by Sashas,4,10,,31.51877602,74.3464033,249,99,https://images.deliveryhero.io/image/fd-pk/LH/kmqd-listing.jpg,1.183,stax-by-sashas
+110645,eezz,Drip - Coffee Brewery & Bakery,4.8,36,,31.5306832,74.3520506,249,99,https://images.deliveryhero.io/image/fd-pk/LH/eezz-listing.jpg,1.311,drip-coffee-brewery-and-bakery
+113050,zh4y,The Bombobar,4.2,7,,31.5208073,74.3803504,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zh4y-listing.jpg,2.048,the-bombobar
+104860,ss38,"Amna,s Kitchen",4.8,324,,31.4874233,74.3635654,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ss38-listing.jpg,3.692,amna-s-kitchen-ss38
+93784,n1p0,OX & Grill Steak House,4.7,184,,31.5105004,74.3495533,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n1p0-listing.jpg,1.401,ox-and-grill-steak-house
+104938,d58y,Yang Ong Chinese Foods,4.1,193,,31.5383198,74.3306028,249,99,https://images.deliveryhero.io/image/fd-pk/LH/d58y-listing.jpg,3.332,yang-ong-chinese-foods
+110266,miw7,Gourmet Restaurant - Gulberg,4.5,20,,31.51891826,74.34737204,249,99,https://images.deliveryhero.io/image/fd-pk/LH/miw7-listing.jpg,1.09,gourmet-restaurant-gulberg
+104613,nzh8,Bismillah Restaurant,4.4,404,,31.5194174,74.3221972,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nzh8-listing.jpg,3.466,bismillah-restaurant-nzh8
+3430,s9rk,Pizza M 21 - Gulberg,4.4,4263,B-4 IJAZ CENTRE OPPOSITE HAFEEZE CENTRE GULBERG III LAHORE,31.5153066,74.3438248,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s9rk-listing.jpg,1.522,pizza-m-21-gulberg
+101406,j9gs,Bismillah Beaf Yakhni Pulao,1.6,89,,31.5270983,74.3583614,249,99,https://images.deliveryhero.io/image/fd-pk/LH/j9gs-listing.jpg,0.749,bismillah-beaf-yakhni-pulao
+102065,bq83,Go Flour - Gulberg,4.9,108,,31.5175511,74.3537933,249,99,https://images.deliveryhero.io/image/fd-pk/LH/bq83-listing.jpg,0.565,go-flour-gulberg
+71246,q5qa,Bismarck Bakeshop,4.6,910,,31.5014589,74.323211,249,99,https://images.deliveryhero.io/image/fd-pk/LH/q5qa-listing.jpg,3.971,bismarck-bakeshop
+100193,rh6n,Vicky Restaurant & Nan Shop,4.8,241,,31.4917493,74.3890702,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rh6n-listing.jpg,4.289,vicky-restaurant-and-nan-shop
+113346,o88r,Churn Station - Rehmanpura,4,25,,31.5217252,74.3157682,249,99,https://images.deliveryhero.io/image/fd-pk/LH/o88r-listing.jpg,4.077,churn-station-rehmanpura
+111310,ngj7,Burger Saucy Hut - DHA,4.8,36,,31.4879908,74.3784186,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ngj7-listing.jpg,4.055,burger-saucy-hut-dha
+106909,qfcs,Burger King & Pizza,4.3,38,,31.49461063,74.3912757,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qfcs-listing.jpg,4.209,burger-king-and-pizza
+113888,fgk3,AOS - Art Of Spices,0,0,,31.5181517,74.3525517,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fgk3-listing.jpg,0.637,aos-art-of-spices
+101034,rgam,Jami n kitchen-Gulberg,3.4,462,,31.50742265,74.34760895,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rgam-listing.jpg,1.785,jami-n-kitchen-gulberg
+88180,lpgo,Taste Pick,4.8,1153,,31.4920417,74.3683841,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lpgo-listing.jpg,3.28,taste-pick-lpgo
+100926,vxt4,Chai Paratha,3,221,,31.5007815,74.3213267,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vxt4-listing.jpg,4.163,chai-paratha-vxt4
+100135,xzxi,Pizza Dot Com.,4.7,37,,31.50714605,74.3357848,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xzxi-listing.jpg,2.627,pizza-dot-com-xzxi
+28237,v4qx,Faisal Zahoor Restaurant,4.8,2863,"Faisal Zahoor Restaurant, Gurumangat Road,Gulberg 3, Lahore",31.508438,74.357631,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v4qx-listing.jpg,1.331,faisal-zahoor-restaurant
+108358,a2jf,Quetta Shaheen Cafe,3.9,183,,31.5057886,74.3845967,249,99,https://images.deliveryhero.io/image/fd-pk/LH/a2jf-listing.jpg,2.938,quetta-shaheen-cafe
+109669,nwbm,Bar.B.Q. HUB - Walton,4.7,52,,31.4935464,74.372461,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nwbm-listing.jpg,3.254,bar-b-q-hub-walton
+107618,ilri,Panda Kitchen,4.5,619,,31.48959659,74.37377054,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ilri-listing.jpg,3.706,panda-kitchen-ilri
+101533,goc6,Sadpara Chinese Food,3.2,172,,31.5189449,74.3204338,249,99,https://images.deliveryhero.io/image/fd-pk/LH/goc6-listing.jpg,3.635,sadpara-chinese-food
+92122,lqxd,Benediction,4.7,218,,31.5140393,74.3527205,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lqxd-listing.jpg,0.907,benediction
+105678,andc,Falafel - Barkat Market,4.6,192,,31.50045725,74.32253775,249,99,https://images.deliveryhero.io/image/fd-pk/LH/andc-listing.jpg,4.085,falafel-barkat-market
+85661,ipcw,Lush Crush - Bahoo,5,291,,31.5025956,74.3245268,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ipcw-listing.jpg,3.799,lush-crush-bahoo
+126693,mvt5,Chick City,0,0,,31.50766678,74.34778281,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mvt5-listing.jpg,1.754,chick-city
+90867,bx2z,Quetta Paratha - 112 A,3.6,853,,31.50975045,74.3418738,249,99,https://images.deliveryhero.io/image/fd-pk/LH/bx2z-listing.jpg,1.988,quetta-paratha-112-a
+74309,x49n,Liberty paratha Roll,4.7,499,,31.5082867,74.3448828,249,99,https://images.deliveryhero.io/image/fd-pk/LH/x49n-listing.jpg,1.879,liberty-paratha-roll
+20406,u8bf,Muhammadi Nahari House - DHA,4.8,2388,"Main Boulevard Defence, Opp Fatima Fertilizer, Lahore",31.4936699,74.3757061,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u8bf-listing.jpg,3.376,muhammadi-nahari-house-dha
+95583,q5c2,Karachi Spicy Roll Corner - Gulberg,4.6,651,,31.508569,74.344884,249,99,https://images.deliveryhero.io/image/fd-pk/LH/q5c2-listing.jpg,1.857,karachi-spicy-roll-corner-gulberg
+86910,ak6i,Sadia's Kitchen,4.7,4670,,31.5014353,74.362127,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ak6i-listing.jpg,2.13,sadias-kitchen-ak6i
+74481,yfnt,Kunafa House - Muslim Town,4.8,255,,31.5202762,74.3261629,249,99,https://images.deliveryhero.io/image/fd-pk/LH/yfnt-listing.jpg,3.089,kunafa-house-muslim-town
+89491,ds7p,Suadish Biryani - Shalimar,4.2,535,,31.5006296,74.3214259,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ds7p-listing.jpg,4.164,suadish-biryani-shalimar
+24215,n3bw,Arabian Shawarma & Pizza,4.2,1980,Mian Chowk Madina Colony Near Shifa Hospital Walton,31.492861,74.363171,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n3bw-listing.jpg,3.087,arabian-shawarma-and-pizza
+104031,rrp2,Culture Food,4.9,240,,31.4907715,74.3737529,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rrp2-listing.jpg,3.585,culture-food
+93368,oyxi,Shezan Bakers - Sher Pao,4.9,174,,31.5241579,74.3646627,249,99,https://images.deliveryhero.io/image/fd-pk/LH/oyxi-listing.jpg,0.701,shezan-bakers-sher-pao
+101985,nust,Paratha King,2.7,195,,31.50076,74.32118455,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nust-listing.jpg,4.175,paratha-king-nust
+102764,t74g,Cloud Kitchen,4.9,320,,31.492308,74.367715,249,99,https://images.deliveryhero.io/image/fd-pk/LH/t74g-listing.jpg,3.234,cloud-kitchen-t74g
+113478,qzrr,Chezano,4,13,,31.53851669,74.33696951,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qzrr-listing.jpg,2.887,chezano
+102043,rfz3,Teacakery,4.9,125,,31.532399,74.328062,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rfz3-listing.jpg,3.201,teacakery-rfz3
+102001,rtz5,Paratha Roll Center,2.2,121,,31.50081462,74.32127975,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rtz5-listing.jpg,4.165,paratha-roll-center
+110381,wpsp,RED Asian Food,3.4,9,,31.53268705,74.3632903,249,99,https://images.deliveryhero.io/image/fd-pk/LH/wpsp-listing.jpg,1.436,red-asian-food
+105886,fge3,Filli Cafe,4.8,24,,31.51876076,74.3458821,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fge3-listing.jpg,1.233,filli-cafe-fge3
+109600,cvms,Dragon Wok Fire,3.2,7,,31.5383198,74.3306028,249,99,https://images.deliveryhero.io/image/fd-pk/LH/cvms-listing.jpg,3.332,dragon-wok-fire
+107523,ir3x,Abid brothers fastfood and pizza point,4.6,25,,31.5031373,74.3834422,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ir3x-listing.jpg,3.025,abid-brothers-fastfood-and-pizza-point
+63375,a2wb,Pizza Tonight,4.7,409,,31.4928243,74.36317685,249,99,https://images.deliveryhero.io/image/fd-pk/LH/a2wb-listing.jpg,3.092,pizza-tonight-a2wb
+113968,e05a,Fropresso - Gulberg,0,0,,31.516979,74.3512887,249,99,https://images.deliveryhero.io/image/fd-pk/LH/e05a-listing.jpg,0.801,fropresso-gulberg
+112302,xte4,TLT - The Lost Tribe - Gulberg,4.3,9,,31.5086248,74.3506163,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xte4-listing.jpg,1.516,tlt-the-lost-tribe-gulberg
+95268,fvfo,Homes Food,4.7,676,,31.5203831,74.3176026,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fvfo-listing.jpg,3.9,homes-food-fvfo
+114138,jlzr,Haagen Dazs - Mm Alam Road,0,0,,31.5100997,74.3501682,249,99,https://images.deliveryhero.io/image/fd-pk/LH/jlzr-listing.jpg,1.402,haagen-dazs-mm-alam-road
+68076,hiot,Ayesha ka bawarchi khana,4.8,1511,,31.525496,74.341954,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hiot-listing.jpg,1.691,ayesha-ka-bawarchi-khana
+58659,j9o6,Ziafat,4.9,923,,31.52749005,74.356219,249,99,https://images.deliveryhero.io/image/fd-pk/LH/j9o6-listing.jpg,0.827,ziafat-j9o6
+84251,tmqx,Jani Yakhni Pulao,4.7,112,,31.4999459,74.34966235,249,99,https://images.deliveryhero.io/image/fd-pk/LH/tmqx-listing.jpg,2.429,jani-yakhni-pulao
+115369,fjge,Casa Cardone Roma,0,0,,31.51817638,74.38182861,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fjge-listing.jpg,2.201,casa-cardone-roma
+94184,lpx4,Malang Jan Food,4.4,224,,31.5102295,74.3259254,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lpx4-listing.jpg,3.309,malang-jan-food
+110092,qv69,Mocca Coffee - Mall 94,3.9,40,,31.5187529,74.3462579,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qv69-listing.jpg,1.197,mocca-coffee-mall-94-qv69
+16489,u9py,Nawab Biryani,4.3,988,"Main Boulevard, Opp Adil Hosp, Dha, lahore",31.48869,74.37955625,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u9py-listing.jpg,4.037,nawab-biryani
+20066,u4vq,Shahid Fast Food & Restaurant,4.3,853,Main Bazar Model Colony gulderg 3 Lahore Near Sana Food World,31.499676,74.349669,249,99,https://images.deliveryhero.io/image/fd-pk/LH/u4vq-listing.jpg,2.457,shahid-fast-food-and-restaurant
+89480,ghf0,Dan Dan Restaurant,4.9,129,,31.5201131,74.3499026,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ghf0-listing.jpg,0.839,dan-dan-restaurant
+88473,vd5i,Lieta Gelato,4.7,48,,31.5298197,74.3437301,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vd5i-listing.jpg,1.769,lieta-gelato
+54895,f7gv,Desi Chaska,4.3,643,,31.4918831,74.373269,249,99,https://images.deliveryhero.io/image/fd-pk/LH/f7gv-listing.jpg,3.454,desi-chaska-f7gv
+103899,hrfe,Hawq Restaurant,4.6,113,,31.5427289,74.3620349,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hrfe-listing.jpg,2.506,hawq-restaurant
+99006,r8d3,Quetta Paratha - 102,3.9,45,,31.4947101,74.3741263,249,99,https://images.deliveryhero.io/image/fd-pk/LH/r8d3-listing.jpg,3.204,quetta-paratha-102-r8d3
+27221,n7iq,Gino's Pizza,4.6,336,"Ejaz Center, Main Blvd Gulberg, Block D1 Block D 1 Gulberg III, Lahore",31.5152908,74.3440523,249,99,https://images.deliveryhero.io/image/fd-pk/LH/n7iq-listing.jpg,1.503,ginos-pizza
+113975,uby6,Taoyuan Pizza & Fast Food,0,0,,31.5152162,74.344114,249,99,https://images.deliveryhero.io/image/fd-pk/LH/uby6-listing.jpg,1.501,taoyuan-pizza-and-fast-food
+125098,xs2p,Premium food zone,0,0,,31.4944997,74.3911165,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xs2p-listing.jpg,4.206,premium-food-zone-xs2p
+69889,d8gc,Karachi Biryani - Garden Town,3.6,293,,31.50057925,74.32138015,249,99,https://images.deliveryhero.io/image/fd-pk/LH/d8gc-listing.jpg,4.17,karachi-biryani-garden-town
+107250,vfcz,Body by Butter Xpress - Gulberg,4.5,20,,31.5143927,74.35083385,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vfcz-listing.jpg,1.002,body-by-butter-xpress-gulberg
+105438,xghf,AL ZAJ,4.9,63,,31.4939558,74.3521221,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xghf-listing.jpg,3.003,al-zaj
+111137,rdpf,Astro Dairies,4.8,53,,31.49893105,74.32327415,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rdpf-listing.jpg,4.122,astro-dairies
+104236,y9ka,Amaltaas - Cantt,4.9,63,,31.51954145,74.38181115,249,99,https://images.deliveryhero.io/image/fd-pk/LH/y9ka-listing.jpg,2.188,amaltaas-cantt
+105257,dnqt,DASH Burgers,3.5,13,,31.51058397,74.34867506,249,99,https://images.deliveryhero.io/image/fd-pk/LH/dnqt-listing.jpg,1.448,dash-burgers
+114496,zm2p,Quetta Khan Cafe - Kalma Chowk,3.4,11,,31.5050201,74.3319316,249,99,https://images.deliveryhero.io/image/fd-pk/LH/zm2p-listing.jpg,3.062,quetta-khan-cafe-kalma-chowk
+103584,dea6,Wok Rock Chinese Food Point,4.2,42,,31.50695555,74.35813005,249,99,https://images.deliveryhero.io/image/fd-pk/LH/dea6-listing.jpg,1.493,wok-rock-chinese-food-point
+113124,z0z1,Karak Khel - Gulberg,0,0,,31.52679545,74.3477995,249,99,https://images.deliveryhero.io/image/fd-pk/LH/z0z1-listing.jpg,1.26,karak-khel-gulberg-z0z1
+68526,sn8e,Bagh,4.5,171,,31.51105485,74.35280795,249,99,https://images.deliveryhero.io/image/fd-pk/LH/sn8e-listing.jpg,1.179,bagh
+111569,gsll,Wonton Delight - Chinese and Thai Cuisine,4.1,37,,31.50221237,74.3488964,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gsll-listing.jpg,2.225,wonton-delight-chinese-and-thai-cuisine
+112102,kdcr,SUCRE,3.6,17,,31.5207528,74.3802169,249,99,https://images.deliveryhero.io/image/fd-pk/LH/kdcr-listing.jpg,2.036,sucre
+109839,bdoi,Wok Walk,4.1,11,,31.5099475,74.3250007,249,99,https://images.deliveryhero.io/image/fd-pk/LH/bdoi-listing.jpg,3.402,wok-walk
+113767,s8f0,The Wok Lab,0,0,,31.5254245,74.3461495,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s8f0-listing.jpg,1.32,the-wok-lab
+112893,coht,Papa-Jee's Fast Food Restaurant,0,0,,31.5292699,74.3592084,249,99,https://images.deliveryhero.io/image/fd-pk/LH/coht-listing.jpg,0.991,papa-jees-fast-food-restaurant
+110540,acwb,Sam's Wings & Things - Barkat Market,2.8,21,,31.500395,74.3223743,249,99,https://images.deliveryhero.io/image/fd-pk/LH/acwb-listing.jpg,4.102,sams-wings-and-things-barkat-market
+94444,oiue,RARE,4.8,52,,31.5320939,74.3516862,249,99,https://images.deliveryhero.io/image/fd-pk/LH/oiue-listing.jpg,1.465,rare
+6364,s3yc,Fuchsia - Gulberg 3,4.7,191,"119/E -1, Hali Road Gulberg 3 Lahore",31.5139083,74.3407809,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s3yc-listing.jpg,1.848,fuchsia-gulberg-3
+75551,f23n,Wok & Co - Gulberg,4.7,246,,31.51650455,74.35259,249,99,https://images.deliveryhero.io/image/fd-pk/LH/f23n-listing.jpg,0.725,wok-and-co-gulberg
+83983,rt0v,Shaghf- Mall 1,4.2,42,,31.5186916,74.3460843,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rt0v-listing.jpg,1.215,shaghf-mall-1
+99014,l0ja,Quetta Paratha - 112,3.2,197,,31.50972671,74.34187605,249,99,https://images.deliveryhero.io/image/fd-pk/LH/l0ja-listing.jpg,1.99,quetta-paratha-112
+110093,o2li,Lahore Organic Village,4.6,9,,31.49060085,74.3796933,249,99,https://images.deliveryhero.io/image/fd-pk/LH/o2li-listing.jpg,3.86,lahore-organic-village
+110606,k9a3,Zouq-E-Saeed Restaurant,1.3,6,,31.5035322,74.35712825,249,99,https://images.deliveryhero.io/image/fd-pk/LH/k9a3-listing.jpg,1.879,zouq-e-saeed-restaurant
+113723,ohx8,Sip and Bite,4.9,25,,31.4872633,74.3567,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ohx8-listing.jpg,3.686,sip-and-bite-ohx8
+103575,b7dg,Brasserie Polo by L’Amour,4.4,10,,31.54354,74.336363,249,99,https://images.deliveryhero.io/image/fd-pk/LH/b7dg-listing.jpg,3.337,brasserie-polo-by-lamour
+107129,cydv,Gloria Jean's - Mall Of Lahore,3.7,43,,31.529348,74.3787412,249,99,https://images.deliveryhero.io/image/fd-pk/LH/cydv-listing.jpg,2.142,gloria-jeans-mall-of-lahore
+109967,idui,Taisha Chinese,0,0,,31.5119067,74.3438233,249,99,https://images.deliveryhero.io/image/fd-pk/LH/idui-listing.jpg,1.699,taisha-chinese
+90344,rxk8,STOP FOR DELICIOUS MEAL,4.9,137,,31.5144235,74.34359865,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rxk8-listing.jpg,1.581,stop-for-delicious-meal
+110954,x36b,Sunny Kitchen,4.9,8,,31.52231,74.3565298,249,99,https://images.deliveryhero.io/image/fd-pk/LH/x36b-listing.jpg,0.301,sunny-kitchen-x36b
+105240,y294,CIAO Italian,3.8,26,,31.51058397,74.34867506,249,99,https://images.deliveryhero.io/image/fd-pk/LH/y294-listing.jpg,1.448,ciao-italian
+107480,hogb,Dubai Chocolate,4.8,44,,31.48588543,74.36482404,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hogb-listing.jpg,3.878,dubai-chocolate
+113529,wzmj,Spouse kitchen hub,4.7,8,,31.4876875,74.3452969,249,99,https://images.deliveryhero.io/image/fd-pk/LH/wzmj-listing.jpg,3.851,spouse-kitchen-hub
+95048,ayie,NorthlandZ- Gaddafi Stadium,4.8,1377,,31.5114422,74.3308263,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ayie-listing.jpg,2.827,northlandz-gaddafi-stadium
+103432,fu1a,HOT & CHILLI CHINESE,4.7,57,,31.519253,74.322846,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fu1a-listing.jpg,3.405,hot-and-chilli-chinese
+114243,owv7,HomeFreeze Magic,4.8,9,,31.49032842,74.36573524,249,99,https://images.deliveryhero.io/image/fd-pk/LH/owv7-listing.jpg,3.405,homefreeze-magic
+101179,prmm,The Wok - Mall 1,4.6,46,,31.5188643,74.3461551,249,99,https://images.deliveryhero.io/image/fd-pk/LH/prmm-listing.jpg,1.205,the-wok-mall-1
+93040,b0xa,Theatre - Live Bakery & Cafe - MM Alam,4.8,75,,31.5170119,74.3511829,249,99,https://images.deliveryhero.io/image/fd-pk/LH/b0xa-listing.jpg,0.808,theatre-live-bakery-and-cafe-mm-alam
+103925,mg1w,Jackson's Fried Chicken  - Gulberg,1.7,16,,31.5232565,74.3457,249,99,https://images.deliveryhero.io/image/fd-pk/LH/mg1w-listing.jpg,1.278,jacksons-fried-chicken-gulberg-mg1w
+110556,b6vp,Snackistan pakistan,4.8,25,,31.53385115,74.32139797,249,99,https://images.deliveryhero.io/image/fd-pk/LH/b6vp-listing.jpg,3.844,snackistan-pakistan
+111043,esn4,Crafè,4.8,15,,31.5296727,74.3771179,249,99,https://images.deliveryhero.io/image/fd-pk/LH/esn4-listing.jpg,2.025,crafe
+114423,qe85,Mountain Munch Cafe,0,0,,31.4948441,74.3700812,249,99,https://images.deliveryhero.io/image/fd-pk/LH/qe85-listing.jpg,3.035,mountain-munch-cafe
+109343,uuf9,Brickster,3.5,17,,31.4886033,74.326635,249,99,https://images.deliveryhero.io/image/fd-pk/LH/uuf9-listing.jpg,4.663,brickster
+112096,d1b7,AR Raazik Foods,4.7,31,,31.51923615,74.32293945,249,99,https://images.deliveryhero.io/image/fd-pk/LH/d1b7-listing.jpg,3.397,ar-raazik-foods
+112506,duij,Mambo's Kitchen,4.9,18,,31.49783667,74.36547559,249,99,https://images.deliveryhero.io/image/fd-pk/LH/duij-listing.jpg,2.585,mambos-kitchen
+43470,k1lp,Ameen Murgh Channay and Bhola Juice Corner,4.3,573,"Walton Road Near Kouray Stop Masjid, Lahore",31.492631,74.372406,249,99,https://images.deliveryhero.io/image/fd-pk/LH/k1lp-listing.jpg,3.345,ameen-murgh-channay-and-bhola-juice-corner
+108813,w3z3,Kafnun,4.2,27,,31.50147615,74.32325265,249,99,https://images.deliveryhero.io/image/fd-pk/LH/w3z3-listing.jpg,3.967,kafnun
+99563,oqyq,Dumplings Bar.pk,4.4,159,,31.50890355,74.36025855,249,99,https://images.deliveryhero.io/image/fd-pk/LH/oqyq-listing.jpg,1.283,dumplings-bar-pk
+113646,tjzy,Koru Restaurant,0,0,,31.5225607,74.3441746,249,99,https://images.deliveryhero.io/image/fd-pk/LH/tjzy-listing.jpg,1.403,koru-restaurant
+105249,xyla,ZEN - Pan Asian,4.2,6,,31.51058397,74.34867506,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xyla-listing.jpg,1.448,zen-pan-asian
+70931,ihzc,Karachi Sindhi Biryani,3.7,315,,31.5005937,74.3214822,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ihzc-listing.jpg,4.161,karachi-sindhi-biryani-ihzc
+112703,vwp7,Frystro,4.8,6,,31.5245264,74.3268689,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vwp7-listing.jpg,3.057,frystro
+101013,r0kf,Tofu Hibachi,4.4,31,,31.5078063,74.3541341,249,99,https://images.deliveryhero.io/image/fd-pk/LH/r0kf-listing.jpg,1.464,tofu-hibachi
+77632,shex,Shanghai Chinese Restaurant,4.8,375,,31.49890356,74.35700845,249,99,https://images.deliveryhero.io/image/fd-pk/LH/shex-listing.jpg,2.393,shanghai-chinese-restaurant
+112243,tr32,Karnivora Steak House - Gulberg,3,5,,31.5186309,74.3465069,249,99,https://images.deliveryhero.io/image/fd-pk/LH/tr32-listing.jpg,1.176,karnivora-steak-house-gulberg
+73618,axpl,Bistro 201,4.8,276,,31.54220805,74.352814,249,99,https://images.deliveryhero.io/image/fd-pk/LH/axpl-listing.jpg,2.493,bistro-201
+99172,cj6x,KAI,4.5,27,,31.5182803,74.3523544,249,99,https://images.deliveryhero.io/image/fd-pk/LH/cj6x-listing.jpg,0.649,kai
+99009,gc8s,Quetta Paratha - 111 A,3.9,132,,31.4992271,74.3665996,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gc8s-listing.jpg,2.466,quetta-paratha-111-a
+99005,ammw,Quetta Paratha - 102 A,4.4,72,,31.4947278,74.3742167,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ammw-listing.jpg,3.206,quetta-paratha-102-a
+107737,fvso,Cocta,4.9,5,,31.5181654,74.3524068,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fvso-listing.jpg,0.649,cocta-fvso
+69822,za4h,Dickey's Barbecue Pit,4.2,92,,31.5086466,74.3498303,249,99,https://images.deliveryhero.io/image/fd-pk/LH/za4h-listing.jpg,1.554,dickeys-barbecue-pit
+110977,j1h7,Khaawan,3.9,12,,31.4840295,74.3658278,249,99,https://images.deliveryhero.io/image/fd-pk/LH/j1h7-listing.jpg,4.096,khaawan-j1h7
+112240,j2gw,Jolly Boba - Lahore Cantt,0,0,,31.53253055,74.36345105,249,99,https://images.deliveryhero.io/image/fd-pk/LH/j2gw-listing.jpg,1.424,jolly-boba-lahore-cantt
+110347,suqs,Caviar Club,4.8,7,,31.54345801,74.33614354,249,99,https://images.deliveryhero.io/image/fd-pk/LH/suqs-listing.jpg,3.344,caviar-club
+110769,ky9d,CAPTAIN CUISINE - Fortress Square,0,0,,31.5320251,74.3631444,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ky9d-listing.jpg,1.361,captain-cuisine-fortress-square
+114954,d916,Tim Hunger,0,0,,31.4938626,74.3880715,249,99,https://images.deliveryhero.io/image/fd-pk/LH/d916-listing.jpg,4.052,tim-hunger-d916
+7007,s0rm,Karachi Hot Biryani,3.8,1556,"22 Civic Centre, Barkat Market, Commercial Area Garden Town, Lahore, Punjab, Pakistan",31.50059895,74.32138525,249,99,https://images.deliveryhero.io/image/fd-pk/LH/s0rm-listing.jpg,4.169,karachi-hot-biryani-s0rm
+98439,yvix,Rollin' Smoke,4.8,28,,31.5034778,74.3878812,249,99,https://images.deliveryhero.io/image/fd-pk/LH/yvix-listing.jpg,3.34,rollin-smoke
+111816,by5z,Maa Jee Ka Zaiqa - Mall Road,1.8,6,,31.5435333,74.3584209,249,99,https://images.deliveryhero.io/image/fd-pk/LH/by5z-listing.jpg,2.576,maa-jee-ka-zaiqa-mall-road
+103935,nekr,Crispy Planet (Gulberg),3.7,22,,31.5232525,74.3456714,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nekr-listing.jpg,1.28,crispy-planet-gulberg-nekr
+76873,hgp6,D Steak House,3.5,114,,31.5203584,74.351862,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hgp6-listing.jpg,0.653,d-steak-house
+107968,fro1,Jaidi Restaurant - Fortress,4.6,8,,31.5342558,74.3646254,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fro1-listing.jpg,1.642,jaidi-restaurant-fortress
+110650,fplb,WOK IN SPECIAL CHINESE,4.6,8,,31.5193021,74.3228732,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fplb-listing.jpg,3.403,wok-in-special-chinese
+110507,ca8d,Chilli Milli Fast Food & Chinese,0,0,,31.5252208,74.3440499,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ca8d-listing.jpg,1.494,chilli-milli-fast-food-and-chinese
+109884,nloh,MashaAllah Dahi Bhallay & Russian Salad,0,0,,31.4753499,74.3625051,249,99,https://images.deliveryhero.io/image/fd-pk/LH/nloh-listing.jpg,5.019,mashaallah-dahi-bhallay-and-russian-salad
+113836,bvo3,SWEETAHOLIC,0,0,,31.5070733,74.3536633,249,99,https://images.deliveryhero.io/image/fd-pk/LH/bvo3-listing.jpg,1.555,sweetaholic-bvo3
+111023,hcw3,Erina Kitchen,0,0,,31.4910717,74.3428046,249,99,https://images.deliveryhero.io/image/fd-pk/LH/hcw3-listing.jpg,3.591,erina-kitchen
+113708,xiua,PATAHA-Gulberg,0,0,,31.4906253,74.3428336,249,99,https://images.deliveryhero.io/image/fd-pk/LH/xiua-listing.jpg,3.635,pataha-gulberg
+95766,rt9c,Iceland - Gulberg,3.6,43,,31.5396732,74.3533175,249,99,https://images.deliveryhero.io/image/fd-pk/LH/rt9c-listing.jpg,2.207,iceland-gulberg
+110932,v3s1,Zaiqa Palace,0,0,,31.52172409,74.32037154,249,99,https://images.deliveryhero.io/image/fd-pk/LH/v3s1-listing.jpg,3.641,zaiqa-palace
+104923,gmth,Mei Masala,3.8,7,,31.4998883,74.3215967,249,99,https://images.deliveryhero.io/image/fd-pk/LH/gmth-listing.jpg,4.194,mei-masala
+113744,wnij,Flavours,0,0,,31.5253688,74.346357,249,99,https://images.deliveryhero.io/image/fd-pk/LH/wnij-listing.jpg,1.299,flavours-wnij
+113296,b0no,Bloom and Brew,0,0,,31.5194737,74.3818443,249,99,https://images.deliveryhero.io/image/fd-pk/LH/b0no-listing.jpg,2.192,bloom-and-brew
+82794,wezl,Hifny Tifny - Gulberg,4.8,1150,,31.51164487,74.35993226,249,99,https://images.deliveryhero.io/image/fd-pk/LH/wezl-listing.jpg,0.977,hifny-tifny-gulberg
+102445,ms60,The Muffin House,3.3,15,,31.4821898,74.3304386,249,99,https://images.deliveryhero.io/image/fd-pk/LH/ms60-listing.jpg,5.023,the-muffin-house
+110013,w3c9,Elly's Kitchen,0,0,,31.4957946,74.3514159,249,99,https://images.deliveryhero.io/image/fd-pk/LH/w3c9-listing.jpg,2.82,ellys-kitchen
+90587,p1t5,LE MEILLEUR Café & Restaurant,4.7,91,,31.51246,74.3293733,249,99,https://images.deliveryhero.io/image/fd-pk/LH/p1t5-listing.jpg,2.92,le-meilleur-cafe-and-restaurant
+110818,vpbu,Khana Peena Lahore,2.2,7,,31.5202983,74.31762,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vpbu-listing.jpg,3.898,khana-peena-lahore
+111299,fdh3,Tao Pan,0,0,,31.5274151,74.3489967,249,99,https://images.deliveryhero.io/image/fd-pk/LH/fdh3-listing.jpg,1.212,tao-pan-fdh3
+95080,vugp,Fasana Café - Gulberg,4.5,37,,31.51968385,74.3464269,249,99,https://images.deliveryhero.io/image/fd-pk/LH/vugp-listing.jpg,1.17,fasana-cafe-gulberg
+106857,lavc,Blend- Gulberg,4.9,35,,31.5249692,74.3510108,249,99,https://images.deliveryhero.io/image/fd-pk/LH/lavc-listing.jpg,0.894,blend-gulberg

@@ -11,6 +11,10 @@ import Feed from "./pages/Feed";
 import RecipeBook from "./pages/RecipeBook";
 import GeneratedRecipes from "./pages/GeneratedRecipes";
 import CreateRecipe from "./pages/CreateRecipe";
+import RestaurantDiscovery from "./pages/RestaurantDiscovery";
+import RestaurantDetail from "./pages/RestaurantDetail";
+import AdminDashboard from "./pages/AdminDashboard";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
@@ -18,7 +22,7 @@ import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+const ProtectedRoute = ({ children }:  { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -31,7 +35,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!user) {
-    console.log('No user found, redirecting to landing');
     return <Navigate to="/" replace state={{ from: location }} />;
   }
 
@@ -44,18 +47,10 @@ const AppRoutes = () => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (!loading) {
+    if (! loading) {
       setIsReady(true);
     }
   }, [loading]);
-
-  useEffect(() => {
-    console.log('Auth state changed:', { 
-      user: user ? `${user.email} (${user.id})` : 'null', 
-      loading,
-      path: location.pathname 
-    });
-  }, [user, loading, location.pathname]);
 
   if (!isReady || loading) {
     return (
@@ -65,9 +60,14 @@ const AppRoutes = () => {
     );
   }
 
+  // Check if current path is a restaurant route
+  const isRestaurantRoute = location.pathname.startsWith('/restaurants');
+
   return (
     <>
-      <Navigation />
+      {/* Only show Navigation for non-restaurant routes */}
+      {!isRestaurantRoute && <Navigation />}
+      
       <Routes>
         <Route 
           path="/" 
@@ -75,7 +75,7 @@ const AppRoutes = () => {
         />
         <Route 
           path="/auth" 
-          element={user ? <Navigate to="/home" replace /> : <Auth />} 
+          element={user ?  <Navigate to="/home" replace /> : <Auth />} 
         />
         <Route 
           path="/home" 
@@ -85,6 +85,26 @@ const AppRoutes = () => {
             </ProtectedRoute>
           } 
         />
+        
+        {/* Restaurant Discovery Routes */}
+        <Route 
+          path="/restaurants" 
+          element={
+            <ProtectedRoute>
+              <RestaurantDiscovery />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/restaurants/:id" 
+          element={
+            <ProtectedRoute>
+              <RestaurantDetail />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Recipe Routes */}
         <Route 
           path="/feed" 
           element={
@@ -117,6 +137,25 @@ const AppRoutes = () => {
             </ProtectedRoute>
           } 
         />
+        
+        {/* Admin Routes */}
+        <Route 
+          path="/admin-dashboard" 
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/superadmin-dashboard" 
+          element={
+            <ProtectedRoute>
+              <SuperAdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
@@ -127,7 +166,7 @@ const App = () => {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   if (!googleClientId) {
-    console.error('Google Client ID is missing!');
+    console.error('Google Client ID is missing! ');
   }
 
   return (

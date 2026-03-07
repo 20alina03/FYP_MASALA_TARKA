@@ -1,38 +1,52 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { BookOpen, Heart, Plus, Home, LogOut, Sparkles } from 'lucide-react';
+import { BookOpen, Heart, Plus, Home, LogOut, Sparkles, MapPin, ShieldCheck, Store } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { mongoClient } from '@/lib/mongodb-client';
 
 const Navigation = () => {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    console.log('Navigation render:', { 
-      user: user ? `${user.email}` : 'null', 
-      path: location.pathname 
-    });
-  }, [user, location.pathname]);
+    checkUserRole();
+  }, [user]);
+
+  const checkUserRole = async () => {
+    if (!user) return;
+    
+    // Check if super admin
+    setIsSuperAdmin(user.email === 'alinarafiq0676@gmail.com');
+    
+    // Check if admin
+    try {
+      const { data } = await mongoClient.request('/restaurants/admin/status');
+      setIsAdmin(data?. status === 'approved');
+    } catch (error) {
+      console.error('Check admin status error:', error);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
-      // Sign out from Supabase first
       const { error } = await supabase.auth.signOut();
       
       if (error) throw error;
       
-      // Clear all storage
       localStorage.clear();
       sessionStorage.clear();
       
@@ -41,7 +55,6 @@ const Navigation = () => {
         description: "You have been signed out successfully",
       });
       
-      // Force navigation and page reload to clear all state
       window.location.href = '/';
     } catch (error) {
       console.error('Sign out error:', error);
@@ -55,19 +68,18 @@ const Navigation = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const getInitials = (name?: string) => {
+  const getInitials = (name?:  string) => {
     if (!name) return 'U';
     return name
       .split(' ')
-      .map(part => part.charAt(0))
+      .map(part => part. charAt(0))
       .join('')
       .toUpperCase()
       .slice(0, 2);
   };
 
-  // Don't show navigation on public pages or if no user
   const publicPaths = ['/', '/auth'];
-  if (publicPaths.includes(location.pathname) || !user) {
+  if (publicPaths.includes(location.pathname) || ! user) {
     return null;
   }
 
@@ -80,7 +92,7 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           <Link to="/home" className="flex items-center space-x-3">
             <img 
-              src="/noodles.png" 
+              src="/noodles. png" 
               alt="Masala Tarka Logo" 
               className="w-8 h-8 object-contain" 
             />
@@ -101,12 +113,24 @@ const Navigation = () => {
                 <span className="hidden sm:inline">Home</span>
               </Link>
             </Button>
+
+            <Button
+              variant={isActive('/restaurants') ? 'default' : 'ghost'}
+              size="sm"
+              asChild
+              className={isActive('/restaurants') ? 'text-white hover:text-white' : ''}
+            >
+              <Link to="/restaurants" className="flex items-center space-x-2">
+                <MapPin className="w-4 h-4" />
+                <span className="hidden sm:inline">Restaurants</span>
+              </Link>
+            </Button>
             
             <Button
               variant={isActive('/feed') ? 'default' : 'ghost'}
               size="sm"
               asChild
-              className={isActive('/feed') ? 'text-white hover:text-white' : ''}
+              className={isActive('/feed') ? 'text-white hover:text-white' :  ''}
             >
               <Link to="/feed" className="flex items-center space-x-2">
                 <Heart className="w-4 h-4" />
@@ -118,7 +142,7 @@ const Navigation = () => {
               variant={isActive('/recipe-book') ? 'default' : 'ghost'}
               size="sm"
               asChild
-              className={isActive('/recipe-book') ? 'text-white hover:text-white' : ''}
+              className={isActive('/recipe-book') ? 'text-white hover:text-white' :  ''}
             >
               <Link to="/recipe-book" className="flex items-center space-x-2">
                 <BookOpen className="w-4 h-4" />
@@ -171,6 +195,24 @@ const Navigation = () => {
                     </p>
                   </div>
                 </DropdownMenuItem>
+                
+                {(isAdmin || isSuperAdmin) && <DropdownMenuSeparator />}
+                
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate('/admin-dashboard')}>
+                    <Store className="mr-2 h-4 w-4" />
+                    <span>Admin Dashboard</span>
+                  </DropdownMenuItem>
+                )}
+                
+                {isSuperAdmin && (
+                  <DropdownMenuItem onClick={() => navigate('/superadmin-dashboard')}>
+                    <ShieldCheck className="mr-2 h-4 w-4" />
+                    <span>Super Admin</span>
+                  </DropdownMenuItem>
+                )}
+                
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
