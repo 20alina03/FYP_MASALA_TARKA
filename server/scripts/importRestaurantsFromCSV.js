@@ -36,7 +36,7 @@ async function importRestaurants() {
   try {
     console.log('Starting restaurant import...');
     
-    const restaurantData = await parseCSV('./data/foodpanda_restaurants.csv');
+    const restaurantData = await parseCSV('../data/foodpanda_restaurants.csv');
     
     const restaurantMap = new Map();
     const skippedDuplicates = [];
@@ -123,7 +123,7 @@ async function importMenuItems(codeToIdMap) {
   try {
     console.log('\nStarting menu items import...');
     
-    const menuData = await parseCSV('./data/menu_progress.csv');
+    const menuData = await parseCSV('../data/menu_progress.csv');
     
     const categoryMap = new Map();
     const menuItemsToInsert = [];
@@ -254,8 +254,8 @@ async function main() {
   try {
     console.log('🚀 Starting CSV import process...\n');
     
-    const restaurantsCsvPath = './data/foodpanda_restaurants.csv';
-    const menuCsvPath = './data/menu_progress.csv';
+    const restaurantsCsvPath = '../data/foodpanda_restaurants.csv';
+    const menuCsvPath = '../data/menu_progress.csv';
     
     if (!fs.existsSync(restaurantsCsvPath)) {
       throw new Error(`Restaurant CSV file not found: ${restaurantsCsvPath}`);
