@@ -24,9 +24,23 @@ const CreateReviewModal = ({ isOpen, onClose, restaurantId, onReviewCreated }: C
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (! files) return;
+    if (!files) return;
 
-    Array.from(files).forEach(file => {
+    const maxImages = 5;
+    const remainingSlots = maxImages - images.length;
+    
+    if (remainingSlots <= 0) {
+      toast({
+        title: "Maximum images reached",
+        description: `You can only upload up to ${maxImages} images`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+    
+    filesToProcess.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImages(prev => [...prev, reader.result as string]);
@@ -40,10 +54,15 @@ const CreateReviewModal = ({ isOpen, onClose, restaurantId, onReviewCreated }: C
   };
 
   const handleSubmit = async () => {
-    if (rating === 0) {
+    // Validate: At least one of rating, review_text, or images must be provided
+    const hasRating = rating > 0;
+    const hasText = reviewText.trim().length > 0;
+    const hasImages = images.length > 0;
+
+    if (!hasRating && !hasText && !hasImages) {
       toast({
-        title: "Rating required",
-        description: "Please select a rating",
+        title: "Review required",
+        description: "Please provide at least a rating, comment, or photo",
         variant: "destructive"
       });
       return;
@@ -55,7 +74,7 @@ const CreateReviewModal = ({ isOpen, onClose, restaurantId, onReviewCreated }: C
       const { error } = await mongoClient.request(`/restaurants/${restaurantId}/reviews`, {
         method: 'POST',
         body: JSON.stringify({
-          rating,
+          rating: rating || 0,
           review_text: reviewText,
           images
         })
@@ -71,8 +90,9 @@ const CreateReviewModal = ({ isOpen, onClose, restaurantId, onReviewCreated }: C
       setRating(0);
       setReviewText('');
       setImages([]);
+      onClose();
       onReviewCreated();
-    } catch (error:  any) {
+    } catch (error: any) {
       console.error('Create review error:', error);
       toast({
         title: "Error",
@@ -84,6 +104,8 @@ const CreateReviewModal = ({ isOpen, onClose, restaurantId, onReviewCreated }: C
     }
   };
 
+  const hasContent = rating > 0 || reviewText.trim().length > 0 || images.length > 0;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
@@ -92,9 +114,18 @@ const CreateReviewModal = ({ isOpen, onClose, restaurantId, onReviewCreated }: C
         </DialogHeader>
 
         <div className="space-y-6 py-4">
+          <div className="bg-muted/50 p-4 rounded-lg text-sm text-muted-foreground">
+            <p>Please provide at least one of the following:</p>
+            <ul className="list-disc list-inside mt-2 space-y-1">
+              <li>A rating (1-5 stars)</li>
+              <li>A written review</li>
+              <li>Photos of your experience</li>
+            </ul>
+          </div>
+
           {/* Rating */}
           <div className="space-y-2">
-            <Label>Your Rating *</Label>
+            <Label>Your Rating</Label>
             <div className="flex items-center gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -124,7 +155,7 @@ const CreateReviewModal = ({ isOpen, onClose, restaurantId, onReviewCreated }: C
 
           {/* Review Text */}
           <div className="space-y-2">
-            <Label htmlFor="review">Your Review (optional)</Label>
+            <Label htmlFor="review">Your Review</Label>
             <Textarea
               id="review"
               value={reviewText}
@@ -136,7 +167,7 @@ const CreateReviewModal = ({ isOpen, onClose, restaurantId, onReviewCreated }: C
 
           {/* Images */}
           <div className="space-y-2">
-            <Label>Photos (optional)</Label>
+            <Label>Photos</Label>
             <div className="border-2 border-dashed rounded-lg p-4">
               {images.length > 0 ? (
                 <div className="grid grid-cols-4 gap-2 mb-4">
@@ -178,7 +209,7 @@ const CreateReviewModal = ({ isOpen, onClose, restaurantId, onReviewCreated }: C
                   Choose Photos
                 </Label>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Upload up to 5 photos
+                  Upload up to 5 photos ({images.length}/5)
                 </p>
               </div>
             </div>
@@ -195,7 +226,7 @@ const CreateReviewModal = ({ isOpen, onClose, restaurantId, onReviewCreated }: C
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={submitting || rating === 0}
+              disabled={submitting || !hasContent}
               className="flex-1"
             >
               {submitting ? (

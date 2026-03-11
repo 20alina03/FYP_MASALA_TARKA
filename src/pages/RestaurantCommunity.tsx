@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import { mongoClient } from '@/lib/mongodb-client';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, MessageCircle, Share2, MapPin, Star, Search, Filter } from 'lucide-react';
+import { MapPin, Star, Search } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import RestaurantNavigation from '@/components/RestaurantNavigation';
 import { useNavigate } from 'react-router-dom';
@@ -19,52 +17,84 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-interface CommunityPost {
+interface Review {
   _id: string;
   restaurant_id: any;
-  post_type: 'text' | 'image' | 'video';
-  content: string;
-  media_url?: string;
-  likes_count: number;
-  comments_count: number;
-  user_liked?:  boolean;
+  restaurant_name?: string;
+  menu_item_name?: string;
+  user_name: string;
+  rating: number;
+  review_text?: string;
+  images?: string[];
   created_at: string;
+  review_type: 'restaurant' | 'menu_item';
 }
 
 const RestaurantCommunity = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCuisine, setSelectedCuisine] = useState('all');
-  const [postType, setPostType] = useState('all');
+  const [reviewType, setReviewType] = useState('all');
+  const [selectedLocation, setSelectedLocation] = useState('all');
 
-  const cuisines = ['Italian', 'Indian', 'Japanese', 'Mediterranean', 'American', 'Mexican', 'Thai', 'Chinese', 'Korean'];
+  const cuisines = ['Italian', 'Indian', 'Japanese', 'Mediterranean', 'American', 'Mexican', 'Thai', 'Chinese', 'Korean', 'Pakistani'];
+  const locations = ['Gulberg', 'DHA', 'Johar Town', 'Model Town', 'Bahria Town', 'Liberty'];
 
   useEffect(() => {
-    fetchPosts();
-  }, [selectedCuisine, postType]);
+    fetchReviews();
+  }, [selectedCuisine, reviewType]);
 
-  const fetchPosts = async () => {
+  const fetchReviews = async () => {
     try {
       setLoading(true);
       
-      const params:  any = {};
-      if (selectedCuisine !== 'all') params.cuisine = selectedCuisine;
-      if (postType !== 'all') params.post_type = postType;
+      const token = localStorage.getItem('token');
       
-      const queryString = new URLSearchParams(params).toString();
-      const { data, error } = await mongoClient.request(`/restaurants/community/posts?${queryString}`);
-      
-      if (error) throw error;
-      
-      setPosts(data || []);
-    } catch (error:  any) {
-      console.error('Fetch posts error:', error);
+      // Fetch both restaurant and menu item reviews
+      const [restaurantReviewsRes, menuReviewsRes] = await Promise.all([
+        fetch('http://localhost:5000/api/restaurants/all-reviews', {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          }
+        }),
+        fetch('http://localhost:5000/api/restaurants/all-menu-reviews', {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          }
+        })
+      ]);
+
+      const restaurantReviews = restaurantReviewsRes.ok ? await restaurantReviewsRes.json() : [];
+      const menuReviews = menuReviewsRes.ok ? await menuReviewsRes.json() : [];
+
+      // Combine and format reviews
+      const formattedRestaurantReviews = restaurantReviews.map((r: any) => ({
+        ...r,
+        review_type: 'restaurant' as const,
+        restaurant_name: r.restaurant_id?.name || 'Unknown Restaurant'
+      }));
+
+      const formattedMenuReviews = menuReviews.map((r: any) => ({
+        ...r,
+        review_type: 'menu_item' as const,
+        restaurant_name: r.restaurant_id?.name || 'Unknown Restaurant',
+        menu_item_name: r.menu_item_id?.name || 'Unknown Dish'
+      }));
+
+      const allReviews = [...formattedRestaurantReviews, ...formattedMenuReviews]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      setReviews(allReviews);
+    } catch (error: any) {
+      console.error('Fetch reviews error:', error);
       toast({
         title: "Error",
-        description: "Failed to load community posts",
+        description: "Failed to load community reviews",
         variant: "destructive"
       });
     } finally {
@@ -72,52 +102,32 @@ const RestaurantCommunity = () => {
     }
   };
 
-  const handleLike = async (postId: string) => {
-    if (!user) {
-      toast({
-        title:  "Sign in required",
-        description: "Please sign in to like posts",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      const { error } = await mongoClient.request(`/restaurants/community/posts/${postId}/like`, {
-        method: 'POST'
-      });
-
-      if (error) throw error;
-
-      // Update local state
-      setPosts(prev => prev.map(post => {
-        if (post._id === postId) {
-          return {
-            ...post,
-            user_liked: !post.user_liked,
-            likes_count: post. user_liked ? post.likes_count - 1 : post.likes_count + 1
-          };
-        }
-        return post;
-      }));
-    } catch (error: any) {
-      console.error('Like post error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to like post",
-        variant: "destructive"
-      });
-    }
-  };
-
   const handleRestaurantClick = (restaurantId: string) => {
-    navigate(`/restaurants/${restaurantId}`);
+    if (restaurantId) {
+      navigate(`/restaurants/${restaurantId}`);
+    }
   };
 
-  const filteredPosts = posts.filter(post => {
-    if (! searchTerm) return true;
-    return post.restaurant_id?. name?. toLowerCase().includes(searchTerm. toLowerCase()) ||
-           post.content?. toLowerCase().includes(searchTerm. toLowerCase());
+  const filteredReviews = reviews.filter(review => {
+    // Search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch = 
+        review.restaurant_name?.toLowerCase().includes(searchLower) ||
+        review.menu_item_name?.toLowerCase().includes(searchLower) ||
+        review.review_text?.toLowerCase().includes(searchLower) ||
+        review.user_name?.toLowerCase().includes(searchLower);
+      
+      if (!matchesSearch) return false;
+    }
+
+    // Review type filter
+    if (reviewType !== 'all') {
+      if (reviewType === 'restaurant' && review.review_type !== 'restaurant') return false;
+      if (reviewType === 'menu_item' && review.review_type !== 'menu_item') return false;
+    }
+
+    return true;
   });
 
   const formatTimeAgo = (dateString: string) => {
@@ -148,54 +158,73 @@ const RestaurantCommunity = () => {
             Restaurant Community
           </h1>
           <p className="text-muted-foreground text-lg">
-            Discover latest updates, offers, and posts from restaurants
+            Discover reviews and ratings from the community
           </p>
         </div>
 
         {/* Filters */}
         <Card className="mb-8 p-6">
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md: grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
-                  placeholder="Search posts..."
+                  placeholder="Search reviews, restaurants, dishes..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
               </div>
 
-              <Select value={selectedCuisine} onValueChange={setSelectedCuisine}>
+              <Select value={reviewType} onValueChange={setReviewType}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Cuisines" />
+                  <SelectValue placeholder="Review Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Cuisines</SelectItem>
-                  {cuisines.map((cuisine) => (
-                    <SelectItem key={cuisine} value={cuisine}>
-                      {cuisine}
+                  <SelectItem value="all">All Reviews</SelectItem>
+                  <SelectItem value="restaurant">Restaurant Reviews</SelectItem>
+                  <SelectItem value="menu_item">Dish Reviews</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Locations</SelectItem>
+                  {locations.map((location) => (
+                    <SelectItem key={location} value={location}>
+                      {location}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+            </div>
 
-              <Select value={postType} onValueChange={setPostType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All Post Types" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="text">Text Posts</SelectItem>
-                  <SelectItem value="image">Images</SelectItem>
-                  <SelectItem value="video">Videos</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                variant={selectedCuisine === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCuisine('all')}
+              >
+                All Cuisines
+              </Button>
+              {cuisines.map((cuisine) => (
+                <Button
+                  key={cuisine}
+                  variant={selectedCuisine === cuisine ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedCuisine(cuisine)}
+                >
+                  {cuisine}
+                </Button>
+              ))}
             </div>
           </div>
         </Card>
 
-        {/* Posts Feed */}
+        {/* Reviews Feed */}
         {loading ? (
           <div className="space-y-6">
             {[...Array(5)].map((_, i) => (
@@ -204,120 +233,95 @@ const RestaurantCommunity = () => {
               </div>
             ))}
           </div>
-        ) : filteredPosts.length === 0 ? (
+        ) : filteredReviews.length === 0 ? (
           <Card className="p-12 text-center">
             <p className="text-muted-foreground text-lg">
-              No posts found. Check back later for updates!
+              No reviews found. Be the first to review!
             </p>
+            <Button 
+              onClick={() => navigate('/restaurants')}
+              className="mt-4"
+            >
+              Discover Restaurants
+            </Button>
           </Card>
         ) : (
           <div className="space-y-6">
-            {filteredPosts. map((post) => (
-              <Card key={post._id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            {filteredReviews.map((review) => (
+              <Card key={review._id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    <Avatar 
-                      className="cursor-pointer hover:opacity-80"
-                      onClick={() => handleRestaurantClick(post.restaurant_id?._id)}
-                    >
+                  <div className="flex items-start gap-3">
+                    <Avatar>
                       <AvatarFallback>
-                        {post.restaurant_id?. name?. charAt(0) || 'R'}
+                        {review.user_name?.charAt(0)?.toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <h3 
-                        className="font-semibold cursor-pointer hover:text-primary"
-                        onClick={() => handleRestaurantClick(post. restaurant_id?._id)}
-                      >
-                        {post.restaurant_id?.name || 'Restaurant'}
-                      </h3>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold">{review.user_name || 'Anonymous'}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {review.review_type === 'restaurant' ? 'Restaurant' : 'Dish'} Review
+                        </Badge>
+                      </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="w-3 h-3" />
-                        <span>{post.restaurant_id?.city || 'Unknown'}</span>
+                        <span 
+                          className="hover:text-primary cursor-pointer font-medium"
+                          onClick={() => handleRestaurantClick(review.restaurant_id?._id || review.restaurant_id)}
+                        >
+                          {review.restaurant_name}
+                        </span>
+                        {review.menu_item_name && (
+                          <>
+                            <span>•</span>
+                            <span className="italic">{review.menu_item_name}</span>
+                          </>
+                        )}
                         <span>•</span>
-                        <span>{formatTimeAgo(post.created_at)}</span>
+                        <span>{formatTimeAgo(review.created_at)}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {post.restaurant_id?.rating && (
-                        <div className="flex items-center gap-1 text-sm">
-                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                          <span className="font-semibold">
-                            {post.restaurant_id. rating.toFixed(1)}
-                          </span>
-                        </div>
-                      )}
-                      <Badge variant="outline" className="text-xs">
-                        {post. post_type}
-                      </Badge>
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < review.rating ? 'text-yellow-500 fill-current' : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
                     </div>
                   </div>
                 </CardHeader>
 
                 <CardContent className="pt-0">
-                  {/* Post Content */}
-                  {post.content && (
-                    <p className="mb-4 whitespace-pre-wrap">{post.content}</p>
+                  {/* Review Text */}
+                  {review.review_text && (
+                    <p className="mb-4 whitespace-pre-wrap text-sm">{review.review_text}</p>
                   )}
 
-                  {/* Media */}
-                  {post. media_url && (
-                    <div className="mb-4 rounded-lg overflow-hidden">
-                      {post.post_type === 'image' && (
+                  {/* Images */}
+                  {review.images && review.images.length > 0 && (
+                    <div className="flex gap-2 mb-4 overflow-x-auto">
+                      {review.images.map((img, idx) => (
                         <img
-                          src={post.media_url}
-                          alt="Post content"
-                          className="w-full max-h-96 object-cover"
+                          key={idx}
+                          src={img}
+                          alt={`Review ${idx + 1}`}
+                          className="w-32 h-32 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
+                          onClick={() => window.open(img, '_blank')}
                         />
-                      )}
-                      {post.post_type === 'video' && (
-                        <video
-                          src={post.media_url}
-                          controls
-                          className="w-full max-h-96"
-                        />
-                      )}
-                    </div>
-                  )}
-
-                  {/* Cuisine Tags */}
-                  {post. restaurant_id?.cuisine_types && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {post.restaurant_id. cuisine_types.slice(0, 3).map((cuisine:  string, idx: number) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
-                          {cuisine}
-                        </Badge>
                       ))}
                     </div>
                   )}
 
                   {/* Actions */}
-                  <div className="flex items-center gap-6 pt-4 border-t">
+                  <div className="flex items-center gap-4 pt-4 border-t">
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleLike(post._id)}
-                      className={post.user_liked ? 'text-red-500' :  ''}
+                      onClick={() => handleRestaurantClick(review.restaurant_id?._id || review.restaurant_id)}
                     >
-                      <Heart className={`w-5 h-5 mr-2 ${post.user_liked ?  'fill-current' : ''}`} />
-                      <span>{post.likes_count}</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRestaurantClick(post. restaurant_id?._id)}
-                    >
-                      <MessageCircle className="w-5 h-5 mr-2" />
-                      <span>{post.comments_count || 0}</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRestaurantClick(post.restaurant_id?._id)}
-                    >
-                      <MapPin className="w-5 h-5 mr-2" />
+                      <MapPin className="w-4 h-4 mr-2" />
                       <span>Visit Restaurant</span>
                     </Button>
                   </div>

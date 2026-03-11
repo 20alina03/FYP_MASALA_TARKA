@@ -11,7 +11,7 @@ const CommunityPost = require('../models/CommunityPost');
 const PostLike = require('../models/PostLike');
 const { authenticateToken } = require('../middleware/auth');
 
-const router = express. Router();
+const router = express.Router();
 
 // ============= RESTAURANT DISCOVERY =============
 
@@ -20,25 +20,23 @@ router.get('/discover', async (req, res) => {
     console.log('=== DISCOVER ENDPOINT CALLED ===');
     console.log('Query params:', req.query);
     
-    // Fetch ALL restaurants from your collection
     let restaurants = await Restaurant.find({}).lean();
     
     console.log(`Total restaurants in DB: ${restaurants.length}`);
     
     if (restaurants.length === 0) {
-      console.log('❌ No restaurants found in database! ');
+      console.log('❌ No restaurants found in database!');
       return res.json([]);
     }
     
     console.log('✅ Sample restaurant:', {
-      name: restaurants[0]. name,
+      name: restaurants[0].name,
       lat: restaurants[0].latitude,
       lng: restaurants[0].longitude,
       rating: restaurants[0].rating,
       review_count: restaurants[0].review_number || restaurants[0].review_count
     });
     
-    // Map your DB fields to expected format
     restaurants = restaurants.map(r => ({
       _id: r._id,
       name: r.name,
@@ -49,17 +47,16 @@ router.get('/discover', async (req, res) => {
       contact_number: r.phone || '+92-XXX-XXXXXXX',
       description: r.description || `${r.name} - Great food!`,
       cuisine_types: r.cuisines || ['Pakistani', 'Fast Food'],
-      image_url:  r.hero_listing_image || r.logo || '',
+      image_url: r.hero_listing_image || r.logo || '',
       rating: r.rating || 0,
-      review_count: r. review_number || r.review_count || 0,
+      review_count: r.review_number || r.review_count || 0,
       minimum_order_amount: r.minimum_order_amount,
-      delivery_fee: r. minimum_delivery_fee,
+      delivery_fee: r.minimum_delivery_fee,
       url_key: r.url_key
     }));
     
     const { latitude, longitude, radius = 10, cuisine, city } = req.query;
     
-    // Apply filters
     if (latitude && longitude) {
       const userLat = parseFloat(latitude);
       const userLon = parseFloat(longitude);
@@ -78,14 +75,14 @@ router.get('/discover', async (req, res) => {
     
     if (cuisine) {
       restaurants = restaurants.filter(r => 
-        r.cuisine_types?. includes(cuisine)
+        r.cuisine_types?.includes(cuisine)
       );
       console.log(`After cuisine filter: ${restaurants.length} restaurants`);
     }
     
     if (city) {
       restaurants = restaurants.filter(r => 
-        r.city?. toLowerCase().includes(city.toLowerCase())
+        r.city?.toLowerCase().includes(city.toLowerCase())
       );
     }
     
@@ -99,30 +96,79 @@ router.get('/discover', async (req, res) => {
 });
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Earth radius in km
+  const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
             Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
             Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math. sqrt(a), Math.sqrt(1-a));
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
 }
+
+// ============= COMMUNITY REVIEW ROUTES (MUST BE BEFORE :id ROUTES) =============
+
+// Get all restaurant reviews for community
+router.get('/all-reviews', async (req, res) => {
+  try {
+    const reviews = await RestaurantReview.find({ is_reported: false })
+      .populate('restaurant_id', 'name city cuisines hero_listing_image')
+      .sort({ created_at: -1 })
+      .limit(100)
+      .lean();
+
+    const formattedReviews = reviews.map(r => ({
+      ...r,
+      user_name: r.user_name || 'Anonymous',
+      restaurant_id: r.restaurant_id
+    }));
+
+    res.json(formattedReviews);
+  } catch (error) {
+    console.error('Get all reviews error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get all menu item reviews for community
+router.get('/all-menu-reviews', async (req, res) => {
+  try {
+    const reviews = await MenuItemReview.find({ is_reported: false })
+      .populate('restaurant_id', 'name city cuisines hero_listing_image')
+      .populate('menu_item_id', 'name')
+      .sort({ created_at: -1 })
+      .limit(100)
+      .lean();
+
+    const formattedReviews = reviews.map(r => ({
+      ...r,
+      user_name: r.user_name || 'Anonymous',
+      menu_item_name: r.menu_item_id?.name || 'Unknown Dish',
+      restaurant_id: r.restaurant_id
+    }));
+
+    res.json(formattedReviews);
+  } catch (error) {
+    console.error('Get all menu reviews error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============= RESTAURANT DETAIL ROUTES =============
 
 router.get('/:id', async (req, res) => {
   try {
     console.log('🔍 Fetching restaurant details for ID:', req.params.id);
     
-    const restaurant = await Restaurant.findById(req. params.id).lean();
+    const restaurant = await Restaurant.findById(req.params.id).lean();
     
     if (!restaurant) {
       console.log('❌ Restaurant not found');
       return res.status(404).json({ error: 'Restaurant not found' });
     }
     
-    console.log('✅ Restaurant found:', restaurant. name);
+    console.log('✅ Restaurant found:', restaurant.name);
     
-    // Format restaurant data to match your DB structure
     const formattedRestaurant = {
       _id: restaurant._id,
       name: restaurant.name,
@@ -140,25 +186,22 @@ router.get('/:id', async (req, res) => {
       delivery_fee: restaurant.minimum_delivery_fee,
     };
     
-    // Try to fetch menu items (if they exist)
-   // Try to fetch menu items (if they exist)
-let menuItems = [];
-try {
-  menuItems = await MenuItem.find({ 
-    restaurant_id: new mongoose.Types.ObjectId(req.params.id), // ✅ Cast to ObjectId
-    is_available: true 
-  }).lean();
-  console.log(`📋 Found ${menuItems.length} menu items`);
-} catch (menuError) {
-  console.log('⚠️ No menu items found (non-critical)');
-  menuItems = [];
-}
+    let menuItems = [];
+    try {
+      menuItems = await MenuItem.find({ 
+        restaurant_id: new mongoose.Types.ObjectId(req.params.id),
+        is_available: true 
+      }).lean();
+      console.log(`📋 Found ${menuItems.length} menu items`);
+    } catch (menuError) {
+      console.log('⚠️ No menu items found (non-critical)');
+      menuItems = [];
+    }
     
-    // Try to fetch reviews (if they exist)
     let reviews = [];
     try {
       reviews = await RestaurantReview.find({ 
-        restaurant_id: req. params.id, 
+        restaurant_id: req.params.id, 
         is_reported: false 
       }).sort({ created_at: -1 }).limit(10).lean();
       console.log(`⭐ Found ${reviews.length} reviews`);
@@ -167,7 +210,6 @@ try {
       reviews = [];
     }
     
-    // Return combined data
     const response = {
       ...formattedRestaurant,
       menu_items: menuItems,
@@ -182,6 +224,7 @@ try {
     res.status(500).json({ error: error.message });
   }
 });
+
 router.get('/:id/menu', async (req, res) => {
   try {
     const { budget, category } = req.query;
@@ -190,7 +233,6 @@ router.get('/:id/menu', async (req, res) => {
       is_available: true 
     };
     
-    // Only apply budget filter if provided and less than max
     if (budget && parseFloat(budget) < 100000) {
       query.price = { $lte: parseFloat(budget) };
     }
@@ -229,16 +271,36 @@ router.get('/:id/menu-reviews', async (req, res) => {
   }
 });
 
+router.get('/:id/reviews', async (req, res) => {
+  try {
+    const reviews = await RestaurantReview.find({ 
+      restaurant_id: req.params.id, 
+      is_reported: false 
+    }).sort({ created_at: -1 }).lean();
+    
+    res.json(reviews);
+  } catch (error) {
+    console.error('Get reviews error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============= REVIEW CREATION ROUTES =============
+
 router.post('/:id/reviews', authenticateToken, async (req, res) => {
   try {
     const { rating, review_text, images } = req.body;
     
+    if (!rating && !review_text && (!images || images.length === 0)) {
+      return res.status(400).json({ error: 'Please provide at least a rating, comment, or image' });
+    }
+    
     const review = new RestaurantReview({
-      restaurant_id: req. params.id,
+      restaurant_id: req.params.id,
       user_id: req.user.id,
-      rating,
-      review_text,
-      images:  images || [],
+      rating: rating || 0,
+      review_text: review_text || '',
+      images: images || [],
       user_name: req.user.full_name || req.user.email
     });
     
@@ -255,42 +317,33 @@ router.post('/:id/reviews', authenticateToken, async (req, res) => {
 router.post('/menu/:menuItemId/reviews', authenticateToken, async (req, res) => {
   try {
     const { rating, review_text, images } = req.body;
+    
+    if (!rating && !review_text && (!images || images.length === 0)) {
+      return res.status(400).json({ error: 'Please provide at least a rating, comment, or image' });
+    }
+    
     const menuItem = await MenuItem.findById(req.params.menuItemId).lean();
     
     if (!menuItem) {
-      return res. status(404).json({ error: 'Menu item not found' });
+      return res.status(404).json({ error: 'Menu item not found' });
     }
     
     const review = new MenuItemReview({
-      menu_item_id:  req.params.menuItemId,
+      menu_item_id: req.params.menuItemId,
       restaurant_id: menuItem.restaurant_id,
-      user_id: req.user. id,
-      rating,
-      review_text,
-      images:  images || [],
+      user_id: req.user.id,
+      rating: rating || 0,
+      review_text: review_text || '',
+      images: images || [],
       user_name: req.user.full_name || req.user.email
     });
     
-    await review. save();
+    await review.save();
     await updateMenuItemRating(req.params.menuItemId);
     
     res.status(201).json(review);
   } catch (error) {
     console.error('Create menu review error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-router.get('/:id/reviews', async (req, res) => {
-  try {
-    const reviews = await RestaurantReview.find({ 
-      restaurant_id: req.params.id, 
-      is_reported: false 
-    }).sort({ created_at: -1 }).lean();
-    
-    res.json(reviews);
-  } catch (error) {
-    console.error('Get reviews error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -309,7 +362,7 @@ router.get('/community/posts', async (req, res) => {
       query.post_type = post_type;
     }
     
-    let posts = await CommunityPost. find(query)
+    let posts = await CommunityPost.find(query)
       .populate('restaurant_id', 'name city rating cuisine_types image_url')
       .sort({ created_at: -1 })
       .limit(50)
@@ -317,13 +370,13 @@ router.get('/community/posts', async (req, res) => {
     
     if (cuisine && cuisine !== 'all') {
       posts = posts.filter(post => 
-        post.restaurant_id?. cuisine_types?. includes(cuisine)
+        post.restaurant_id?.cuisine_types?.includes(cuisine)
       );
     }
     
     if (req.user) {
       const userLikes = await PostLike.find({ user_id: req.user.id }).lean();
-      const likedPostIds = new Set(userLikes.map(like => like.post_id. toString()));
+      const likedPostIds = new Set(userLikes.map(like => like.post_id.toString()));
       
       posts = posts.map(post => ({
         ...post,
@@ -389,12 +442,12 @@ router.post('/community/posts/:postId/like', authenticateToken, async (req, res)
       res.json({ message: 'Post unliked', liked: false });
     } else {
       const like = new PostLike({
-        user_id: req.user. id,
-        post_id:  postId
+        user_id: req.user.id,
+        post_id: postId
       });
       await like.save();
       await CommunityPost.findByIdAndUpdate(postId, {
-        $inc: { likes_count:  1 }
+        $inc: { likes_count: 1 }
       });
       res.json({ message: 'Post liked', liked: true });
     }
@@ -413,17 +466,17 @@ router.delete('/community/posts/:postId', authenticateToken, async (req, res) =>
     }
     
     const isSuperAdmin = req.user.email === 'alinarafiq0676@gmail.com';
-    const adminData = await RestaurantAdmin. findOne({
-      user_id: req. user.id,
+    const adminData = await RestaurantAdmin.findOne({
+      user_id: req.user.id,
       status: 'approved',
-      restaurant_id: post. restaurant_id
+      restaurant_id: post.restaurant_id
     }).lean();
     
     if (!isSuperAdmin && !adminData) {
       return res.status(403).json({ error: 'Not authorized' });
     }
     
-    await CommunityPost.findByIdAndDelete(req.params. postId);
+    await CommunityPost.findByIdAndDelete(req.params.postId);
     res.json({ message: 'Post deleted' });
   } catch (error) {
     console.error('Delete post error:', error);
@@ -464,12 +517,12 @@ router.post('/admin/request', authenticateToken, async (req, res) => {
 
 router.get('/admin/status', authenticateToken, async (req, res) => {
   try {
-    const adminData = await RestaurantAdmin.findOne({ user_id: req.user. id })
+    const adminData = await RestaurantAdmin.findOne({ user_id: req.user.id })
       .populate('restaurant_id')
       .lean();
     
     if (!adminData) {
-      return res. json({ status: 'none' });
+      return res.json({ status: 'none' });
     }
     
     res.json(adminData);
@@ -482,11 +535,11 @@ router.get('/admin/status', authenticateToken, async (req, res) => {
 router.get('/admin/my-restaurant', authenticateToken, async (req, res) => {
   try {
     const adminData = await RestaurantAdmin.findOne({ 
-      user_id: req. user.id, 
+      user_id: req.user.id, 
       status: 'approved' 
     }).lean();
     
-    if (!adminData || ! adminData.restaurant_id) {
+    if (!adminData || !adminData.restaurant_id) {
       return res.status(404).json({ error: 'No approved restaurant found' });
     }
     
@@ -504,7 +557,7 @@ router.get('/admin/my-restaurant', authenticateToken, async (req, res) => {
 
 router.post('/admin/menu', authenticateToken, async (req, res) => {
   try {
-    const adminData = await RestaurantAdmin. findOne({ 
+    const adminData = await RestaurantAdmin.findOne({ 
       user_id: req.user.id, 
       status: 'approved' 
     }).lean();
@@ -513,7 +566,7 @@ router.post('/admin/menu', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: 'Not authorized' });
     }
     
-    const menuItem = new MenuItem({ ... req.body, restaurant_id: adminData.restaurant_id });
+    const menuItem = new MenuItem({ ...req.body, restaurant_id: adminData.restaurant_id });
     await menuItem.save();
     
     res.status(201).json(menuItem);
@@ -543,21 +596,21 @@ router.put('/admin/menu/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Menu item not found' });
     }
     
-    Object.assign(menuItem, req. body);
+    Object.assign(menuItem, req.body);
     menuItem.updated_at = new Date();
-    await menuItem. save();
+    await menuItem.save();
     
     res.json(menuItem);
   } catch (error) {
     console.error('Update menu item error:', error);
-    res.status(500).json({ error: error. message });
+    res.status(500).json({ error: error.message });
   }
 });
 
 router.delete('/admin/menu/:id', authenticateToken, async (req, res) => {
   try {
     const adminData = await RestaurantAdmin.findOne({ 
-      user_id:  req.user.id, 
+      user_id: req.user.id, 
       status: 'approved' 
     }).lean();
     
@@ -565,7 +618,7 @@ router.delete('/admin/menu/:id', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: 'Not authorized' });
     }
     
-    const menuItem = await MenuItem. findOne({ 
+    const menuItem = await MenuItem.findOne({ 
       _id: req.params.id, 
       restaurant_id: adminData.restaurant_id 
     });
@@ -587,7 +640,7 @@ router.post('/admin/menu/:id/discount', authenticateToken, async (req, res) => {
     const { discount_percentage } = req.body;
     
     const adminData = await RestaurantAdmin.findOne({ 
-      user_id: req. user.id, 
+      user_id: req.user.id, 
       status: 'approved' 
     }).lean();
     
@@ -619,10 +672,10 @@ router.post('/admin/menu/:id/discount', authenticateToken, async (req, res) => {
 
 router.post('/admin/bulk-discount', authenticateToken, async (req, res) => {
   try {
-    const { restaurant_id, category, discount_percentage } = req. body;
+    const { restaurant_id, category, discount_percentage } = req.body;
     
-    const adminData = await RestaurantAdmin. findOne({
-      user_id: req. user.id,
+    const adminData = await RestaurantAdmin.findOne({
+      user_id: req.user.id,
       status: 'approved',
       restaurant_id: restaurant_id
     }).lean();
@@ -647,7 +700,7 @@ router.post('/admin/bulk-discount', authenticateToken, async (req, res) => {
     }
     
     const updates = menuItems.map(async (item) => {
-      if (! item.original_price || item.discount_percentage === 0) {
+      if (!item.original_price || item.discount_percentage === 0) {
         item.original_price = item.price;
       }
       
@@ -660,12 +713,12 @@ router.post('/admin/bulk-discount', authenticateToken, async (req, res) => {
       }
       
       item.updated_at = new Date();
-      return item. save();
+      return item.save();
     });
     
     await Promise.all(updates);
     
-    console.log(`Bulk discount applied:  ${discount_percentage}% to ${menuItems.length} items`);
+    console.log(`Bulk discount applied: ${discount_percentage}% to ${menuItems.length} items`);
     res.json({ 
       message: 'Discount applied successfully',
       items_updated: menuItems.length
@@ -681,7 +734,7 @@ router.post('/admin/report', authenticateToken, async (req, res) => {
     const { review_id, report_type, reason, restaurant_id } = req.body;
     
     const adminData = await RestaurantAdmin.findOne({ 
-      user_id:  req.user.id, 
+      user_id: req.user.id, 
       status: 'approved' 
     }).lean();
     
@@ -702,7 +755,7 @@ router.post('/admin/report', authenticateToken, async (req, res) => {
     if (report_type === 'restaurant_review') {
       await RestaurantReview.findByIdAndUpdate(review_id, { is_reported: true });
     } else {
-      await MenuItemReview. findByIdAndUpdate(review_id, { is_reported: true });
+      await MenuItemReview.findByIdAndUpdate(review_id, { is_reported: true });
     }
     
     res.status(201).json({ message: 'Report submitted successfully' });
@@ -884,7 +937,7 @@ router.get('/superadmin/all-restaurants', authenticateToken, async (req, res) =>
 
 router.get('/superadmin/restaurants/:restaurantId/menu', authenticateToken, async (req, res) => {
   try {
-    if (req. user.email !== 'alinarafiq0676@gmail.com') {
+    if (req.user.email !== 'alinarafiq0676@gmail.com') {
       return res.status(403).json({ error: 'Not authorized' });
     }
     
@@ -898,7 +951,7 @@ router.get('/superadmin/restaurants/:restaurantId/menu', authenticateToken, asyn
 
 router.put('/superadmin/menu/:itemId', authenticateToken, async (req, res) => {
   try {
-    if (req. user.email !== 'alinarafiq0676@gmail.com') {
+    if (req.user.email !== 'alinarafiq0676@gmail.com') {
       return res.status(403).json({ error: 'Not authorized' });
     }
     
@@ -907,7 +960,7 @@ router.put('/superadmin/menu/:itemId', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Menu item not found' });
     }
     
-    Object.assign(menuItem, req. body);
+    Object.assign(menuItem, req.body);
     menuItem.updated_at = new Date();
     await menuItem.save();
     
@@ -955,7 +1008,7 @@ router.delete('/superadmin/restaurants/:restaurantId', authenticateToken, async 
     await CommunityPost.deleteMany({ restaurant_id: req.params.restaurantId });
     
     await RestaurantAdmin.updateMany(
-      { restaurant_id:  req.params.restaurantId },
+      { restaurant_id: req.params.restaurantId },
       { status: 'rejected', restaurant_id: null }
     );
     
@@ -970,20 +1023,9 @@ router.delete('/superadmin/restaurants/:restaurantId', authenticateToken, async 
 
 // ============= HELPER FUNCTIONS =============
 
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radius of Earth in km
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-}
-
 async function updateRestaurantRating(restaurantId) {
   try {
-    const reviews = await RestaurantReview. find({ 
+    const reviews = await RestaurantReview.find({ 
       restaurant_id: restaurantId, 
       is_reported: false 
     }).lean();
@@ -1004,13 +1046,13 @@ async function updateMenuItemRating(menuItemId) {
   try {
     const reviews = await MenuItemReview.find({ 
       menu_item_id: menuItemId, 
-      is_reported:  false 
+      is_reported: false 
     }).lean();
     
     if (reviews.length > 0) {
       const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
-      await MenuItem. findByIdAndUpdate(menuItemId, { 
-        rating:  avgRating, 
+      await MenuItem.findByIdAndUpdate(menuItemId, { 
+        rating: avgRating, 
         review_count: reviews.length 
       });
     }

@@ -15,6 +15,7 @@ import RestaurantDiscovery from "./pages/RestaurantDiscovery";
 import RestaurantDetail from "./pages/RestaurantDetail";
 import AdminDashboard from "./pages/AdminDashboard";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
+import RestaurantCommunity from '@/pages/RestaurantCommunity';
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
@@ -155,6 +156,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           } 
         />
+        <Route path="/restaurant-community" element={<ProtectedRoute><RestaurantCommunity /></ProtectedRoute>} />
         
         <Route path="*" element={<NotFound />} />
       </Routes>
