@@ -922,13 +922,28 @@ router.get('/superadmin/all-restaurants', authenticateToken, async (req, res) =>
     if (req.user.email !== 'alinarafiq0676@gmail.com') {
       return res.status(403).json({ error: 'Not authorized' });
     }
-    
-    const restaurants = await Restaurant.find()
-      .populate('admin_id', 'email full_name')
-      .sort({ created_at: -1 })
-      .lean();
-    
-    res.json(restaurants);
+
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
+
+    const [restaurants, total] = await Promise.all([
+      Restaurant.find()
+        .populate('admin_id', 'email full_name')
+        .sort({ created_at: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Restaurant.countDocuments(),
+    ]);
+
+    res.json({
+      restaurants,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit) || 1,
+    });
   } catch (error) {
     console.error('Get all restaurants error:', error);
     res.status(500).json({ error: error.message });

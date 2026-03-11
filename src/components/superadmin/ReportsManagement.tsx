@@ -34,11 +34,8 @@ const ReportsManagement = ({ onUpdate }: ReportsManagementProps) => {
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const { data, error } = await mongoClient. request('/restaurants/superadmin/reports');
-      
-      if (error) throw error;
-      
-      setReports(data || []);
+      const data = await mongoClient.request('/restaurants/superadmin/reports');
+      setReports(Array.isArray(data) ? data : []);
     } catch (error:  any) {
       console.error('Fetch reports error:', error);
       toast({
@@ -55,7 +52,7 @@ const ReportsManagement = ({ onUpdate }: ReportsManagementProps) => {
     setSubmitting(true);
 
     try {
-      const { error } = await mongoClient.request(`/restaurants/superadmin/reports/${resolvingReport._id}/resolve`, {
+      await mongoClient.request(`/restaurants/superadmin/reports/${resolvingReport._id}/resolve`, {
         method: 'POST',
         body: JSON.stringify({
           action: 'delete_review',
@@ -63,8 +60,6 @@ const ReportsManagement = ({ onUpdate }: ReportsManagementProps) => {
           block_user: blockUser
         })
       });
-
-      if (error) throw error;
 
       toast({
         title: "Success",

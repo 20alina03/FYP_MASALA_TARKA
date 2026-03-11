@@ -41,10 +41,7 @@ const AdminDashboard = () => {
   const checkAdminStatus = async () => {
     try {
       setLoading(true);
-      const { data, error } = await mongoClient.request('/restaurants/admin/status');
-      
-      if (error) throw error;
-      
+      const data = await mongoClient.request('/restaurants/admin/status');
       setAdminStatus(data);
     } catch (error: any) {
       console.error('Check admin status error:', error);
@@ -60,11 +57,8 @@ const AdminDashboard = () => {
 
   const fetchRestaurantData = async () => {
     try {
-      const { data, error } = await mongoClient. request('/restaurants/admin/my-restaurant');
-      
-      if (error) throw error;
-      
-      setRestaurant(data. restaurant);
+      const data = await mongoClient.request('/restaurants/admin/my-restaurant');
+      setRestaurant(data.restaurant);
       setMenuItems(data.menu_items || []);
       setReviews(data.reviews || []);
       setMenuReviews(data.menu_reviews || []);

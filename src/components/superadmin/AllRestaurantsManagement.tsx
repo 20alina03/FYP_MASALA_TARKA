@@ -13,19 +13,27 @@ const AllRestaurantsManagement = () => {
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     fetchRestaurants();
-  }, []);
+  }, [page]);
 
   const fetchRestaurants = async () => {
     try {
       setLoading(true);
-      const { data, error } = await mongoClient.request('/restaurants/superadmin/all-restaurants');
-      
-      if (error) throw error;
-      
-      setRestaurants(data || []);
+      const data = await mongoClient.request(
+        `/restaurants/superadmin/all-restaurants?page=${page}&limit=10`
+      );
+      if (Array.isArray(data)) {
+        // Backward compatibility: endpoint returns plain array
+        setRestaurants(data);
+        setTotalPages(1);
+      } else {
+        setRestaurants(Array.isArray(data.restaurants) ? data.restaurants : []);
+        setTotalPages(data.totalPages || 1);
+      }
     } catch (error:  any) {
       console.error('Fetch restaurants error:', error);
       toast({
@@ -129,7 +137,7 @@ const AllRestaurantsManagement = () => {
 
                     <Button
                       variant="outline"
-                      onClick={() => navigate(`/restaurants/${restaurant._id}`)}
+                      onClick={() => navigate(`/restaurants/${restaurant._id}?from=superadmin`)}
                     >
                       View Details
                     </Button>
@@ -137,6 +145,27 @@ const AllRestaurantsManagement = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between mt-6">
+            <Button
+              variant="outline"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              Next
+            </Button>
           </div>
 
           {filteredRestaurants.length === 0 && (

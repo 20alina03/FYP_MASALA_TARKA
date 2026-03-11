@@ -21,11 +21,8 @@ const AdminRequestsManagement = ({ onUpdate }: AdminRequestsManagementProps) => 
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const { data, error } = await mongoClient.request('/restaurants/superadmin/requests');
-      
-      if (error) throw error;
-      
-      setRequests(data || []);
+      const data = await mongoClient.request('/restaurants/superadmin/requests');
+      setRequests(Array.isArray(data) ? data : []);
     } catch (error: any) {
       console.error('Fetch requests error:', error);
       toast({
@@ -42,11 +39,9 @@ const AdminRequestsManagement = ({ onUpdate }: AdminRequestsManagementProps) => 
     if (! confirm('Are you sure you want to approve this admin request?')) return;
 
     try {
-      const { error } = await mongoClient.request(`/restaurants/superadmin/approve/${requestId}`, {
+      await mongoClient.request(`/restaurants/superadmin/approve/${requestId}`, {
         method: 'POST'
       });
-
-      if (error) throw error;
 
       toast({
         title: "Success",
@@ -69,11 +64,9 @@ const AdminRequestsManagement = ({ onUpdate }: AdminRequestsManagementProps) => 
     if (!confirm('Are you sure you want to reject this admin request?')) return;
 
     try {
-      const { error } = await mongoClient.request(`/restaurants/superadmin/reject/${requestId}`, {
+      await mongoClient.request(`/restaurants/superadmin/reject/${requestId}`, {
         method: 'POST'
       });
-
-      if (error) throw error;
 
       toast({
         title:  "Success",

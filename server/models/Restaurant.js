@@ -24,6 +24,8 @@ const restaurantSchema = new mongoose.Schema({
   url_key: String,
   code: String,
   external_id: String,
+  admin_id: {type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',},
   created_at: { type: Date, default: Date. now },
   updated_at:  { type: Date, default: Date.now }
 }, { 

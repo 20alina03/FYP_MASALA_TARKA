@@ -46,12 +46,10 @@ const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
         cuisine_types: formData.cuisine_types. split(',').map(c => c.trim()).filter(c => c)
       };
 
-      const { data, error } = await mongoClient.request('/restaurants/admin/request', {
+      await mongoClient.request('/restaurants/admin/request', {
         method: 'POST',
         body: JSON.stringify(payload)
       });
-
-      if (error) throw error;
 
       toast({
         title: "Request submitted! ",

@@ -34,8 +34,8 @@ const Navigation = () => {
     
     // Check if admin
     try {
-      const { data } = await mongoClient.request('/restaurants/admin/status');
-      setIsAdmin(data?. status === 'approved');
+      const data = await mongoClient.request('/restaurants/admin/status');
+      setIsAdmin(data?.status === 'approved');
     } catch (error) {
       console.error('Check admin status error:', error);
     }

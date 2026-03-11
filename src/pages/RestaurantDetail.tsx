@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { mongoClient } from '@/lib/mongodb-client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ import {
 
 const RestaurantDetail = () => {
   const { id } = useParams();
+  const location = useLocation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [restaurant, setRestaurant] = useState<any>(null);
@@ -34,6 +35,9 @@ const RestaurantDetail = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('popular');
   const [showReviewModal, setShowReviewModal] = useState(false);
+
+  const searchParams = new URLSearchParams(location.search);
+  const isFromSuperAdmin = searchParams.get('from') === 'superadmin';
 
   useEffect(() => {
     fetchRestaurantDetails();
@@ -194,9 +198,14 @@ const RestaurantDetail = () => {
         <RestaurantNavigation />
         <div className="container mx-auto px-4 py-8 text-center">
           <p className="text-muted-foreground text-lg">Restaurant not found</p>
-          <Button onClick={() => navigate('/restaurants')} className="mt-4">
+          <Button
+            onClick={() =>
+              navigate(isFromSuperAdmin ? '/superadmin-dashboard?tab=restaurants' : '/restaurants')
+            }
+            className="mt-4"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Discovery
+            {isFromSuperAdmin ? 'Back to Super Admin' : 'Back to Discovery'}
           </Button>
         </div>
       </div>
@@ -211,11 +220,13 @@ const RestaurantDetail = () => {
         {/* Back Button */}
         <Button 
           variant="ghost" 
-          onClick={() => navigate('/restaurants')}
+          onClick={() =>
+            navigate(isFromSuperAdmin ? '/superadmin-dashboard?tab=restaurants' : '/restaurants')
+          }
           className="mb-4"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Discovery
+          {isFromSuperAdmin ? 'Back to Super Admin' : 'Back to Discovery'}
         </Button>
 
         {/* Restaurant Header */}

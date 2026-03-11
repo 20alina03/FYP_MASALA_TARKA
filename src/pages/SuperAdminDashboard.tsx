@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { Store, Users, AlertCircle, CheckCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AdminRequestsManagement from '@/components/superadmin/AdminRequestsManagement';
 import AllRestaurantsManagement from '@/components/superadmin/AllRestaurantsManagement';
 import ReportsManagement from '@/components/superadmin/ReportsManagement';
@@ -14,6 +14,7 @@ import RestaurantNavigation from '@/components/RestaurantNavigation';
 const RestaurantSuperAdmin = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [stats, setStats] = useState({
     pendingRequests: 0,
     totalRestaurants: 0,
@@ -21,6 +22,16 @@ const RestaurantSuperAdmin = () => {
     totalAdmins: 0
   });
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'requests' | 'restaurants' | 'reports'>('requests');
+
+  useEffect(() => {
+    // Initialize active tab from query parameter if present
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab') as 'requests' | 'restaurants' | 'reports' | null;
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     if (user?.email !== 'alinarafiq0676@gmail.com') {
@@ -45,13 +56,27 @@ const RestaurantSuperAdmin = () => {
         mongoClient.request('/restaurants/superadmin/all-restaurants'),
         mongoClient. request('/restaurants/superadmin/reports')
       ]);
-      
-      setStats({
-        pendingRequests: requestsRes.data?. filter((r: any) => r.status === 'pending').length || 0,
-        totalRestaurants:  restaurantsRes.data?.length || 0,
-        pendingReports: reportsRes.data?.filter((r: any) => r.status === 'pending').length || 0,
-        totalAdmins: requestsRes.data?.filter((r: any) => r.status === 'approved').length || 0
-      });
+
+      const requests = Array.isArray(requestsRes) ? requestsRes : [];
+      const restaurantsData = restaurantsRes as any;
+
+const restaurants = Array.isArray(restaurantsRes)
+  ? restaurantsRes
+  : Array.isArray(restaurantsData?.restaurants)
+    ? restaurantsData.restaurants
+    : [];
+
+const totalRestaurants =
+  typeof restaurantsData?.total === 'number'
+    ? restaurantsData.total
+    : restaurants.length;
+
+setStats({
+  pendingRequests: requests.filter((r: any) => r.status === 'pending').length || 0,
+  totalRestaurants,
+  pendingReports: reportsRes.filter((r: any) => r.status === 'pending').length || 0,
+  totalAdmins: requests.filter((r: any) => r.status === 'approved').length || 0,
+});
     } catch (error:  any) {
       console.error('Fetch stats error:', error);
       toast({
@@ -144,7 +169,11 @@ const RestaurantSuperAdmin = () => {
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="requests" className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as 'requests' | 'restaurants' | 'reports')}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="requests">
               Admin Requests
