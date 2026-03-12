@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MapPin, Star, Search } from 'lucide-react';
+import { MapPin, Star, Search, UtensilsCrossed, Store } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import RestaurantNavigation from '@/components/RestaurantNavigation';
 import { useNavigate } from 'react-router-dom';
@@ -35,7 +35,8 @@ const RestaurantCommunity = () => {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [restaurantSearch, setRestaurantSearch] = useState('');
+  const [menuItemSearch, setMenuItemSearch] = useState('');
   const [selectedCuisine, setSelectedCuisine] = useState('all');
   const [reviewType, setReviewType] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState('all');
@@ -47,13 +48,18 @@ const RestaurantCommunity = () => {
     fetchReviews();
   }, [selectedCuisine, reviewType]);
 
+  // Reset menu item search when restaurant search is cleared
+  useEffect(() => {
+    if (!restaurantSearch.trim()) {
+      setMenuItemSearch('');
+    }
+  }, [restaurantSearch]);
+
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      
       const token = localStorage.getItem('token');
-      
-      // Fetch both restaurant and menu item reviews
+
       const [restaurantReviewsRes, menuReviewsRes] = await Promise.all([
         fetch('http://localhost:5000/api/restaurants/all-reviews', {
           headers: {
@@ -72,7 +78,6 @@ const RestaurantCommunity = () => {
       const restaurantReviews = restaurantReviewsRes.ok ? await restaurantReviewsRes.json() : [];
       const menuReviews = menuReviewsRes.ok ? await menuReviewsRes.json() : [];
 
-      // Combine and format reviews
       const formattedRestaurantReviews = restaurantReviews.map((r: any) => ({
         ...r,
         review_type: 'restaurant' as const,
@@ -109,16 +114,28 @@ const RestaurantCommunity = () => {
   };
 
   const filteredReviews = reviews.filter(review => {
-    // Search filter
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = 
-        review.restaurant_name?.toLowerCase().includes(searchLower) ||
-        review.menu_item_name?.toLowerCase().includes(searchLower) ||
-        review.review_text?.toLowerCase().includes(searchLower) ||
-        review.user_name?.toLowerCase().includes(searchLower);
-      
-      if (!matchesSearch) return false;
+    const restaurantSearchLower = restaurantSearch.trim().toLowerCase();
+    const menuItemSearchLower = menuItemSearch.trim().toLowerCase();
+
+    // --- Restaurant search logic ---
+    if (restaurantSearchLower) {
+      const matchesRestaurant = review.restaurant_name?.toLowerCase().includes(restaurantSearchLower);
+      if (!matchesRestaurant) return false;
+
+      // If restaurant is matched and menu item search is active,
+      // only show menu_item reviews matching the dish name
+      if (menuItemSearchLower) {
+        if (review.review_type !== 'menu_item') return false;
+        const matchesMenuItem = review.menu_item_name?.toLowerCase().includes(menuItemSearchLower);
+        if (!matchesMenuItem) return false;
+      }
+    } else {
+      // No restaurant searched — if menu item search is active, search all menu item reviews
+      if (menuItemSearchLower) {
+        if (review.review_type !== 'menu_item') return false;
+        const matchesMenuItem = review.menu_item_name?.toLowerCase().includes(menuItemSearchLower);
+        if (!matchesMenuItem) return false;
+      }
     }
 
     // Review type filter
@@ -130,11 +147,19 @@ const RestaurantCommunity = () => {
     return true;
   });
 
+  // Derive matched restaurant names for the hint label
+  const matchedRestaurants = restaurantSearch.trim()
+    ? [...new Set(
+        reviews
+          .filter(r => r.restaurant_name?.toLowerCase().includes(restaurantSearch.trim().toLowerCase()))
+          .map(r => r.restaurant_name)
+      )]
+    : [];
+
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
     if (seconds < 60) return 'just now';
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `${minutes}m ago`;
@@ -151,7 +176,7 @@ const RestaurantCommunity = () => {
   return (
     <div className="min-h-screen bg-background">
       <RestaurantNavigation />
-      
+
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
@@ -165,17 +190,66 @@ const RestaurantCommunity = () => {
         {/* Filters */}
         <Card className="mb-8 p-6">
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search reviews, restaurants, dishes..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+
+            {/* Two Search Bars */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Restaurant Search */}
+              <div className="space-y-1">
+                <label className="text-sm font-medium flex items-center gap-1.5 text-muted-foreground">
+                  <Store className="w-3.5 h-3.5" />
+                  Search Restaurant
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder="e.g. Pizza Palace, Burger Barn..."
+                    value={restaurantSearch}
+                    onChange={(e) => setRestaurantSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                {matchedRestaurants.length > 0 && restaurantSearch.trim() && (
+                  <p className="text-xs text-muted-foreground">
+                    Showing results for: {matchedRestaurants.slice(0, 3).join(', ')}
+                    {matchedRestaurants.length > 3 && ` +${matchedRestaurants.length - 3} more`}
+                  </p>
+                )}
               </div>
 
+              {/* Menu Item Search */}
+              <div className="space-y-1">
+                <label className="text-sm font-medium flex items-center gap-1.5 text-muted-foreground">
+                  <UtensilsCrossed className="w-3.5 h-3.5" />
+                  Search Dish
+                  {restaurantSearch.trim() && matchedRestaurants.length > 0 && (
+                    <Badge variant="secondary" className="text-xs ml-1">
+                      within matched restaurants
+                    </Badge>
+                  )}
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder={
+                      restaurantSearch.trim()
+                        ? `Search dishes in matched restaurants...`
+                        : 'Search all dishes across restaurants...'
+                    }
+                    value={menuItemSearch}
+                    onChange={(e) => setMenuItemSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                {!restaurantSearch.trim() && menuItemSearch.trim() && (
+                  <p className="text-xs text-muted-foreground">
+                    Searching dishes across all restaurants
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Other filters */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select value={reviewType} onValueChange={setReviewType}>
                 <SelectTrigger>
                   <SelectValue placeholder="Review Type" />
@@ -224,6 +298,40 @@ const RestaurantCommunity = () => {
           </div>
         </Card>
 
+        {/* Active Search Summary */}
+        {(restaurantSearch.trim() || menuItemSearch.trim()) && (
+          <div className="mb-4 flex items-center gap-2 flex-wrap">
+            <span className="text-sm text-muted-foreground">Active filters:</span>
+            {restaurantSearch.trim() && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Store className="w-3 h-3" />
+                Restaurant: "{restaurantSearch}"
+                <button
+                  onClick={() => setRestaurantSearch('')}
+                  className="ml-1 hover:text-destructive transition-colors"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {menuItemSearch.trim() && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <UtensilsCrossed className="w-3 h-3" />
+                Dish: "{menuItemSearch}"
+                <button
+                  onClick={() => setMenuItemSearch('')}
+                  className="ml-1 hover:text-destructive transition-colors"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            <span className="text-xs text-muted-foreground">
+              ({filteredReviews.length} result{filteredReviews.length !== 1 ? 's' : ''})
+            </span>
+          </div>
+        )}
+
         {/* Reviews Feed */}
         {loading ? (
           <div className="space-y-6">
@@ -236,14 +344,23 @@ const RestaurantCommunity = () => {
         ) : filteredReviews.length === 0 ? (
           <Card className="p-12 text-center">
             <p className="text-muted-foreground text-lg">
-              No reviews found. Be the first to review!
+              {restaurantSearch.trim() || menuItemSearch.trim()
+                ? 'No reviews match your search. Try different keywords.'
+                : 'No reviews found. Be the first to review!'}
             </p>
-            <Button 
-              onClick={() => navigate('/restaurants')}
-              className="mt-4"
-            >
-              Discover Restaurants
-            </Button>
+            {(restaurantSearch.trim() || menuItemSearch.trim()) ? (
+              <Button
+                variant="outline"
+                onClick={() => { setRestaurantSearch(''); setMenuItemSearch(''); }}
+                className="mt-4"
+              >
+                Clear Search
+              </Button>
+            ) : (
+              <Button onClick={() => navigate('/restaurants')} className="mt-4">
+                Discover Restaurants
+              </Button>
+            )}
           </Card>
         ) : (
           <div className="space-y-6">
@@ -264,7 +381,7 @@ const RestaurantCommunity = () => {
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span 
+                        <span
                           className="hover:text-primary cursor-pointer font-medium"
                           onClick={() => handleRestaurantClick(review.restaurant_id?._id || review.restaurant_id)}
                         >
@@ -294,12 +411,10 @@ const RestaurantCommunity = () => {
                 </CardHeader>
 
                 <CardContent className="pt-0">
-                  {/* Review Text */}
                   {review.review_text && (
                     <p className="mb-4 whitespace-pre-wrap text-sm">{review.review_text}</p>
                   )}
 
-                  {/* Images */}
                   {review.images && review.images.length > 0 && (
                     <div className="flex gap-2 mb-4 overflow-x-auto">
                       {review.images.map((img, idx) => (
@@ -314,7 +429,6 @@ const RestaurantCommunity = () => {
                     </div>
                   )}
 
-                  {/* Actions */}
                   <div className="flex items-center gap-4 pt-4 border-t">
                     <Button
                       variant="ghost"

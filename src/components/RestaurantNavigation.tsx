@@ -23,6 +23,7 @@ const RestaurantNavigation = () => {
               variant={isActive('/restaurants') ? 'default' : 'ghost'}
               size="sm"
               asChild
+              className={isActive('/restaurants') ? 'text-white [&_svg]:text-white' : ''}
             >
               <Link to="/restaurants" className="flex items-center space-x-2">
                 <MapPin className="w-4 h-4" />
@@ -34,6 +35,7 @@ const RestaurantNavigation = () => {
               variant={isActive('/restaurant-community') ? 'default' : 'ghost'}
               size="sm"
               asChild
+              className={isActive('/restaurant-community') ? 'text-white [&_svg]:text-white' : ''}
             >
               <Link to="/restaurant-community" className="flex items-center space-x-2">
                 <Users className="w-4 h-4" />
