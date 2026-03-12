@@ -383,16 +383,16 @@ const RestaurantDiscovery = () => {
                           Select a location:
                         </p>
                         {LAHORE_LOCATIONS.map((loc, idx) => (
-                          <Button
-                            key={idx}
-                            variant="ghost"
-                            className="w-full justify-start mb-1 hover:bg-primary/10"
-                            onClick={() => selectLocation(loc)}
-                          >
-                            <MapPin className="w-4 h-4 mr-2 text-primary" />
-                            <span className="text-left">{loc.name}</span>
-                          </Button>
-                        ))}
+  <Button
+    key={idx}
+    variant="ghost"
+    className="w-full justify-start mb-1 text-foreground hover:bg-primary/10 hover:text-foreground"
+    onClick={() => selectLocation(loc)}
+  >
+    <MapPin className="w-4 h-4 mr-2 text-primary" />
+    <span className="text-left text-foreground">{loc.name}</span>
+  </Button>
+))}
                       </div>
                     </Card>
                   )}
