@@ -951,6 +951,50 @@ router.get('/superadmin/all-restaurants', authenticateToken, async (req, res) =>
   }
 });
 
+router.post('/superadmin/restaurants', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.email !== 'alinarafiq0676@gmail.com') {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const {
+      name,
+      address,
+      city,
+      contact_number,
+      description,
+      cuisine_types,
+      latitude,
+      longitude,
+      image_url,
+    } = req.body;
+
+    if (!name || !address || !city) {
+      return res
+        .status(400)
+        .json({ error: 'Name, address, and city are required' });
+    }
+
+    const restaurant = new Restaurant({
+      name,
+      address,
+      city,
+      contact_number,
+      description,
+      cuisine_types: Array.isArray(cuisine_types) ? cuisine_types : [],
+      latitude,
+      longitude,
+      image_url,
+    });
+
+    await restaurant.save();
+    res.status(201).json(restaurant);
+  } catch (error) {
+    console.error('Create restaurant error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.put('/superadmin/restaurants/:restaurantId', authenticateToken, async (req, res) => {
   try {
     if (req.user.email !== 'alinarafiq0676@gmail.com') {

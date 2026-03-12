@@ -24,6 +24,17 @@ const AllRestaurantsManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    name: '',
+    address: '',
+    city: '',
+    contact_number: '',
+    description: '',
+    cuisine_types: '',
+    image: '',
+  });
   const [editingRestaurant, setEditingRestaurant] = useState<any | null>(null);
   const [editForm, setEditForm] = useState({
     name: '',
@@ -91,14 +102,19 @@ const AllRestaurantsManagement = () => {
               <Store className="w-5 h-5 text-primary" />
               All Restaurants ({restaurants.length})
             </CardTitle>
-            <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Search restaurants..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+            <div className="flex items-center gap-3">
+              <div className="relative w-64">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Search restaurants..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Button variant="outline" onClick={() => setShowCreateDialog(true)}>
+                Add Restaurant
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -262,6 +278,187 @@ const AllRestaurantsManagement = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Create Restaurant Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Add New Restaurant</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="space-y-4 p-1 pr-3">
+              <div className="space-y-2">
+                <Label htmlFor="create-name">Name *</Label>
+                <Input
+                  id="create-name"
+                  value={createForm.name}
+                  onChange={e =>
+                    setCreateForm(f => ({ ...f, name: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="create-address">Address *</Label>
+                <Input
+                  id="create-address"
+                  value={createForm.address}
+                  onChange={e =>
+                    setCreateForm(f => ({ ...f, address: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="create-city">City *</Label>
+                <Input
+                  id="create-city"
+                  value={createForm.city}
+                  onChange={e =>
+                    setCreateForm(f => ({ ...f, city: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="create-contact">Contact Number</Label>
+                <Input
+                  id="create-contact"
+                  value={createForm.contact_number}
+                  onChange={e =>
+                    setCreateForm(f => ({
+                      ...f,
+                      contact_number: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="create-cuisines">
+                  Cuisine Types (comma-separated)
+                </Label>
+                <Input
+                  id="create-cuisines"
+                  value={createForm.cuisine_types}
+                  onChange={e =>
+                    setCreateForm(f => ({
+                      ...f,
+                      cuisine_types: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="create-description">Description</Label>
+                <Textarea
+                  id="create-description"
+                  rows={3}
+                  value={createForm.description}
+                  onChange={e =>
+                    setCreateForm(f => ({
+                      ...f,
+                      description: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="create-image">Restaurant Image</Label>
+                {createForm.image && (
+                  <div className="mb-2">
+                    <img
+                      src={createForm.image}
+                      alt="Preview"
+                      className="w-full max-h-48 object-cover rounded"
+                    />
+                  </div>
+                )}
+                <Input
+                  id="create-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setCreateForm(f => ({
+                        ...f,
+                        image: reader.result as string,
+                      }));
+                    };
+                    reader.readAsDataURL(file);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="mt-4 flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowCreateDialog(false)}
+              disabled={creating}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={
+                creating ||
+                !createForm.name.trim() ||
+                !createForm.address.trim() ||
+                !createForm.city.trim()
+              }
+              onClick={async () => {
+                setCreating(true);
+                try {
+                  const payload = {
+                    name: createForm.name.trim(),
+                    address: createForm.address.trim(),
+                    city: createForm.city.trim(),
+                    contact_number: createForm.contact_number.trim(),
+                    description: createForm.description.trim(),
+                    cuisine_types: createForm.cuisine_types
+                      .split(',')
+                      .map(c => c.trim())
+                      .filter(Boolean),
+                    image_url: createForm.image || undefined,
+                  };
+                  await mongoClient.request('/restaurants/superadmin/restaurants', {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                  });
+                  toast({
+                    title: 'Restaurant created',
+                    description: 'The new restaurant has been added.',
+                  });
+                  setShowCreateDialog(false);
+                  setCreateForm({
+                    name: '',
+                    address: '',
+                    city: '',
+                    contact_number: '',
+                    description: '',
+                    cuisine_types: '',
+                    image: '',
+                  });
+                  // Go back to first page to show the newest restaurant
+                  setPage(1);
+                  fetchRestaurants();
+                } catch (error: any) {
+                  console.error('Create restaurant error:', error);
+                  toast({
+                    title: 'Error',
+                    description:
+                      error?.error || error?.message || 'Failed to create restaurant',
+                    variant: 'destructive',
+                  });
+                } finally {
+                  setCreating(false);
+                }
+              }}
+            >
+              {creating ? 'Creating...' : 'Create Restaurant'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Restaurant Dialog */}
       <Dialog open={!!editingRestaurant} onOpenChange={open => !open && setEditingRestaurant(null)}>
