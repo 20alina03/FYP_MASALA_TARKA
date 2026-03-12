@@ -15,9 +15,15 @@ interface MenuItemCardProps {
   menuItem: any;
   restaurantId: string;
   onReviewAdded: () => void;
+  canSuperAdminEdit?: boolean;
 }
 
-const MenuItemCard = ({ menuItem, restaurantId, onReviewAdded }: MenuItemCardProps) => {
+const MenuItemCard = ({
+  menuItem,
+  restaurantId,
+  onReviewAdded,
+  canSuperAdminEdit,
+}: MenuItemCardProps) => {
   const { user } = useAuth();
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [rating, setRating] = useState(0);
@@ -25,6 +31,14 @@ const MenuItemCard = ({ menuItem, restaurantId, onReviewAdded }: MenuItemCardPro
   const [reviewText, setReviewText] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: menuItem.name || '',
+    price: menuItem.price || 0,
+    category: menuItem.category || '',
+    description: menuItem.description || '',
+  });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -180,17 +194,74 @@ const MenuItemCard = ({ menuItem, restaurantId, onReviewAdded }: MenuItemCardPro
             )}
           </div>
 
-          {user && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowReviewModal(true)}
-              className="w-full"
-            >
-              <Star className="w-4 h-4 mr-2" />
-              Write Review
-            </Button>
-          )}
+          <div className="flex flex-col gap-2">
+            {user && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowReviewModal(true)}
+                className="w-full"
+              >
+                <Star className="w-4 h-4 mr-2" />
+                Write Review
+              </Button>
+            )}
+
+            {canSuperAdminEdit && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    setEditForm({
+                      name: menuItem.name || '',
+                      price: menuItem.price || 0,
+                      category: menuItem.category || '',
+                      description: menuItem.description || '',
+                    });
+                    setShowEditModal(true);
+                  }}
+                >
+                  Edit Menu Item
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="w-full"
+                  onClick={async () => {
+                    if (
+                      !window.confirm(
+                        `Are you sure you want to delete "${menuItem.name}"?`,
+                      )
+                    ) {
+                      return;
+                    }
+                    try {
+                      await mongoClient.request(`/restaurants/superadmin/menu/${menuItem._id}`, {
+                        method: 'DELETE',
+                      });
+                      toast({
+                        title: 'Menu item deleted',
+                        description: 'The menu item has been removed from this restaurant.',
+                      });
+                      onReviewAdded();
+                    } catch (error: any) {
+                      console.error('Super admin delete menu item error:', error);
+                      toast({
+                        title: 'Error',
+                        description:
+                          error?.error || error?.message || 'Failed to delete menu item',
+                        variant: 'destructive',
+                      });
+                    }
+                  }}
+                >
+                  Delete Menu Item
+                </Button>
+              </>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -327,6 +398,101 @@ const MenuItemCard = ({ menuItem, restaurantId, onReviewAdded }: MenuItemCardPro
                 )}
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Super Admin Edit Menu Item Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Menu Item</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="edit-item-name">Name</Label>
+              <Input
+                id="edit-item-name"
+                value={editForm.name}
+                onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-item-price">Price (Rs.)</Label>
+              <Input
+                id="edit-item-price"
+                type="number"
+                value={editForm.price}
+                onChange={e =>
+                  setEditForm(f => ({ ...f, price: Number(e.target.value) || 0 }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-item-category">Category</Label>
+              <Input
+                id="edit-item-category"
+                value={editForm.category}
+                onChange={e => setEditForm(f => ({ ...f, category: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-item-description">Description</Label>
+              <Textarea
+                id="edit-item-description"
+                rows={3}
+                value={editForm.description}
+                onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+              />
+            </div>
+          </div>
+          <div className="flex gap-4 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1"
+              onClick={() => setShowEditModal(false)}
+              disabled={savingEdit}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="flex-1"
+              disabled={savingEdit}
+              onClick={async () => {
+                setSavingEdit(true);
+                try {
+                  const payload = {
+                    name: editForm.name,
+                    price: editForm.price,
+                    category: editForm.category,
+                    description: editForm.description,
+                  };
+                  await mongoClient.request(`/restaurants/superadmin/menu/${menuItem._id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(payload),
+                  });
+                  toast({
+                    title: 'Menu item updated',
+                    description: 'The menu item has been updated successfully.',
+                  });
+                  setShowEditModal(false);
+                  onReviewAdded();
+                } catch (error: any) {
+                  console.error('Super admin update menu item error:', error);
+                  toast({
+                    title: 'Error',
+                    description:
+                      error?.error || error?.message || 'Failed to update menu item',
+                    variant: 'destructive',
+                  });
+                } finally {
+                  setSavingEdit(false);
+                }
+              }}
+            >
+              {savingEdit ? 'Saving...' : 'Save changes'}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -38,6 +38,7 @@ const RestaurantDetail = () => {
 
   const searchParams = new URLSearchParams(location.search);
   const isFromSuperAdmin = searchParams.get('from') === 'superadmin';
+  const isSuperAdminUser = user?.email === 'alinarafiq0676@gmail.com';
 
   useEffect(() => {
     fetchRestaurantDetails();
@@ -431,6 +432,7 @@ const RestaurantDetail = () => {
                     menuItem={item}
                     restaurantId={id!}
                     onReviewAdded={fetchRestaurantDetails}
+                  canSuperAdminEdit={isSuperAdminUser && !restaurant.admin_id}
                   />
                 ))}
               </div>

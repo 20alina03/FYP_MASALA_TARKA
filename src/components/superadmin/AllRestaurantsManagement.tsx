@@ -4,6 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import { Store, Star, MapPin, Phone, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +24,16 @@ const AllRestaurantsManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [editingRestaurant, setEditingRestaurant] = useState<any | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    address: '',
+    city: '',
+    contact_number: '',
+    description: '',
+    cuisine_types: '',
+  });
+  const [savingEdit, setSavingEdit] = useState(false);
 
   useEffect(() => {
     fetchRestaurants();
@@ -135,12 +154,78 @@ const AllRestaurantsManagement = () => {
                       </div>
                     </div>
 
-                    <Button
-                      variant="outline"
-                      onClick={() => navigate(`/restaurants/${restaurant._id}?from=superadmin`)}
-                    >
-                      View Details
-                    </Button>
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          navigate(`/restaurants/${restaurant._id}?from=superadmin`)
+                        }
+                      >
+                        View Details
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditingRestaurant(restaurant);
+                          setEditForm({
+                            name: restaurant.name || '',
+                            address: restaurant.address || '',
+                            city: restaurant.city || '',
+                            contact_number: restaurant.contact_number || '',
+                            description: restaurant.description || '',
+                            cuisine_types: Array.isArray(restaurant.cuisine_types)
+                              ? restaurant.cuisine_types.join(', ')
+                              : '',
+                          });
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={async () => {
+                          if (
+                            !window.confirm(
+                              `Are you sure you want to delete "${restaurant.name}" and all its data?`,
+                            )
+                          ) {
+                            return;
+                          }
+                          try {
+                            await mongoClient.request(
+                              `/restaurants/superadmin/restaurants/${restaurant._id}`,
+                              {
+                                method: 'DELETE',
+                              },
+                            );
+                            toast({
+                              title: 'Restaurant deleted',
+                              description:
+                                'The restaurant and all related data have been removed.',
+                            });
+                            // If this page is now empty and not the first page, go back one page
+                            if (restaurants.length === 1 && page > 1) {
+                              setPage(prev => prev - 1);
+                            } else {
+                              fetchRestaurants();
+                            }
+                          } catch (error: any) {
+                            console.error('Delete restaurant error:', error);
+                            toast({
+                              title: 'Error',
+                              description:
+                                error?.error || error?.message || 'Failed to delete restaurant',
+                              variant: 'destructive',
+                            });
+                          }
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -177,6 +262,116 @@ const AllRestaurantsManagement = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Restaurant Dialog */}
+      <Dialog open={!!editingRestaurant} onOpenChange={open => !open && setEditingRestaurant(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Restaurant</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Name</Label>
+              <Input
+                id="edit-name"
+                value={editForm.name}
+                onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-address">Address</Label>
+              <Input
+                id="edit-address"
+                value={editForm.address}
+                onChange={e => setEditForm(f => ({ ...f, address: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-city">City</Label>
+              <Input
+                id="edit-city"
+                value={editForm.city}
+                onChange={e => setEditForm(f => ({ ...f, city: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-contact">Contact Number</Label>
+              <Input
+                id="edit-contact"
+                value={editForm.contact_number}
+                onChange={e => setEditForm(f => ({ ...f, contact_number: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-cuisines">Cuisine Types (comma-separated)</Label>
+              <Input
+                id="edit-cuisines"
+                value={editForm.cuisine_types}
+                onChange={e => setEditForm(f => ({ ...f, cuisine_types: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Description</Label>
+              <Textarea
+                id="edit-description"
+                rows={3}
+                value={editForm.description}
+                onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter className="mt-4 flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setEditingRestaurant(null)}
+              disabled={savingEdit}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                if (!editingRestaurant) return;
+                setSavingEdit(true);
+                try {
+                  const payload = {
+                    ...editForm,
+                    cuisine_types: editForm.cuisine_types
+                      .split(',')
+                      .map(c => c.trim())
+                      .filter(Boolean),
+                  };
+                  await mongoClient.request(
+                    `/restaurants/superadmin/restaurants/${editingRestaurant._id}`,
+                    {
+                      method: 'PUT',
+                      body: JSON.stringify(payload),
+                    },
+                  );
+                  toast({
+                    title: 'Restaurant updated',
+                    description: 'The restaurant details have been saved.',
+                  });
+                  setEditingRestaurant(null);
+                  fetchRestaurants();
+                } catch (error: any) {
+                  console.error('Update restaurant error:', error);
+                  toast({
+                    title: 'Error',
+                    description:
+                      error?.error || error?.message || 'Failed to update restaurant details',
+                    variant: 'destructive',
+                  });
+                } finally {
+                  setSavingEdit(false);
+                }
+              }}
+              disabled={savingEdit}
+            >
+              {savingEdit ? 'Saving...' : 'Save changes'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
