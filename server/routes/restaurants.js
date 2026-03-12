@@ -184,6 +184,7 @@ router.get('/:id', async (req, res) => {
       review_count: restaurant.review_number || restaurant.review_count || 0,
       minimum_order_amount: restaurant.minimum_order_amount,
       delivery_fee: restaurant.minimum_delivery_fee,
+      admin_id: restaurant.admin_id || null,
     };
     
     let menuItems = [];
@@ -950,6 +951,88 @@ router.get('/superadmin/all-restaurants', authenticateToken, async (req, res) =>
   }
 });
 
+router.post('/superadmin/restaurants', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.email !== 'alinarafiq0676@gmail.com') {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const {
+      name,
+      address,
+      city,
+      contact_number,
+      description,
+      cuisine_types,
+      latitude,
+      longitude,
+      image_url,
+    } = req.body;
+
+    if (!name || !address || !city) {
+      return res
+        .status(400)
+        .json({ error: 'Name, address, and city are required' });
+    }
+
+    const restaurant = new Restaurant({
+      name,
+      address,
+      city,
+      contact_number,
+      description,
+      cuisine_types: Array.isArray(cuisine_types) ? cuisine_types : [],
+      latitude,
+      longitude,
+      image_url,
+    });
+
+    await restaurant.save();
+    res.status(201).json(restaurant);
+  } catch (error) {
+    console.error('Create restaurant error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/superadmin/restaurants/:restaurantId', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.email !== 'alinarafiq0676@gmail.com') {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const restaurant = await Restaurant.findById(req.params.restaurantId);
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurant not found' });
+    }
+
+    const updatableFields = [
+      'name',
+      'address',
+      'city',
+      'contact_number',
+      'description',
+      'cuisine_types',
+      'latitude',
+      'longitude',
+    ];
+
+    updatableFields.forEach((field) => {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+        restaurant[field] = req.body[field];
+      }
+    });
+
+    restaurant.updated_at = new Date();
+    await restaurant.save();
+
+    res.json(restaurant);
+  } catch (error) {
+    console.error('Update restaurant error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get('/superadmin/restaurants/:restaurantId/menu', authenticateToken, async (req, res) => {
   try {
     if (req.user.email !== 'alinarafiq0676@gmail.com') {
@@ -973,6 +1056,14 @@ router.put('/superadmin/menu/:itemId', authenticateToken, async (req, res) => {
     const menuItem = await MenuItem.findById(req.params.itemId);
     if (!menuItem) {
       return res.status(404).json({ error: 'Menu item not found' });
+    }
+
+    // Only allow editing menu items for restaurants that do NOT have an admin
+    if (menuItem.restaurant_id) {
+      const restaurant = await Restaurant.findById(menuItem.restaurant_id).lean();
+      if (restaurant && restaurant.admin_id) {
+        return res.status(403).json({ error: 'Cannot edit menu items for restaurants with an admin' });
+      }
     }
     
     Object.assign(menuItem, req.body);
