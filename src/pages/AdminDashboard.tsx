@@ -28,12 +28,15 @@ const AdminDashboard = () => {
     reportedReviews: 0
   });
 
+  // Password state
+  const [newPassword, setNewPassword] = useState('');
+
   useEffect(() => {
     checkAdminStatus();
   }, []);
 
   useEffect(() => {
-    if (adminStatus?. status === 'approved' && adminStatus. restaurant_id) {
+    if (adminStatus?.status === 'approved' && adminStatus.restaurant_id) {
       fetchRestaurantData();
     }
   }, [adminStatus]);
@@ -48,7 +51,7 @@ const AdminDashboard = () => {
       toast({
         title: "Error",
         description: "Failed to check admin status",
-        variant:  "destructive"
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
@@ -63,8 +66,7 @@ const AdminDashboard = () => {
       setReviews(data.reviews || []);
       setMenuReviews(data.menu_reviews || []);
       
-      // Calculate stats
-      const totalReviews = (data.reviews?. length || 0) + (data.menu_reviews?.length || 0);
+      const totalReviews = (data.reviews?.length || 0) + (data.menu_reviews?.length || 0);
       const avgRating = totalReviews > 0 
         ? ([...data.reviews, ...data.menu_reviews].reduce((sum, r) => sum + r.rating, 0) / totalReviews)
         : 0;
@@ -73,13 +75,39 @@ const AdminDashboard = () => {
         totalMenuItems: data.menu_items?.length || 0,
         totalReviews,
         averageRating: avgRating,
-        reportedReviews: [... data.reviews, ...data.menu_reviews].filter(r => r.is_reported).length
+        reportedReviews: [...data.reviews, ...data.menu_reviews].filter(r => r.is_reported).length
       });
     } catch (error: any) {
       console.error('Fetch restaurant data error:', error);
       toast({
         title: "Error",
         description: "Failed to load restaurant data",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleChangePassword = async () => {
+    try {
+      if (!newPassword) return;
+
+      await mongoClient.request('/restaurants/admin/change-password', {
+  method: 'POST',
+  body: JSON.stringify({ password: newPassword }),
+});
+
+      toast({
+        title: "Success",
+        description: "Password updated successfully",
+        variant: "default"
+      });
+
+      setNewPassword('');
+    } catch (error: any) {
+      console.error('Change password error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update password",
         variant: "destructive"
       });
     }
@@ -106,7 +134,7 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-6">
-              Apply to manage your restaurant on our platform.  You'll be able to add menu items, 
+              Apply to manage your restaurant on our platform. You'll be able to add menu items, 
               manage reviews, and engage with customers.
             </p>
             <AdminRequestForm onSuccess={checkAdminStatus} />
@@ -162,72 +190,65 @@ const AdminDashboard = () => {
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">Restaurant Admin Dashboard</h1>
         <p className="text-muted-foreground text-lg">
-          Manage {restaurant?. name}
+          Managed by {restaurant?.name}
         </p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Menu Items</p>
-                <p className="text-3xl font-bold">{stats. totalMenuItems}</p>
-              </div>
-              <Menu className="w-8 h-8 text-primary" />
+          <CardContent className="p-6 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Menu Items</p>
+              <p className="text-3xl font-bold">{stats.totalMenuItems}</p>
             </div>
+            <Menu className="w-8 h-8 text-primary" />
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Reviews</p>
-                <p className="text-3xl font-bold">{stats.totalReviews}</p>
-              </div>
-              <Star className="w-8 h-8 text-yellow-500" />
+          <CardContent className="p-6 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Total Reviews</p>
+              <p className="text-3xl font-bold">{stats.totalReviews}</p>
             </div>
+            <Star className="w-8 h-8 text-yellow-500" />
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Average Rating</p>
-                <p className="text-3xl font-bold">{stats.averageRating. toFixed(1)}</p>
-              </div>
-              <TrendingUp className="w-8 h-8 text-green-500" />
+          <CardContent className="p-6 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Average Rating</p>
+              <p className="text-3xl font-bold">{stats.averageRating.toFixed(1)}</p>
             </div>
+            <TrendingUp className="w-8 h-8 text-green-500" />
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Reported</p>
-                <p className="text-3xl font-bold">{stats.reportedReviews}</p>
-              </div>
-              <AlertCircle className="w-8 h-8 text-red-500" />
+          <CardContent className="p-6 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Reported</p>
+              <p className="text-3xl font-bold">{stats.reportedReviews}</p>
             </div>
+            <AlertCircle className="w-8 h-8 text-red-500" />
           </CardContent>
         </Card>
       </div>
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="menu" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="menu">Menu Management</TabsTrigger>
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
           <TabsTrigger value="restaurant">Restaurant Info</TabsTrigger>
+          <TabsTrigger value="password">Change Password</TabsTrigger>
         </TabsList>
 
         <TabsContent value="menu">
           <MenuItemManagement
-            restaurantId={restaurant._id}
+            restaurantId={restaurant?._id}
             menuItems={menuItems}
             onUpdate={fetchRestaurantData}
           />
@@ -235,7 +256,7 @@ const AdminDashboard = () => {
 
         <TabsContent value="reviews">
           <ReviewManagement
-            restaurantId={restaurant._id}
+            restaurantId={restaurant?._id}
             reviews={reviews}
             menuReviews={menuReviews}
             onUpdate={fetchRestaurantData}
@@ -243,38 +264,68 @@ const AdminDashboard = () => {
         </TabsContent>
 
         <TabsContent value="restaurant">
-          <Card>
+          <Card className="mb-6">
             <CardHeader>
               <CardTitle>Restaurant Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <p className="text-sm text-muted-foreground">Name</p>
-                <p className="text-lg font-semibold">{restaurant. name}</p>
+                <p className="text-lg font-semibold">{restaurant?.name}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Government registration number</p>
+                <p className="text-lg font-semibold">{restaurant?.government_registration_number || 'Not available'}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Address</p>
-                <p className="text-lg">{restaurant. address}, {restaurant.city}</p>
+                <p className="text-lg">{restaurant?.address}, {restaurant?.city}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Contact</p>
-                <p className="text-lg">{restaurant. contact_number}</p>
+                <p className="text-lg">{restaurant?.contact_number}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Cuisine Types</p>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {restaurant.cuisine_types?.map((cuisine:  string, idx: number) => (
+                  {restaurant?.cuisine_types?.map((cuisine: string, idx: number) => (
                     <Badge key={idx}>{cuisine}</Badge>
                   ))}
                 </div>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Description</p>
-                <p className="text-lg">{restaurant. description}</p>
+                <p className="text-lg">{restaurant?.description}</p>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
+        <TabsContent value="password">
+  <Card className="max-w-md mx-auto">  {/* mx-auto centers the card */}
+    <CardHeader className="text-center">  {/* centers "Change Password" title */}
+      <CardTitle>Change Password</CardTitle>
+    </CardHeader>
+
+    <CardContent className="space-y-4">
+      <div>
+        <label className="text-sm text-muted-foreground">New Password</label>
+        <input
+          type="password"
+          placeholder="Enter new password"
+          className="mt-1 block w-full border rounded-md p-2"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+        />
+      </div>
+
+      <div className="flex justify-center">  {/* centers the button */}
+        <Button onClick={handleChangePassword} disabled={!newPassword}>
+          Update Password
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
+</TabsContent>
       </Tabs>
     </div>
   );

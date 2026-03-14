@@ -179,6 +179,7 @@ const MenuItemManagement = ({ restaurantId, menuItems, onUpdate }: MenuItemManag
 
       {/* Modals */}
       <CreateMenuItemModal
+      key={showCreateModal ? 'open' : 'closed'}
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         restaurantId={restaurantId}

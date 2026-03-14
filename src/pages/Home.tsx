@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ChefHat, Sparkles, BookOpen, Clock, Users, Zap, AlertTriangle, X } from "lucide-react";
+import { ChefHat, Sparkles, BookOpen, Clock, Users, Zap, AlertTriangle, X, CheckCircle, XCircle } from "lucide-react";
 import RecipeGenerator from "@/components/RecipeGenerator";
 import RecipeCard, { Recipe } from "@/components/RecipeCard";
 import RecipeModal from "@/components/RecipeModal";
@@ -12,14 +12,63 @@ import { mongoClient } from "@/lib/mongodb-client";
 import { useAuth } from "@/hooks/useAuth";
 import heroImage from "@/assets/hero-image.jpg";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useNavigate } from "react-router-dom";
+import AdminRequestForm from "@/components/admin/AdminRequestForm";
 
 const Home = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [validationWarning, setValidationWarning] = useState<string | null>(null);
+  const [adminStatus, setAdminStatus] = useState<any>(null);
 
+useEffect(() => {
+  if (user) {
+    mongoClient.request('/restaurants/admin/status')
+      .then(data => setAdminStatus(data))
+      .catch(() => {});
+  }
+}, [user]);
+const getButtonConfig = () => {
+  switch (adminStatus?.status) {
+    case 'pending':
+      return {
+        label: 'Request Pending',
+        icon: <Clock className="mr-2 h-6 w-6 animate-spin" />,
+        className: 'bg-yellow-500 text-white hover:bg-yellow-500 cursor-default',
+        onClick: () => {},
+        disabled: true
+      };
+    case 'approved':
+      return {
+        label: 'Go to Dashboard',
+        icon: <CheckCircle className="mr-2 h-6 w-6" />,
+        className: 'bg-green-500 text-white hover:bg-green-600',
+        onClick: () => navigate('/admin-dashboard'),
+        disabled: false
+      };
+    case 'rejected':
+      return {
+        label: 'Request Rejected',
+        icon: <XCircle className="mr-2 h-6 w-6" />,
+        className: 'bg-red-500 text-white hover:bg-red-500 cursor-default',
+        onClick: () => {},
+        disabled: true
+      };
+    default:
+      return {
+        label: 'Register Your Restaurant',
+        icon: <Sparkles className="mr-2 h-6 w-6 animate-pulse" />,
+        className: 'bg-white text-primary hover:bg-white/90 hover:scale-110 shadow-glow hover:shadow-hover',
+        onClick: () => navigate('/admin-request-form'),
+        disabled: false
+      };
+  }
+};
+
+const btn = getButtonConfig();
   const handleRecipeGenerate = async (params: any) => {
     setIsGenerating(true);
     setValidationWarning(null);
@@ -164,6 +213,7 @@ const Home = () => {
               Transform your ingredients into <span className="text-accent font-bold">multiple amazing dishes</span> with AI-powered recipe generation
             </p>
             
+            
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg"
@@ -173,6 +223,15 @@ const Home = () => {
                 <Sparkles className="mr-2 h-6 w-6 animate-pulse" />
                 Discover Restaurants
               </Button>
+              <Button
+  size="lg"
+  className={`transition-all duration-500 px-8 py-6 text-lg font-bold ${btn.className}`}
+  onClick={btn.onClick}
+  disabled={btn.disabled}
+>
+  {btn.icon}
+  {btn.label}
+</Button>
               <Button 
                 size="lg"
                 variant="outline"
@@ -182,6 +241,7 @@ const Home = () => {
                 <BookOpen className="mr-2 h-6 w-6" />
                 Try Sample Recipes
               </Button>
+          
             </div>
           </div>
         </div>

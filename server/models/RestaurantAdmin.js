@@ -5,11 +5,15 @@ const restaurantAdminSchema = new mongoose. Schema({
     type:  mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
-    unique: true
   },
   restaurant_name: {
     type: String,
     required: true
+  },
+  government_registration_number: {
+    type: String,
+    required: true,
+    unique: true
   },
   contact_number: {
     type: String,

@@ -10,6 +10,7 @@ const Report = require('../models/Report');
 const CommunityPost = require('../models/CommunityPost');
 const PostLike = require('../models/PostLike');
 const { authenticateToken } = require('../middleware/auth');
+const User = require('../models/User');
 
 const router = express.Router();
 
@@ -489,7 +490,7 @@ router.delete('/community/posts/:postId', authenticateToken, async (req, res) =>
 
 router.post('/admin/request', authenticateToken, async (req, res) => {
   try {
-    const { restaurant_name, contact_number, address, city, latitude, longitude, description, cuisine_types } = req.body;
+    const { restaurant_name,  government_registration_number, contact_number, address, city, latitude, longitude, description, cuisine_types } = req.body;
     
     const existingRequest = await RestaurantAdmin.findOne({ user_id: req.user.id });
     if (existingRequest) {
@@ -499,6 +500,7 @@ router.post('/admin/request', authenticateToken, async (req, res) => {
     const adminRequest = new RestaurantAdmin({
       user_id: req.user.id,
       restaurant_name,
+      government_registration_number,
       contact_number,
       address,
       city,
@@ -762,6 +764,24 @@ router.post('/admin/report', authenticateToken, async (req, res) => {
     res.status(201).json({ message: 'Report submitted successfully' });
   } catch (error) {
     console.error('Report review error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+router.post('/admin/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password) return res.status(400).json({ error: 'Password is required' });
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    user.password = password; // triggers pre-save hook to hash
+    user.updated_at = new Date();
+    await user.save();
+
+    res.status(201).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
     res.status(500).json({ error: error.message });
   }
 });

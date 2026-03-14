@@ -14,6 +14,7 @@ interface AdminRequestFormProps {
 const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
   const [formData, setFormData] = useState({
     restaurant_name: '',
+    government_registration_number: '',
     contact_number: '',
     address: '',
     city: '',
@@ -26,8 +27,8 @@ const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
 
   const handleSubmit = async (e: React. FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.restaurant_name || !formData.contact_number || !formData.address || !formData.city) {
+
+    if (!formData.restaurant_name || !formData.government_registration_number || !formData.contact_number || !formData.address || !formData.city) {
       toast({
         title: "Missing fields",
         description: "Please fill in all required fields",
@@ -80,6 +81,12 @@ const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
           placeholder="Enter restaurant name"
           required
         />
+      </div>
+      <div className="space-y-2"> 
+        <Label htmlFor="government_registration_number"> Government Registration Number * </Label> 
+        <Input id="government_registration_number" value={formData.government_registration_number} 
+        onChange={(e) => setFormData({ ...formData, government_registration_number: e.target.value }) }
+         placeholder="Enter government registration number" required /> 
       </div>
 
       <div className="space-y-2">

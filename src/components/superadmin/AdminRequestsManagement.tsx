@@ -140,6 +140,13 @@ const AdminRequestsManagement = ({ onUpdate }: AdminRequestsManagementProps) => 
                   </div>
 
                   <div className="flex items-start gap-2">
+                      <Phone className="w-4 h-4 text-muted-foreground mt-1" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">government Registration Number</p>
+                        <p className="font-semibold">{request.government_registration_number}</p>
+                      </div>
+                    </div>
+                  <div className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-muted-foreground mt-1" />
                     <div>
                       <p className="text-sm text-muted-foreground">Address</p>
