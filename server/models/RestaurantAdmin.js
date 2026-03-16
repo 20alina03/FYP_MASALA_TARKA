@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-const restaurantAdminSchema = new mongoose. Schema({
+const restaurantAdminSchema = new mongoose.Schema({
   user_id: {
-    type:  mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
@@ -15,9 +15,14 @@ const restaurantAdminSchema = new mongoose. Schema({
     required: true,
     unique: true
   },
+  cnic: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   contact_number: {
     type: String,
-    required: true
+    required: true,  
   },
   address: {
     type: String,
@@ -37,7 +42,7 @@ const restaurantAdminSchema = new mongoose. Schema({
     default: 'pending'
   },
   restaurant_id: {
-    type:  mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Restaurant'
   },
   created_at: {
@@ -46,7 +51,7 @@ const restaurantAdminSchema = new mongoose. Schema({
   },
   approved_at: Date,
   approved_by: {
-    type:  mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }
 });

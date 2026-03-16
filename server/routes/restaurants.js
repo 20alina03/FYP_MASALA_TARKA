@@ -490,7 +490,7 @@ router.delete('/community/posts/:postId', authenticateToken, async (req, res) =>
 
 router.post('/admin/request', authenticateToken, async (req, res) => {
   try {
-    const { restaurant_name,  government_registration_number, contact_number, address, city, latitude, longitude, description, cuisine_types } = req.body;
+    const { restaurant_name,  government_registration_number,  cnic, contact_number, address, city, latitude, longitude, description, cuisine_types } = req.body;
     
     const existingRequest = await RestaurantAdmin.findOne({ user_id: req.user.id });
     if (existingRequest) {
@@ -500,7 +500,7 @@ router.post('/admin/request', authenticateToken, async (req, res) => {
     const adminRequest = new RestaurantAdmin({
       user_id: req.user.id,
       restaurant_name,
-      government_registration_number,
+      government_registration_number,  cnic,
       contact_number,
       address,
       city,
@@ -514,6 +514,49 @@ router.post('/admin/request', authenticateToken, async (req, res) => {
     res.status(201).json({ message: 'Request submitted successfully', request: adminRequest });
   } catch (error) {
     console.error('Admin request error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+router.patch('/admin/update', authenticateToken, async (req, res) => {
+  try {
+    const { name, contact_number, address, city, description, cuisine_types } = req.body;
+
+    // Find the approved admin record for this user
+    const adminRecord = await RestaurantAdmin.findOne({
+      user_id: req.user.id,
+      status: 'approved'
+    });
+
+    if (!adminRecord) {
+      return res.status(403).json({ error: 'No approved restaurant found for this user' });
+    }
+
+    // Build update object with only the fields that were provided
+    const updateFields = {};
+    if (name !== undefined)            updateFields.name            = name;
+    if (contact_number !== undefined)  updateFields.contact_number  = contact_number;
+    if (address !== undefined)         updateFields.address         = address;
+    if (city !== undefined)            updateFields.city            = city;
+    if (description !== undefined)     updateFields.description     = description;
+    if (cuisine_types !== undefined)   updateFields.cuisine_types   = cuisine_types;
+
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ error: 'No valid fields provided for update' });
+    }
+
+    const updatedRestaurant = await Restaurant.findByIdAndUpdate(
+      adminRecord.restaurant_id,
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (!updatedRestaurant) {
+      return res.status(404).json({ error: 'Restaurant not found' });
+    }
+
+    res.json({ message: 'Restaurant updated successfully', restaurant: updatedRestaurant });
+  } catch (error) {
+    console.error('Admin update error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -550,8 +593,12 @@ router.get('/admin/my-restaurant', authenticateToken, async (req, res) => {
     const menuItems = await MenuItem.find({ restaurant_id: adminData.restaurant_id }).lean();
     const reviews = await RestaurantReview.find({ restaurant_id: adminData.restaurant_id }).lean();
     const menuReviews = await MenuItemReview.find({ restaurant_id: adminData.restaurant_id }).lean();
-    
-    res.json({ restaurant, menu_items: menuItems, reviews, menu_reviews: menuReviews });
+    const restaurantData = {
+  ...restaurant,
+  government_registration_number: adminData.government_registration_number,
+  cnic: adminData.cnic,
+};
+res.json({ restaurant: restaurantData, menu_items: menuItems, reviews, menu_reviews: menuReviews });
   } catch (error) {
     console.error('Get my restaurant error:', error);
     res.status(500).json({ error: error.message });
