@@ -13,7 +13,7 @@ import DiscountModal from './DiscountModal';
 interface MenuItemManagementProps {
   restaurantId: string;
   menuItems: any[];
-  onUpdate:  () => void;
+  onUpdate: () => void;
 }
 
 const MenuItemManagement = ({ restaurantId, menuItems, onUpdate }: MenuItemManagementProps) => {
@@ -23,10 +23,10 @@ const MenuItemManagement = ({ restaurantId, menuItems, onUpdate }: MenuItemManag
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
 
-  const categories = [... new Set(menuItems.map(item => item.category))];
+  const categories = [...new Set(menuItems.map(item => item.category))];
 
   const handleDelete = async (itemId: string) => {
-    if (! confirm('Are you sure you want to delete this menu item?')) return;
+    if (!confirm('Are you sure you want to delete this menu item?')) return;
 
     try {
       const { error } = await mongoClient.request(`/restaurants/admin/menu/${itemId}`, {
@@ -44,7 +44,7 @@ const MenuItemManagement = ({ restaurantId, menuItems, onUpdate }: MenuItemManag
     } catch (error: any) {
       console.error('Delete error:', error);
       toast({
-        title:  "Error",
+        title: "Error",
         description: error.message || "Failed to delete menu item",
         variant: "destructive"
       });
@@ -53,7 +53,7 @@ const MenuItemManagement = ({ restaurantId, menuItems, onUpdate }: MenuItemManag
 
   const filteredItems = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = ! categoryFilter || item.category === categoryFilter;
+    const matchesCategory = !categoryFilter || item.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
@@ -73,7 +73,7 @@ const MenuItemManagement = ({ restaurantId, menuItems, onUpdate }: MenuItemManag
             <Input
               placeholder="Search menu items..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e. target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1"
             />
             <select
@@ -92,7 +92,7 @@ const MenuItemManagement = ({ restaurantId, menuItems, onUpdate }: MenuItemManag
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredItems.map((item) => (
               <Card key={item._id} className="relative">
-                {! item.is_available && (
+                {!item.is_available && (
                   <div className="absolute top-2 right-2 z-10">
                     <Badge variant="destructive">Unavailable</Badge>
                   </div>
@@ -122,18 +122,18 @@ const MenuItemManagement = ({ restaurantId, menuItems, onUpdate }: MenuItemManag
                     </p>
                   )}
                   <div className="flex items-center gap-2 mb-3">
-                    {item.original_price && item.original_price !== item.price ?  (
+                    {item.original_price && item.original_price !== item.price ? (
                       <>
                         <span className="text-lg font-bold text-green-600">
-                          ${item.price. toFixed(2)}
+                          Rs. {Math.round(item.price)}
                         </span>
                         <span className="text-sm text-muted-foreground line-through">
-                          ${item.original_price.toFixed(2)}
+                          Rs. {Math.round(item.original_price)}
                         </span>
                       </>
                     ) : (
                       <span className="text-lg font-bold">
-                        ${item.price. toFixed(2)}
+                        Rs. {Math.round(item.price)}
                       </span>
                     )}
                   </div>
@@ -179,7 +179,7 @@ const MenuItemManagement = ({ restaurantId, menuItems, onUpdate }: MenuItemManag
 
       {/* Modals */}
       <CreateMenuItemModal
-      key={showCreateModal ? 'open' : 'closed'}
+        key={showCreateModal ? 'open' : 'closed'}
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         restaurantId={restaurantId}
@@ -191,7 +191,7 @@ const MenuItemManagement = ({ restaurantId, menuItems, onUpdate }: MenuItemManag
 
       {editingItem && (
         <EditMenuItemModal
-          isOpen={!! editingItem}
+          isOpen={!!editingItem}
           onClose={() => setEditingItem(null)}
           menuItem={editingItem}
           onSuccess={() => {

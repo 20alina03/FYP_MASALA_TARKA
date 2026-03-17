@@ -24,7 +24,7 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
     category: '',
     price: '',
     dietary_tags: '',
-    image_url:  '',
+    image_url: '',
     is_available: true
   });
   const [submitting, setSubmitting] = useState(false);
@@ -38,12 +38,12 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
         name: menuItem.name || '',
         description: menuItem.description || '',
         category: menuItem.category || '',
-        price: menuItem.original_price?. toString() || menuItem.price?.toString() || '',
-        dietary_tags: menuItem.dietary_tags?. join(', ') || '',
+        price: menuItem.original_price?.toString() || menuItem.price?.toString() || '',
+        dietary_tags: menuItem.dietary_tags?.join(', ') || '',
         image_url: menuItem.image_url || '',
         is_available: menuItem.is_available !== false
       });
-      setImagePreview(menuItem. image_url || '');
+      setImagePreview(menuItem.image_url || '');
     }
   }, [menuItem]);
 
@@ -52,7 +52,7 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader. result as string);
+        setImagePreview(reader.result as string);
         setFormData({ ...formData, image_url: reader.result as string });
       };
       reader.readAsDataURL(file);
@@ -81,11 +81,11 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
         price: parseFloat(formData.price),
         original_price: menuItem.discount_percentage > 0 ? parseFloat(formData.price) : null,
         dietary_tags: formData.dietary_tags.split(',').map(t => t.trim()).filter(t => t),
-        image_url: formData. image_url || null,
+        image_url: formData.image_url || null,
         is_available: formData.is_available
       };
 
-      const { error } = await mongoClient. request(`/restaurants/admin/menu/${menuItem._id}`, {
+      const { error } = await mongoClient.request(`/restaurants/admin/menu/${menuItem._id}`, {
         method: 'PUT',
         body: JSON.stringify(payload)
       });
@@ -94,7 +94,7 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
 
       toast({
         title: "Success",
-        description:  "Menu item updated successfully"
+        description: "Menu item updated successfully"
       });
 
       onSuccess();
@@ -168,7 +168,7 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e. target.value })}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="Enter item name"
               required
             />
@@ -178,7 +178,7 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              value={formData. description}
+              value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe the menu item"
               rows={3}
@@ -188,12 +188,12 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({ ... formData, category: value })}>
+              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories. map(cat => (
+                  {categories.map(cat => (
                     <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                   ))}
                 </SelectContent>
@@ -201,16 +201,23 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price">Price *</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="0.00"
-                required
-              />
+              <Label htmlFor="price">Price (PKR) *</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
+                  Rs.
+                </span>
+                <Input
+                  id="price"
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="0"
+                  className="pl-9"
+                  required
+                />
+              </div>
             </div>
           </div>
 
@@ -219,7 +226,7 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
             <Input
               id="dietary_tags"
               value={formData.dietary_tags}
-              onChange={(e) => setFormData({ ...formData, dietary_tags: e. target.value })}
+              onChange={(e) => setFormData({ ...formData, dietary_tags: e.target.value })}
               placeholder="e.g., vegetarian, vegan, gluten-free"
             />
           </div>
@@ -246,7 +253,7 @@ const EditMenuItemModal = ({ isOpen, onClose, menuItem, onSuccess }: EditMenuIte
               {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Updating... 
+                  Updating...
                 </>
               ) : (
                 'Update Item'

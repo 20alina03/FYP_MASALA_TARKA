@@ -15,7 +15,7 @@ interface DiscountModalProps {
 }
 
 const DiscountModal = ({ isOpen, onClose, menuItem, onSuccess }: DiscountModalProps) => {
-  const [discount, setDiscount] = useState([menuItem?. discount_percentage || 0]);
+  const [discount, setDiscount] = useState([menuItem?.discount_percentage || 0]);
   const [submitting, setSubmitting] = useState(false);
 
   const originalPrice = menuItem?.original_price || menuItem?.price || 0;
@@ -34,7 +34,7 @@ const DiscountModal = ({ isOpen, onClose, menuItem, onSuccess }: DiscountModalPr
 
       toast({
         title: "Success",
-        description: discount[0] > 0 ?  `${discount[0]}% discount applied` : "Discount removed"
+        description: discount[0] > 0 ? `${discount[0]}% discount applied` : "Discount removed"
       });
 
       onSuccess();
@@ -61,7 +61,7 @@ const DiscountModal = ({ isOpen, onClose, menuItem, onSuccess }: DiscountModalPr
           <div className="text-center">
             <h3 className="text-lg font-semibold mb-2">{menuItem?.name}</h3>
             <p className="text-sm text-muted-foreground">
-              Original Price: ${originalPrice.toFixed(2)}
+              Original Price: Rs. {Math.round(originalPrice)}
             </p>
           </div>
 
@@ -87,18 +87,18 @@ const DiscountModal = ({ isOpen, onClose, menuItem, onSuccess }: DiscountModalPr
 
           <div className="bg-muted p-4 rounded-lg">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-muted-foreground">Original Price: </span>
-              <span className="font-semibold line-through">${originalPrice.toFixed(2)}</span>
+              <span className="text-sm text-muted-foreground">Original Price:</span>
+              <span className="font-semibold line-through">Rs. {Math.round(originalPrice)}</span>
             </div>
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-muted-foreground">Discount:</span>
-              <span className="font-semibold text-red-500">-${(originalPrice - discountedPrice).toFixed(2)}</span>
+              <span className="font-semibold text-red-500">- Rs. {Math.round(originalPrice - discountedPrice)}</span>
             </div>
             <div className="border-t pt-2 mt-2">
               <div className="flex justify-between items-center">
-                <span className="font-semibold">Final Price: </span>
+                <span className="font-semibold">Final Price:</span>
                 <span className="text-2xl font-bold text-green-600">
-                  ${discountedPrice.toFixed(2)}
+                  Rs. {Math.round(discountedPrice)}
                 </span>
               </div>
             </div>

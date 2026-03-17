@@ -23,7 +23,7 @@ const CreateMenuItemModal = ({ isOpen, onClose, restaurantId, onSuccess }: Creat
     category: '',
     price: '',
     dietary_tags: '',
-    image_url:  ''
+    image_url: ''
   });
   const [submitting, setSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState('');
@@ -76,7 +76,7 @@ const CreateMenuItemModal = ({ isOpen, onClose, restaurantId, onSuccess }: Creat
 
       toast({
         title: "Success",
-        description:  "Menu item created successfully"
+        description: "Menu item created successfully"
       });
 
       onSuccess();
@@ -160,7 +160,7 @@ const CreateMenuItemModal = ({ isOpen, onClose, restaurantId, onSuccess }: Creat
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              value={formData. description}
+              value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe the menu item"
               rows={3}
@@ -170,12 +170,12 @@ const CreateMenuItemModal = ({ isOpen, onClose, restaurantId, onSuccess }: Creat
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
-              <Select value={formData. category} onValueChange={(value) => setFormData({ ... formData, category: value })}>
+              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories. map(cat => (
+                  {categories.map(cat => (
                     <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                   ))}
                 </SelectContent>
@@ -183,16 +183,23 @@ const CreateMenuItemModal = ({ isOpen, onClose, restaurantId, onSuccess }: Creat
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price">Price *</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="0.00"
-                required
-              />
+              <Label htmlFor="price">Price (PKR) *</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
+                  Rs.
+                </span>
+                <Input
+                  id="price"
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="0"
+                  className="pl-9"
+                  required
+                />
+              </div>
             </div>
           </div>
 
@@ -201,7 +208,7 @@ const CreateMenuItemModal = ({ isOpen, onClose, restaurantId, onSuccess }: Creat
             <Input
               id="dietary_tags"
               value={formData.dietary_tags}
-              onChange={(e) => setFormData({ ...formData, dietary_tags: e. target.value })}
+              onChange={(e) => setFormData({ ...formData, dietary_tags: e.target.value })}
               placeholder="e.g., vegetarian, vegan, gluten-free"
             />
           </div>
@@ -214,7 +221,7 @@ const CreateMenuItemModal = ({ isOpen, onClose, restaurantId, onSuccess }: Creat
               {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating... 
+                  Creating...
                 </>
               ) : (
                 'Create Item'
