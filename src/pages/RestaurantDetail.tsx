@@ -305,22 +305,25 @@ const RestaurantDetail = () => {
                   </div>
                 </div>
               )}
-              {restaurant.latitude && restaurant.longitude && (
-                <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={openInMaps}
-                    className="w-full justify-start p-0"
-                  >
-                    <NavigationIcon className="w-5 h-5 text-primary mr-2" />
-                    <div className="text-left">
-                      <p className="text-xs text-muted-foreground">Location</p>
-                      <p className="font-semibold text-sm">Get Directions</p>
-                    </div>
-                  </Button>
-                </div>
-              )}
+             {restaurant.latitude && restaurant.longitude && (
+  <div
+    onClick={openInMaps}
+    className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg cursor-pointer hover:bg-red-50 transition-colors group"
+  >
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={openInMaps}
+      className="w-full justify-start p-0 hover:bg-transparent focus:bg-transparent"
+    >
+      <NavigationIcon className="w-5 h-5 text-primary mr-2" />
+      <span className="text-left">
+        <p className="text-xs text-muted-foreground">Location</p>
+        <p className="font-semibold text-sm">Get Directions</p>
+      </span>
+    </Button>
+  </div>
+)}
             </div>
           </CardContent>
         </Card>
