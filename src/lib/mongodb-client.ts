@@ -43,8 +43,13 @@ class MongoDBClient {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Request failed' }));
-      throw error;
+      const body = await response.json().catch(() => ({ error: 'Request failed' }));
+      // Throw a proper Error so .message is always a string
+      const message = body?.error || body?.message || 'Request failed';
+      const err = new Error(message);
+      (err as any).status = response.status;
+      (err as any).data = body;
+      throw err;
     }
 
     return response.json();
@@ -58,10 +63,7 @@ class MongoDBClient {
         body: JSON.stringify({ email, password, full_name }),
       });
       this.setToken(data.token);
-      
-      // Store user info
       localStorage.setItem('mongodb_user', JSON.stringify(data.user));
-      
       return { user: data.user, error: null };
     },
 
@@ -71,10 +73,7 @@ class MongoDBClient {
         body: JSON.stringify({ email, password }),
       });
       this.setToken(data.token);
-      
-      // Store user info
       localStorage.setItem('mongodb_user', JSON.stringify(data.user));
-      
       return { user: data.user, error: null };
     },
 
@@ -84,21 +83,16 @@ class MongoDBClient {
         body: JSON.stringify({ credential }),
       });
       this.setToken(data.token);
-      
-      // Store user info
       localStorage.setItem('mongodb_user', JSON.stringify(data.user));
-      
       return { user: data.user, error: null };
     },
 
     getSession: async () => {
       try {
-        // Check if we have a token
         if (!this.token) {
           return { user: null };
         }
 
-        // Try to get user from localStorage first (faster)
         const userStr = localStorage.getItem('mongodb_user');
         if (userStr) {
           try {
@@ -109,7 +103,6 @@ class MongoDBClient {
           }
         }
 
-        // Fallback to API call to validate session
         const data = await this.request('/auth/session');
         return { user: data.user };
       } catch {

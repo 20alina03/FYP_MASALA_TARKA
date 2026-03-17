@@ -490,17 +490,28 @@ router.delete('/community/posts/:postId', authenticateToken, async (req, res) =>
 
 router.post('/admin/request', authenticateToken, async (req, res) => {
   try {
-    const { restaurant_name,  government_registration_number,  cnic, contact_number, address, city, latitude, longitude, description, cuisine_types } = req.body;
+    const { restaurant_name, government_registration_number, cnic, contact_number, address, city, latitude, longitude, description, cuisine_types } = req.body;
     
     const existingRequest = await RestaurantAdmin.findOne({ user_id: req.user.id });
     if (existingRequest) {
       return res.status(400).json({ error: 'You already have a pending request' });
     }
+
+    const existingRegNum = await RestaurantAdmin.findOne({ government_registration_number });
+    if (existingRegNum) {
+      return res.status(400).json({ error: 'government_registration_number already exists' });
+    }
+
+    const existingCnic = await RestaurantAdmin.findOne({ cnic });
+    if (existingCnic) {
+      return res.status(400).json({ error: 'cnic already exists' });
+    }
     
     const adminRequest = new RestaurantAdmin({
       user_id: req.user.id,
       restaurant_name,
-      government_registration_number,  cnic,
+      government_registration_number,
+      cnic,
       contact_number,
       address,
       city,
@@ -513,6 +524,10 @@ router.post('/admin/request', authenticateToken, async (req, res) => {
     await adminRequest.save();
     res.status(201).json({ message: 'Request submitted successfully', request: adminRequest });
   } catch (error) {
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern || {})[0] || 'field';
+      return res.status(400).json({ error: `${field} already exists` });
+    }
     console.error('Admin request error:', error);
     res.status(500).json({ error: error.message });
   }

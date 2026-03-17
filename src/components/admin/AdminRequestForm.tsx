@@ -116,6 +116,43 @@ const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
   const isAddressValid = addressStatus === 'valid';
   const canSubmit = !submitting && addressStatus !== 'checking' && isAddressValid;
 
+  // ─── Map backend error messages to field-level errors ────────────────────
+  const handleBackendError = (message: string) => {
+    const msg = message.toLowerCase();
+
+    if (msg.includes('government_registration_number') || msg.includes('registration number')) {
+      setErrors(prev => ({ ...prev, government_registration_number: 'This government registration number is already registered.' }));
+      toast({ title: "Duplicate Registration Number", description: "A restaurant with this government registration number already exists.", variant: "destructive" });
+      return;
+    }
+
+    if (msg.includes('cnic')) {
+      setErrors(prev => ({ ...prev, cnic: 'This CNIC is already associated with another restaurant.' }));
+      toast({ title: "Duplicate CNIC", description: "This CNIC is already registered with another restaurant.", variant: "destructive" });
+      return;
+    }
+
+    if (msg.includes('contact') || msg.includes('phone') || msg.includes('contact_number')) {
+      setErrors(prev => ({ ...prev, contact_number: 'This contact number is already in use.' }));
+      toast({ title: "Duplicate Contact Number", description: "This contact number is already registered.", variant: "destructive" });
+      return;
+    }
+
+    if (msg.includes('restaurant_name') || msg.includes('restaurant name')) {
+      setErrors(prev => ({ ...prev, restaurant_name: 'A restaurant with this name already exists.' }));
+      toast({ title: "Duplicate Restaurant Name", description: "A restaurant with this name already exists.", variant: "destructive" });
+      return;
+    }
+
+    if (msg.includes('already have a pending request') || msg.includes('pending')) {
+      toast({ title: "Request Already Submitted", description: "You already have a pending admin request under review.", variant: "destructive" });
+      return;
+    }
+
+    // Fallback — show raw backend message
+    toast({ title: "Submission Failed", description: message || "Something went wrong. Please try again.", variant: "destructive" });
+  };
+
   // ─── Submit ───────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,7 +176,8 @@ const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
       toast({ title: "Request submitted!", description: "Your admin request has been submitted for review" });
       onSuccess();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Failed to submit request", variant: "destructive" });
+      const message = error?.response?.data?.error || error?.message || "Failed to submit request";
+      handleBackendError(message);
     } finally {
       setSubmitting(false);
     }
@@ -198,7 +236,7 @@ const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
 
       {/* Restaurant Name */}
       <div className="space-y-2">
-        <Label htmlFor="restaurant_name">Restaurant Name </Label>
+        <Label htmlFor="restaurant_name">Restaurant Name</Label>
         <Input id="restaurant_name" value={formData.restaurant_name}
           onChange={(e) => { setFormData(prev => ({ ...prev, restaurant_name: e.target.value })); if (errors.restaurant_name) setErrors(prev => ({ ...prev, restaurant_name: '' })); }}
           placeholder="Enter restaurant name" />
@@ -207,7 +245,7 @@ const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
 
       {/* Government Registration Number */}
       <div className="space-y-2">
-        <Label htmlFor="government_registration_number">Government Registration Number </Label>
+        <Label htmlFor="government_registration_number">Government Registration Number</Label>
         <Input id="government_registration_number" value={formData.government_registration_number}
           onChange={(e) => { setFormData(prev => ({ ...prev, government_registration_number: e.target.value })); if (errors.government_registration_number) setErrors(prev => ({ ...prev, government_registration_number: '' })); }}
           placeholder="Enter government registration number" />
@@ -216,21 +254,21 @@ const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
 
       {/* CNIC */}
       <div className="space-y-2">
-        <Label htmlFor="cnic">CNIC </Label>
+        <Label htmlFor="cnic">CNIC</Label>
         <Input id="cnic" value={formData.cnic} onChange={(e) => handleCNICChange(e.target.value)} placeholder="XXXXX-XXXXXXX-X" maxLength={15} />
         {errors.cnic && <p className="text-sm text-red-500">{errors.cnic}</p>}
       </div>
 
       {/* Contact Number */}
       <div className="space-y-2">
-        <Label htmlFor="contact_number">Contact Number </Label>
+        <Label htmlFor="contact_number">Contact Number</Label>
         <Input id="contact_number" value={formData.contact_number} onChange={(e) => handlePhoneChange(e.target.value)} placeholder="+92XXXXXXXXXX" maxLength={13} />
         {errors.contact_number && <p className="text-sm text-red-500">{errors.contact_number}</p>}
       </div>
 
       {/* Address */}
       <div className="space-y-2">
-        <Label htmlFor="address">Address </Label>
+        <Label htmlFor="address">Address</Label>
         <Input id="address" value={formData.address}
           onChange={(e) => { setFormData(prev => ({ ...prev, address: e.target.value })); if (errors.address) setErrors(prev => ({ ...prev, address: '' })); }}
           placeholder="Enter full address"
@@ -241,7 +279,7 @@ const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
       {/* City & Cuisine Types */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="city">City </Label>
+          <Label htmlFor="city">City</Label>
           <Input id="city" value={formData.city}
             onChange={(e) => { setFormData(prev => ({ ...prev, city: e.target.value })); if (errors.city) setErrors(prev => ({ ...prev, city: '' })); }}
             placeholder="Enter city"
@@ -250,7 +288,7 @@ const AdminRequestForm = ({ onSuccess }: AdminRequestFormProps) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="cuisine_types">Cuisine Types * (comma-separated)</Label>
+          <Label htmlFor="cuisine_types">Cuisine Types (comma-separated)</Label>
           <Input id="cuisine_types" value={formData.cuisine_types}
             onChange={(e) => { setFormData(prev => ({ ...prev, cuisine_types: e.target.value })); if (errors.cuisine_types) setErrors(prev => ({ ...prev, cuisine_types: '' })); }}
             placeholder="e.g., Pakistani, Chinese" />

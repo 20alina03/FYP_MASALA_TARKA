@@ -2,7 +2,7 @@ import { useState , useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ChefHat, Sparkles, BookOpen, Clock, Users, Zap, AlertTriangle, X, CheckCircle, XCircle } from "lucide-react";
+import { ChefHat, Sparkles, BookOpen, Clock, Users, Zap, AlertTriangle, X, CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import RecipeGenerator from "@/components/RecipeGenerator";
 import RecipeCard, { Recipe } from "@/components/RecipeCard";
 import RecipeModal from "@/components/RecipeModal";
@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import heroImage from "@/assets/hero-image.jpg";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import AdminRequestForm from "@/components/admin/AdminRequestForm";
 
 const Home = () => {
@@ -23,58 +24,69 @@ const Home = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [validationWarning, setValidationWarning] = useState<string | null>(null);
   const [adminStatus, setAdminStatus] = useState<any>(null);
+  const [showRetryModal, setShowRetryModal] = useState(false);
 
-useEffect(() => {
-  if (user) {
+  useEffect(() => {
+    if (user) {
+      mongoClient.request('/restaurants/admin/status')
+        .then(data => setAdminStatus(data))
+        .catch(() => {});
+    }
+  }, [user]);
+
+  const handleRetrySuccess = () => {
+    setShowRetryModal(false);
+    // Re-fetch admin status so button updates to "pending"
     mongoClient.request('/restaurants/admin/status')
       .then(data => setAdminStatus(data))
       .catch(() => {});
-  }
-}, [user]);
-const getButtonConfig = () => {
-  switch (adminStatus?.status) {
-    case 'pending':
-      return {
-        label: 'Request Pending',
-        icon: <Clock className="mr-2 h-6 w-6 animate-spin" />,
-        className: 'bg-yellow-500 text-white hover:bg-yellow-500 cursor-default',
-        onClick: () => {},
-        disabled: true
-      };
-    case 'approved':
-      return {
-        label: 'Go to Dashboard',
-        icon: <CheckCircle className="mr-2 h-6 w-6" />,
-        className: 'bg-green-500 text-white hover:bg-green-600',
-        onClick: () => navigate('/admin-dashboard'),
-        disabled: false
-      };
-    case 'rejected':
-      return {
-        label: 'Request Rejected',
-        icon: <XCircle className="mr-2 h-6 w-6" />,
-        className: 'bg-red-500 text-white hover:bg-red-500 cursor-default',
-        onClick: () => {},
-        disabled: true
-      };
-    default:
-      return {
-        label: 'Register Your Restaurant',
-        icon: <Sparkles className="mr-2 h-6 w-6 animate-pulse" />,
-        className: 'bg-white text-primary hover:bg-white/90 hover:scale-110 shadow-glow hover:shadow-hover',
-        onClick: () => navigate('/admin-request-form'),
-        disabled: false
-      };
-  }
-};
+  };
 
-const btn = getButtonConfig();
+  const getButtonConfig = () => {
+    switch (adminStatus?.status) {
+      case 'pending':
+        return {
+          label: 'Request Pending',
+          icon: <Clock className="mr-2 h-6 w-6 animate-spin" />,
+          className: 'bg-yellow-500 text-white hover:bg-yellow-500 cursor-default',
+          onClick: () => {},
+          disabled: true
+        };
+      case 'approved':
+        return {
+          label: 'Go to Dashboard',
+          icon: <CheckCircle className="mr-2 h-6 w-6" />,
+          className: 'bg-green-500 text-white hover:bg-green-600',
+          onClick: () => navigate('/admin-dashboard'),
+          disabled: false
+        };
+      case 'rejected':
+        return {
+          label: 'Resubmit Request',
+          icon: <RefreshCw className="mr-2 h-6 w-6" />,
+          className: 'bg-red-500 text-white hover:bg-red-600',
+          onClick: () => setShowRetryModal(true),
+          disabled: false
+        };
+      default:
+        return {
+          label: 'Register Your Restaurant',
+          icon: <Sparkles className="mr-2 h-6 w-6 animate-pulse" />,
+          className: 'bg-white text-primary hover:bg-white/90 hover:scale-110 shadow-glow hover:shadow-hover',
+          onClick: () => navigate('/admin-request-form'),
+          disabled: false
+        };
+    }
+  };
+
+  const btn = getButtonConfig();
+
   const handleRecipeGenerate = async (params: any) => {
     setIsGenerating(true);
     setValidationWarning(null);
     
     try {
-      const { data:  functionData, error: functionError } = await supabase. functions.invoke('generate-recipe', {
+      const { data: functionData, error: functionError } = await supabase.functions.invoke('generate-recipe', {
         body: params
       });
 
@@ -83,7 +95,6 @@ const btn = getButtonConfig();
         throw functionError;
       }
 
-      // Check for validation errors
       if (functionData.error) {
         if (functionData.invalidIngredients && functionData.invalidIngredients.length > 0) {
           toast.error(functionData.error, {
@@ -91,15 +102,12 @@ const btn = getButtonConfig();
             duration: 6000,
           });
         } else {
-          toast.error(functionData. error, {
-            duration: 5000,
-          });
+          toast.error(functionData.error, { duration: 5000 });
         }
         setIsGenerating(false);
         return;
       }
 
-      // Check for warnings (some ingredients excluded)
       if (functionData.warning) {
         setValidationWarning(functionData.warning);
         toast.warning("Recipes Generated with Valid Ingredients Only", {
@@ -112,16 +120,16 @@ const btn = getButtonConfig();
       
       if (user && generatedRecipes.length > 0) {
         const recipesToInsert = generatedRecipes.map((recipe: Recipe) => ({
-          title:  recipe.title,
+          title: recipe.title,
           description: recipe.description,
           ingredients: recipe.ingredients,
           instructions: recipe.instructions,
           cooking_time: recipe.cookingTime,
           servings: recipe.servings,
-          difficulty: recipe. difficulty,
-          cuisine: recipe. cuisine,
-          calories: recipe. calories,
-          nutrition: recipe. nutrition,
+          difficulty: recipe.difficulty,
+          cuisine: recipe.cuisine,
+          calories: recipe.calories,
+          nutrition: recipe.nutrition,
         }));
 
         for (const recipe of recipesToInsert) {
@@ -129,47 +137,32 @@ const btn = getButtonConfig();
             await mongoClient.from('generated_recipes').insert(recipe);
           } catch (dbError) {
             console.error("Database save error:", dbError);
-            // Continue even if DB save fails
           }
         }
       }
       
-      setRecipes(prev => [...generatedRecipes, ... prev]);
+      setRecipes(prev => [...generatedRecipes, ...prev]);
       
       const successMessage = generatedRecipes.length > 1 
         ? `${generatedRecipes.length} recipes generated successfully!` 
         : "Recipe generated successfully!";
       
-      if (! functionData.warning) {
+      if (!functionData.warning) {
         toast.success(successMessage);
       }
     } catch (error: any) {
       console.error("Recipe generation failed:", error);
-      
-      let errorMessage = "Failed to generate recipe.  Please try again.";
-      
-      if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      toast.error(errorMessage, {
+      toast.error(error.message || "Failed to generate recipe. Please try again.", {
         description: "Please check your ingredients and try again.",
         duration: 5000,
       });
-      
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleViewRecipe = (recipe: Recipe) => {
-    setSelectedRecipe(recipe);
-  };
-
-  const handleSaveToBook = () => {
-    // This will trigger a re-fetch if needed
-  };
-
+  const handleViewRecipe = (recipe: Recipe) => setSelectedRecipe(recipe);
+  const handleSaveToBook = () => {};
   const loadSampleRecipes = () => {
     const samplesWithIds = sampleRecipes.map((recipe, index) => ({
       ...recipe,
@@ -209,10 +202,9 @@ const btn = getButtonConfig();
               </span>
             </h1>
             
-            <p className="text-xl md: text-3xl mb-8 text-white/95 leading-relaxed font-medium">
+            <p className="text-xl md:text-3xl mb-8 text-white/95 leading-relaxed font-medium">
               Transform your ingredients into <span className="text-accent font-bold">multiple amazing dishes</span> with AI-powered recipe generation
             </p>
-            
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
@@ -223,15 +215,26 @@ const btn = getButtonConfig();
                 <Sparkles className="mr-2 h-6 w-6 animate-pulse" />
                 Discover Restaurants
               </Button>
-              <Button
-  size="lg"
-  className={`transition-all duration-500 px-8 py-6 text-lg font-bold ${btn.className}`}
-  onClick={btn.onClick}
-  disabled={btn.disabled}
->
-  {btn.icon}
-  {btn.label}
-</Button>
+
+              {/* Dynamic restaurant admin button */}
+              <div className="flex flex-col items-center gap-1">
+                <Button
+                  size="lg"
+                  className={`transition-all duration-500 px-8 py-6 text-lg font-bold ${btn.className}`}
+                  onClick={btn.onClick}
+                  disabled={btn.disabled}
+                >
+                  {btn.icon}
+                  {btn.label}
+                </Button>
+                {/* Show hint under rejected button */}
+                {adminStatus?.status === 'rejected' && (
+                  <p className="text-xs text-white/70">
+                    Your previous request was rejected. You can resubmit.
+                  </p>
+                )}
+              </div>
+
               <Button 
                 size="lg"
                 variant="outline"
@@ -241,20 +244,39 @@ const btn = getButtonConfig();
                 <BookOpen className="mr-2 h-6 w-6" />
                 Try Sample Recipes
               </Button>
-          
             </div>
           </div>
         </div>
       </section>
+
+      {/* Retry Request Modal */}
+      <Dialog open={showRetryModal} onOpenChange={setShowRetryModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <RefreshCw className="h-5 w-5 text-primary" />
+              Resubmit Restaurant Request
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mb-2">
+            <Alert className="border-red-200 bg-red-50">
+              <XCircle className="h-4 w-4 text-red-500" />
+              <AlertDescription className="text-red-700 text-sm">
+                Your previous request was rejected. Please review your details and resubmit.
+                Contact support if you need more information about the rejection.
+              </AlertDescription>
+            </Alert>
+          </div>
+          <AdminRequestForm onSuccess={handleRetrySuccess} />
+        </DialogContent>
+      </Dialog>
 
       {/* Recipe Generator Section */}
       <section id="recipe-generator" className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-6 text-foreground">
-                AI Recipe Generator
-              </h2>
+              <h2 className="text-4xl font-bold mb-6 text-foreground">AI Recipe Generator</h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Enter your ingredients and let our AI create delicious recipes tailored to what you have available
               </p>
@@ -286,7 +308,7 @@ const btn = getButtonConfig();
               <div className="flex items-center justify-center gap-4 text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
-                  <span>{recipes. length} {recipes.length === 1 ?  'recipe' : 'recipes'}</span>
+                  <span>{recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}</span>
                 </div>
               </div>
             </div>
@@ -301,7 +323,6 @@ const btn = getButtonConfig();
               ))}
             </div>
 
-            {/* Close Recipes Button */}
             <div className="flex justify-center mt-12">
               <Button 
                 size="lg"
@@ -322,9 +343,7 @@ const btn = getButtonConfig();
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-6 text-foreground">Why Choose Us</h2>
-            <p className="text-xl text-muted-foreground">
-              Everything you need to create amazing meals
-            </p>
+            <p className="text-xl text-muted-foreground">Everything you need to create amazing meals</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -364,9 +383,7 @@ const btn = getButtonConfig();
       {/* CTA Section */}
       <section className="py-16 bg-muted/20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6 text-foreground">
-            Ready to Transform Your Cooking? 
-          </h2>
+          <h2 className="text-3xl font-bold mb-6 text-foreground">Ready to Transform Your Cooking?</h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Start generating amazing recipes with the ingredients you have today
           </p>
