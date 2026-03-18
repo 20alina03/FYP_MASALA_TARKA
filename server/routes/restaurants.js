@@ -878,20 +878,100 @@ router.post('/superadmin/approve/:requestId', authenticateToken, async (req, res
     if (!adminRequest) {
       return res.status(404).json({ error: 'Request not found' });
     }
-    
-    const restaurant = new Restaurant({
-      name: adminRequest.restaurant_name,
-      address: adminRequest.address,
-      city: adminRequest.city,
-      latitude: adminRequest.latitude,
-      longitude: adminRequest.longitude,
-      admin_id: adminRequest.user_id,
-      contact_number: adminRequest.contact_number,
-      description: adminRequest.description,
-      cuisine_types: adminRequest.cuisine_types
-    });
-    
-    await restaurant.save();
+
+    // If a restaurant already exists in DB without an admin, assign it instead of creating a duplicate.
+    // Match order:
+    // 1) name + city + address
+    // 2) name + address
+    // 3) name only
+    const escapeRegex = (s) => String(s || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const makeLooseRegex = (s) => {
+      const tokens = String(s || '')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .map(escapeRegex);
+      if (tokens.length === 0) return null;
+      return new RegExp(tokens.join('\\s+'), 'i');
+    };
+
+    // Forgiving matching: ignores case and tolerates whitespace differences.
+    const nameRegex = makeLooseRegex(adminRequest.restaurant_name);
+    const cityRegex = adminRequest.city ? makeLooseRegex(adminRequest.city) : null;
+    const addressRegex = adminRequest.address ? makeLooseRegex(adminRequest.address) : null;
+
+    const baseNoAdminQuery = {
+      ...(nameRegex ? { name: { $regex: nameRegex } } : {}),
+      $or: [{ admin_id: null }, { admin_id: { $exists: false } }],
+    };
+    const addressOr = addressRegex
+      ? { $or: [{ address: addressRegex }, { address_line2: addressRegex }] }
+      : null;
+
+    // 1) name + city + address
+    let restaurant =
+      (cityRegex && addressOr
+        ? await Restaurant.findOne({
+            ...baseNoAdminQuery,
+            city: cityRegex,
+            ...addressOr,
+          })
+        : null) ||
+      // 2) name + address
+      (addressOr
+        ? await Restaurant.findOne({
+            ...baseNoAdminQuery,
+            ...addressOr,
+          })
+        : null) ||
+      // 3) name only
+      (await Restaurant.findOne(baseNoAdminQuery));
+
+    // Final safety: search by name only (ignoring any city/address differences),
+    // then pick the earliest-created restaurant that has no admin set.
+    if (!restaurant && nameRegex) {
+      const nameMatches = await Restaurant.find({ name: { $regex: nameRegex } })
+        .sort({ created_at: 1 })
+        .lean();
+      const noAdminMatch = nameMatches.find((r) => r.admin_id == null);
+      if (noAdminMatch) restaurant = await Restaurant.findById(noAdminMatch._id);
+    }
+
+    if (restaurant) {
+      restaurant.admin_id = adminRequest.user_id;
+      // Fill in missing fields from the request (do not overwrite existing populated data)
+      if (!restaurant.address && adminRequest.address) restaurant.address = adminRequest.address;
+      if (!restaurant.city && adminRequest.city) restaurant.city = adminRequest.city;
+      if (!restaurant.latitude && adminRequest.latitude) restaurant.latitude = adminRequest.latitude;
+      if (!restaurant.longitude && adminRequest.longitude) restaurant.longitude = adminRequest.longitude;
+      if (!restaurant.contact_number && adminRequest.contact_number) {
+        restaurant.contact_number = adminRequest.contact_number;
+      }
+      if (!restaurant.description && adminRequest.description) restaurant.description = adminRequest.description;
+      if (
+        (!Array.isArray(restaurant.cuisine_types) || restaurant.cuisine_types.length === 0) &&
+        Array.isArray(adminRequest.cuisine_types) &&
+        adminRequest.cuisine_types.length > 0
+      ) {
+        restaurant.cuisine_types = adminRequest.cuisine_types;
+      }
+      restaurant.updated_at = new Date();
+      await restaurant.save();
+    } else {
+      restaurant = new Restaurant({
+        name: adminRequest.restaurant_name,
+        address: adminRequest.address,
+        city: adminRequest.city,
+        latitude: adminRequest.latitude,
+        longitude: adminRequest.longitude,
+        admin_id: adminRequest.user_id,
+        contact_number: adminRequest.contact_number,
+        description: adminRequest.description,
+        cuisine_types: adminRequest.cuisine_types,
+      });
+
+      await restaurant.save();
+    }
     
     adminRequest.status = 'approved';
     adminRequest.restaurant_id = restaurant._id;
