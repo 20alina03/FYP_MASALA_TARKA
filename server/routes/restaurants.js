@@ -6,6 +6,7 @@ const MenuCategory = require('../models/MenuCategory');
 const RestaurantReview = require('../models/RestaurantReview');
 const MenuItemReview = require('../models/MenuItemReview');
 const RestaurantAdmin = require('../models/RestaurantAdmin');
+const RestaurantAdminRejected = require('../models/RestaurantAdminRejected');
 const Report = require('../models/Report');
 const CommunityPost = require('../models/CommunityPost');
 const PostLike = require('../models/PostLike');
@@ -578,10 +579,17 @@ router.patch('/admin/update', authenticateToken, async (req, res) => {
 
 router.get('/admin/status', authenticateToken, async (req, res) => {
   try {
-    const adminData = await RestaurantAdmin.findOne({ user_id: req.user.id })
+    let adminData = await RestaurantAdmin.findOne({ user_id: req.user.id })
       .populate('restaurant_id')
       .lean();
     
+    // If the request was rejected, we move it out of RestaurantAdmin into a separate collection.
+    if (!adminData) {
+      adminData = await RestaurantAdminRejected.findOne({ user_id: req.user.id })
+        .populate('restaurant_id')
+        .lean();
+    }
+
     if (!adminData) {
       return res.json({ status: 'none' });
     }
@@ -856,12 +864,22 @@ router.get('/superadmin/requests', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: 'Not authorized' });
     }
     
-    const requests = await RestaurantAdmin.find()
-      .populate('user_id', 'email full_name')
-      .sort({ created_at: -1 })
-      .lean();
-    
-    res.json(requests);
+    // pending + approved come from RestaurantAdmin, rejected comes from RestaurantAdminRejected
+    const [activeRequests, rejectedRequests] = await Promise.all([
+      RestaurantAdmin.find({ status: { $in: ['pending', 'approved'] } })
+        .populate('user_id', 'email full_name')
+        .sort({ created_at: -1 })
+        .lean(),
+      RestaurantAdminRejected.find()
+        .populate('user_id', 'email full_name')
+        .sort({ created_at: -1 })
+        .lean(),
+    ]);
+
+    const combined = [...activeRequests, ...rejectedRequests]
+      .sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
+
+    res.json(combined);
   } catch (error) {
     console.error('Get admin requests error:', error);
     res.status(500).json({ error: error.message });
@@ -1005,10 +1023,31 @@ router.post('/superadmin/reject/:requestId', authenticateToken, async (req, res)
     if (!adminRequest) {
       return res.status(404).json({ error: 'Request not found' });
     }
-    
-    adminRequest.status = 'rejected';
-    await adminRequest.save();
-    
+
+    // Copy to rejected collection, then delete from the active one.
+    const rejectedDoc = new RestaurantAdminRejected({
+      user_id: adminRequest.user_id,
+      restaurant_name: adminRequest.restaurant_name,
+      government_registration_number: adminRequest.government_registration_number,
+      cnic: adminRequest.cnic,
+      contact_number: adminRequest.contact_number,
+      address: adminRequest.address,
+      city: adminRequest.city,
+      latitude: adminRequest.latitude,
+      longitude: adminRequest.longitude,
+      description: adminRequest.description,
+      cuisine_types: adminRequest.cuisine_types,
+      restaurant_id: adminRequest.restaurant_id,
+      status: 'rejected',
+      created_at: adminRequest.created_at || new Date(),
+      rejected_at: new Date(),
+      approved_at: adminRequest.approved_at,
+      approved_by: adminRequest.approved_by,
+    });
+
+    await rejectedDoc.save();
+    await RestaurantAdmin.findByIdAndDelete(req.params.requestId);
+
     res.json({ message: 'Admin request rejected' });
   } catch (error) {
     console.error('Reject admin error:', error);
