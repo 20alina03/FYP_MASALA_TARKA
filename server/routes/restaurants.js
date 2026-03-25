@@ -12,8 +12,121 @@ const CommunityPost = require('../models/CommunityPost');
 const PostLike = require('../models/PostLike');
 const { authenticateToken } = require('../middleware/auth');
 const User = require('../models/User');
+const { analyzeReview } = require('../services/sentimentService');
+const Notification = require('../models/Notification');
 
 const router = express.Router();
+
+// ============= THRESHOLD NOTIFICATION CHECKER =============
+// Thresholds
+const THRESHOLDS = {
+  BAD_REVIEWS:      50,   // negative sentiment text reviews
+  BAD_RATINGS:      100,  // star ratings <= 2
+  DISH_BAD_REVIEWS: 20,   // per dish negative reviews
+  DISH_BAD_RATINGS: 40,   // per dish low ratings
+};
+
+async function checkAndNotify(restaurantId, menuItemId = null) {
+  try {
+    const RestaurantReviewModel = require('../models/RestaurantReview');
+    const MenuItemReviewModel   = require('../models/MenuItemReview');
+    const MenuItemModel         = require('../models/MenuItem');
+
+    if (menuItemId) {
+      // ── Dish-level checks ──────────────────────────────────────────
+      const dishReviews = await MenuItemReviewModel.find({ menu_item_id: menuItemId }).lean();
+      const dishBadReviews = dishReviews.filter(r => r.sentiment === 'negative' && r.review_text).length;
+      const dishBadRatings = dishReviews.filter(r => r.rating > 0 && r.rating <= 2).length;
+
+      const menuItem = await MenuItemModel.findById(menuItemId).lean();
+      const itemName = menuItem?.name || 'Unknown dish';
+
+      if (dishBadReviews > 0 && dishBadReviews % THRESHOLDS.DISH_BAD_REVIEWS === 0) {
+        const exists = await Notification.findOne({
+          restaurant_id: restaurantId,
+          menu_item_id:  menuItemId,
+          type: 'dish_bad_reviews',
+          'meta.bad_review_count': dishBadReviews
+        });
+        if (!exists) {
+          await Notification.create({
+            restaurant_id:  restaurantId,
+            menu_item_id:   menuItemId,
+            menu_item_name: itemName,
+            type:    'dish_bad_reviews',
+            title:   `⚠️ ${itemName} is receiving negative feedback`,
+            message: `Your dish "${itemName}" has reached ${dishBadReviews} negative reviews. Consider reviewing the quality, preparation, or description of this item.`,
+            meta: { bad_review_count: dishBadReviews, threshold_hit: `${dishBadReviews} bad reviews` }
+          });
+        }
+      }
+
+      if (dishBadRatings > 0 && dishBadRatings % THRESHOLDS.DISH_BAD_RATINGS === 0) {
+        const exists = await Notification.findOne({
+          restaurant_id: restaurantId,
+          menu_item_id:  menuItemId,
+          type: 'dish_bad_ratings',
+          'meta.bad_rating_count': dishBadRatings
+        });
+        if (!exists) {
+          await Notification.create({
+            restaurant_id:  restaurantId,
+            menu_item_id:   menuItemId,
+            menu_item_name: itemName,
+            type:    'dish_bad_ratings',
+            title:   `⭐ Low ratings for "${itemName}"`,
+            message: `"${itemName}" has received ${dishBadRatings} low ratings (1–2 stars). Customers may be disappointed with this dish — consider improving it or updating the price.`,
+            meta: { bad_rating_count: dishBadRatings, threshold_hit: `${dishBadRatings} low ratings` }
+          });
+        }
+      }
+    } else {
+      // ── Restaurant-level checks ────────────────────────────────────
+      const restReviews = await RestaurantReviewModel.find({ restaurant_id: restaurantId }).lean();
+
+      const badReviews = restReviews.filter(r => r.sentiment === 'negative' && r.review_text).length;
+      const badRatings = restReviews.filter(r => r.rating > 0 && r.rating <= 2).length;
+
+      if (badReviews > 0 && badReviews % THRESHOLDS.BAD_REVIEWS === 0) {
+        const exists = await Notification.findOne({
+          restaurant_id: restaurantId,
+          menu_item_id:  null,
+          type: 'bad_reviews_threshold',
+          'meta.bad_review_count': badReviews
+        });
+        if (!exists) {
+          await Notification.create({
+            restaurant_id: restaurantId,
+            type:    'bad_reviews_threshold',
+            title:   `🚨 ${badReviews} negative reviews reached`,
+            message: `Your restaurant has accumulated ${badReviews} negative customer reviews. We recommend reviewing common complaints and improving the areas customers mention most — service, food quality, or wait times.`,
+            meta: { bad_review_count: badReviews, threshold_hit: `${badReviews} negative reviews` }
+          });
+        }
+      }
+
+      if (badRatings > 0 && badRatings % THRESHOLDS.BAD_RATINGS === 0) {
+        const exists = await Notification.findOne({
+          restaurant_id: restaurantId,
+          menu_item_id:  null,
+          type: 'bad_ratings_threshold',
+          'meta.bad_rating_count': badRatings
+        });
+        if (!exists) {
+          await Notification.create({
+            restaurant_id: restaurantId,
+            type:    'bad_ratings_threshold',
+            title:   `⭐ ${badRatings} low star ratings`,
+            message: `Your restaurant has received ${badRatings} ratings of 1–2 stars. A pattern of low ratings can affect your visibility. Consider reaching out to unhappy customers and addressing their concerns.`,
+            meta: { bad_rating_count: badRatings, threshold_hit: `${badRatings} low ratings` }
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[Notify] Threshold check error:', err.message);
+  }
+}
 
 // ============= RESTAURANT DISCOVERY =============
 
@@ -114,7 +227,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 router.get('/all-reviews', async (req, res) => {
   try {
     const reviews = await RestaurantReview.find({ is_reported: false })
-      .populate('restaurant_id', 'name city cuisines hero_listing_image')
+      .populate('restaurant_id', 'name city cuisines cuisine_types address address_line2 hero_listing_image')
       .sort({ created_at: -1 })
       .limit(100)
       .lean();
@@ -122,7 +235,17 @@ router.get('/all-reviews', async (req, res) => {
     const formattedReviews = reviews.map(r => ({
       ...r,
       user_name: r.user_name || 'Anonymous',
-      restaurant_id: r.restaurant_id
+      restaurant_id: r.restaurant_id,
+      // AI fields
+      sentiment: r.sentiment || 'neutral',
+      sentiment_score: r.sentiment_score ?? 0.5,
+      sentiment_confidence: r.sentiment_confidence ?? 0,
+      is_fake_suspected: r.is_fake_suspected || false,
+      fake_score: r.fake_score || 0,
+      fake_signals: r.fake_signals || [],
+      original_language: r.original_language || 'unknown',
+      translated_text: r.translated_text || '',
+      ai_analyzed: r.ai_analyzed || false,
     }));
 
     res.json(formattedReviews);
@@ -136,7 +259,7 @@ router.get('/all-reviews', async (req, res) => {
 router.get('/all-menu-reviews', async (req, res) => {
   try {
     const reviews = await MenuItemReview.find({ is_reported: false })
-      .populate('restaurant_id', 'name city cuisines hero_listing_image')
+      .populate('restaurant_id', 'name city cuisines cuisine_types address address_line2 hero_listing_image')
       .populate('menu_item_id', 'name')
       .sort({ created_at: -1 })
       .limit(100)
@@ -146,7 +269,17 @@ router.get('/all-menu-reviews', async (req, res) => {
       ...r,
       user_name: r.user_name || 'Anonymous',
       menu_item_name: r.menu_item_id?.name || 'Unknown Dish',
-      restaurant_id: r.restaurant_id
+      restaurant_id: r.restaurant_id,
+      // AI fields
+      sentiment: r.sentiment || 'neutral',
+      sentiment_score: r.sentiment_score ?? 0.5,
+      sentiment_confidence: r.sentiment_confidence ?? 0,
+      is_fake_suspected: r.is_fake_suspected || false,
+      fake_score: r.fake_score || 0,
+      fake_signals: r.fake_signals || [],
+      original_language: r.original_language || 'unknown',
+      translated_text: r.translated_text || '',
+      ai_analyzed: r.ai_analyzed || false,
     }));
 
     res.json(formattedReviews);
@@ -297,18 +430,32 @@ router.post('/:id/reviews', authenticateToken, async (req, res) => {
     if (!rating && !review_text && (!images || images.length === 0)) {
       return res.status(400).json({ error: 'Please provide at least a rating, comment, or image' });
     }
+
+    // Fetch restaurant's overall rating and review count for fake detection
+    const restaurant = await Restaurant.findById(req.params.id).select('rating review_count review_number').lean();
+    const restaurantRating      = restaurant?.rating || 0;
+    const restaurantReviewCount = restaurant?.review_count || restaurant?.review_number || 0;
+
+    // Run AI analysis (translation + sentiment + fake detection)
+    const aiData = await analyzeReview(review_text, restaurantRating, restaurantReviewCount).catch(err => {
+      console.error('AI analysis failed (non-fatal):', err.message);
+      return {};
+    });
     
     const review = new RestaurantReview({
       restaurant_id: req.params.id,
       user_id: req.user.id,
-      rating: rating || 0,
+      ...(rating && rating > 0 ? { rating } : { rating: 0 }),
       review_text: review_text || '',
       images: images || [],
-      user_name: req.user.full_name || req.user.email
+      user_name: req.user.full_name || req.user.email,
+      ...aiData
     });
     
     await review.save();
     await updateRestaurantRating(req.params.id);
+    // Fire-and-forget threshold check
+    checkAndNotify(req.params.id).catch(() => {});
     
     res.status(201).json(review);
   } catch (error) {
@@ -330,19 +477,33 @@ router.post('/menu/:menuItemId/reviews', authenticateToken, async (req, res) => 
     if (!menuItem) {
       return res.status(404).json({ error: 'Menu item not found' });
     }
+
+    // Fetch restaurant's overall rating and review count for fake detection
+    const restaurant = await Restaurant.findById(menuItem.restaurant_id).select('rating review_count review_number').lean();
+    const restaurantRating      = restaurant?.rating || 0;
+    const restaurantReviewCount = restaurant?.review_count || restaurant?.review_number || 0;
+
+    // Run AI analysis (translation + sentiment + fake detection)
+    const aiData = await analyzeReview(review_text, restaurantRating, restaurantReviewCount).catch(err => {
+      console.error('AI analysis failed (non-fatal):', err.message);
+      return {};
+    });
     
     const review = new MenuItemReview({
       menu_item_id: req.params.menuItemId,
       restaurant_id: menuItem.restaurant_id,
       user_id: req.user.id,
-      rating: rating || 0,
+      ...(rating && rating > 0 ? { rating } : { rating: 0 }),
       review_text: review_text || '',
       images: images || [],
-      user_name: req.user.full_name || req.user.email
+      user_name: req.user.full_name || req.user.email,
+      ...aiData
     });
     
     await review.save();
     await updateMenuItemRating(req.params.menuItemId);
+    // Fire-and-forget threshold check for the dish
+    checkAndNotify(menuItem.restaurant_id, req.params.menuItemId).catch(() => {});
     
     res.status(201).json(review);
   } catch (error) {
@@ -1367,5 +1528,86 @@ async function updateMenuItemRating(menuItemId) {
     console.error('Update menu item rating error:', error);
   }
 }
+
+
+// ============= NOTIFICATIONS (Admin) =============
+
+// Get notifications for the logged-in restaurant admin
+router.get('/admin/notifications', authenticateToken, async (req, res) => {
+  try {
+    const adminData = await RestaurantAdmin.findOne({ user_id: req.user.id, status: 'approved' }).lean();
+    if (!adminData) return res.status(403).json({ error: 'Not an approved admin' });
+
+    const notifications = await Notification.find({ restaurant_id: adminData.restaurant_id })
+      .sort({ created_at: -1 })
+      .limit(50)
+      .lean();
+
+    res.json(notifications);
+  } catch (error) {
+    console.error('Get notifications error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Mark notification(s) as read
+router.patch('/admin/notifications/read', authenticateToken, async (req, res) => {
+  try {
+    const adminData = await RestaurantAdmin.findOne({ user_id: req.user.id, status: 'approved' }).lean();
+    if (!adminData) return res.status(403).json({ error: 'Not an approved admin' });
+
+    const { notification_ids } = req.body; // array of ids, or empty = mark all
+    const query = { restaurant_id: adminData.restaurant_id };
+    if (notification_ids?.length) query._id = { $in: notification_ids };
+
+    await Notification.updateMany(query, { is_read: true });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Mark read error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============= SUPER ADMIN — Delete Community Reviews =============
+
+// Delete a restaurant review (super admin only)
+router.delete('/superadmin/community-reviews/:reviewId', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.email !== 'alinarafiq0676@gmail.com') {
+      return res.status(403).json({ error: 'Super admin access required' });
+    }
+
+    const review = await RestaurantReview.findByIdAndDelete(req.params.reviewId);
+    if (!review) return res.status(404).json({ error: 'Review not found' });
+
+    // Update restaurant rating after deletion
+    await updateRestaurantRating(review.restaurant_id);
+
+    res.json({ success: true, message: 'Review deleted successfully' });
+  } catch (error) {
+    console.error('Delete community review error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete a menu item review (super admin only)
+router.delete('/superadmin/community-menu-reviews/:reviewId', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.email !== 'alinarafiq0676@gmail.com') {
+      return res.status(403).json({ error: 'Super admin access required' });
+    }
+
+    const review = await MenuItemReview.findByIdAndDelete(req.params.reviewId);
+    if (!review) return res.status(404).json({ error: 'Review not found' });
+
+    // Update menu item rating after deletion
+    await updateMenuItemRating(review.menu_item_id);
+
+    res.json({ success: true, message: 'Review deleted successfully' });
+  } catch (error) {
+    console.error('Delete community menu review error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = router;

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MapPin, Star, Search, UtensilsCrossed, Store } from 'lucide-react';
+import { MapPin, Star, Search, UtensilsCrossed, Store, ThumbsUp, ThumbsDown, Minus, AlertTriangle, Trash2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import RestaurantNavigation from '@/components/RestaurantNavigation';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +21,8 @@ interface Review {
   _id: string;
   restaurant_id: any;
   restaurant_name?: string;
+  restaurant_cuisines?: string[];
+  restaurant_location?: string;
   menu_item_name?: string;
   user_name: string;
   rating: number;
@@ -28,10 +30,21 @@ interface Review {
   images?: string[];
   created_at: string;
   review_type: 'restaurant' | 'menu_item';
+  // AI fields
+  sentiment?: 'positive' | 'negative' | 'neutral';
+  sentiment_score?: number;
+  sentiment_confidence?: number;
+  is_fake_suspected?: boolean;
+  fake_score?: number;
+  fake_signals?: string[];
+  original_language?: string;
+  translated_text?: string;
+  ai_analyzed?: boolean;
 }
 
 const RestaurantCommunity = () => {
   const { user } = useAuth();
+  const isSuperAdmin = user?.email === 'alinarafiq0676@gmail.com';
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +59,7 @@ const RestaurantCommunity = () => {
 
   useEffect(() => {
     fetchReviews();
-  }, [selectedCuisine, reviewType]);
+  }, []);
 
   // Reset menu item search when restaurant search is cleared
   useEffect(() => {
@@ -78,22 +91,44 @@ const RestaurantCommunity = () => {
       const restaurantReviews = restaurantReviewsRes.ok ? await restaurantReviewsRes.json() : [];
       const menuReviews = menuReviewsRes.ok ? await menuReviewsRes.json() : [];
 
-      const formattedRestaurantReviews = restaurantReviews.map((r: any) => ({
-        ...r,
-        review_type: 'restaurant' as const,
-        restaurant_name: r.restaurant_id?.name || 'Unknown Restaurant'
-      }));
+      const formattedRestaurantReviews = restaurantReviews
+        .filter((r: any) => r.review_text && r.review_text.trim().length > 0)
+        .map((r: any) => ({
+          ...r,
+          review_type: 'restaurant' as const,
+          restaurant_name: r.restaurant_id?.name || 'Unknown Restaurant',
+          restaurant_cuisines: r.restaurant_id?.cuisines || r.restaurant_id?.cuisine_types || [],
+          restaurant_location: [
+            r.restaurant_id?.address || '',
+            r.restaurant_id?.address_line2 || '',
+            r.restaurant_id?.city || ''
+          ].join(' ')
+        }));
 
-      const formattedMenuReviews = menuReviews.map((r: any) => ({
-        ...r,
-        review_type: 'menu_item' as const,
-        restaurant_name: r.restaurant_id?.name || 'Unknown Restaurant',
-        menu_item_name: r.menu_item_id?.name || 'Unknown Dish'
-      }));
+      const formattedMenuReviews = menuReviews
+        .filter((r: any) => r.review_text && r.review_text.trim().length > 0)
+        .map((r: any) => ({
+          ...r,
+          review_type: 'menu_item' as const,
+          restaurant_name: r.restaurant_id?.name || 'Unknown Restaurant',
+          menu_item_name: r.menu_item_id?.name || 'Unknown Dish',
+          restaurant_cuisines: r.restaurant_id?.cuisines || r.restaurant_id?.cuisine_types || [],
+          restaurant_location: [
+            r.restaurant_id?.address || '',
+            r.restaurant_id?.address_line2 || '',
+            r.restaurant_id?.city || ''
+          ].join(' ')
+        }));
 
       const allReviews = [...formattedRestaurantReviews, ...formattedMenuReviews]
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
+      // DEBUG — remove after confirming location filter works
+      if (allReviews.length > 0) {
+        console.log('[DEBUG] Sample review restaurant_id raw:', allReviews[0]?.restaurant_id);
+        console.log('[DEBUG] Sample restaurant_location built:', allReviews[0]?.restaurant_location);
+        console.log('[DEBUG] All unique locations:', [...new Set(allReviews.map((r: any) => r.restaurant_location))]);
+      }
       setReviews(allReviews);
     } catch (error: any) {
       console.error('Fetch reviews error:', error);
@@ -110,6 +145,31 @@ const RestaurantCommunity = () => {
   const handleRestaurantClick = (restaurantId: string) => {
     if (restaurantId) {
       navigate(`/restaurants/${restaurantId}`);
+    }
+  };
+
+  const handleDeleteReview = async (review: Review) => {
+    if (!confirm('Delete this review permanently? This cannot be undone.')) return;
+    try {
+      const endpoint = review.review_type === 'menu_item'
+        ? `/restaurants/superadmin/community-menu-reviews/${review._id}`
+        : `/restaurants/superadmin/community-reviews/${review._id}`;
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:5000/api${endpoint}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to delete');
+      }
+      toast({ title: 'Deleted', description: 'Review removed successfully' });
+      setReviews(prev => prev.filter(r => r._id !== review._id));
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message || 'Failed to delete review', variant: 'destructive' });
     }
   };
 
@@ -144,6 +204,22 @@ const RestaurantCommunity = () => {
       if (reviewType === 'menu_item' && review.review_type !== 'menu_item') return false;
     }
 
+    // Cuisine filter — match against restaurant's cuisines array
+    if (selectedCuisine !== 'all') {
+      const cuisines = review.restaurant_cuisines || [];
+      const matches = cuisines.some((c: string) =>
+        c.toLowerCase() === selectedCuisine.toLowerCase()
+      );
+      if (!matches) return false;
+    }
+
+    // Location filter — search across address, address_line2, and city
+    if (selectedLocation !== 'all') {
+      const locationText = review.restaurant_location || '';
+      const matches = locationText.toLowerCase().includes(selectedLocation.toLowerCase());
+      if (!matches) return false;
+    }
+
     return true;
   });
 
@@ -151,8 +227,8 @@ const RestaurantCommunity = () => {
   const matchedRestaurants = restaurantSearch.trim()
     ? [...new Set(
         reviews
-          .filter(r => r.restaurant_name?.toLowerCase().includes(restaurantSearch.trim().toLowerCase()))
-          .map(r => r.restaurant_name)
+          .filter((r: Review) => r.restaurant_name?.toLowerCase().includes(restaurantSearch.trim().toLowerCase()))
+          .map((r: Review) => r.restaurant_name)
       )]
     : [];
 
@@ -364,8 +440,13 @@ const RestaurantCommunity = () => {
           </Card>
         ) : (
           <div className="space-y-6">
-            {filteredReviews.map((review) => (
-              <Card key={review._id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            {filteredReviews.map((review: Review) => (
+              <Card
+                key={review._id}
+                className={`overflow-hidden hover:shadow-lg transition-shadow ${
+                  review.is_fake_suspected ? 'border-yellow-400 border-2' : ''
+                }`}
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-start gap-3">
                     <Avatar>
@@ -374,11 +455,38 @@ const RestaurantCommunity = () => {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="font-semibold">{review.user_name || 'Anonymous'}</span>
                         <Badge variant="outline" className="text-xs">
                           {review.review_type === 'restaurant' ? 'Restaurant' : 'Dish'} Review
                         </Badge>
+
+                        {/* Sentiment badge — always show on analyzed reviews */}
+                        {review.ai_analyzed && review.sentiment && (
+                          <Badge
+                            className={`text-xs flex items-center gap-1 ${
+                              review.sentiment === 'positive'
+                                ? 'bg-green-100 text-green-800 border-green-300'
+                                : review.sentiment === 'negative'
+                                ? 'bg-red-100 text-red-800 border-red-300'
+                                : 'bg-gray-100 text-gray-700 border-gray-300'
+                            }`}
+                            variant="outline"
+                          >
+                            {review.sentiment === 'positive' && <ThumbsUp className="w-3 h-3" />}
+                            {review.sentiment === 'negative' && <ThumbsDown className="w-3 h-3" />}
+                            {review.sentiment === 'neutral' && <Minus className="w-3 h-3" />}
+                            {review.sentiment.charAt(0).toUpperCase() + review.sentiment.slice(1)}
+                          </Badge>
+                        )}
+
+                        {/* Suspicious badge — only show when flagged */}
+                        {review.is_fake_suspected && (
+                          <Badge variant="outline" className="text-xs flex items-center gap-1 bg-yellow-50 text-yellow-800 border-yellow-400">
+                            <AlertTriangle className="w-3 h-3" />
+                            Suspicious Review
+                          </Badge>
+                        )}
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span
@@ -397,6 +505,7 @@ const RestaurantCommunity = () => {
                         <span>{formatTimeAgo(review.created_at)}</span>
                       </div>
                     </div>
+                    {review.rating > 0 && (
                     <div className="flex items-center gap-1">
                       {[...Array(5)].map((_, i) => (
                         <Star
@@ -407,17 +516,31 @@ const RestaurantCommunity = () => {
                         />
                       ))}
                     </div>
+                    )}
                   </div>
                 </CardHeader>
 
                 <CardContent className="pt-0">
+                  {/* Fake review warning banner */}
+                  {review.is_fake_suspected && (
+                    <div className="mb-3 flex items-start gap-2 rounded-md bg-yellow-50 border border-yellow-200 px-3 py-2 text-xs text-yellow-800">
+                      <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="font-medium">This review may not be genuine.</span>
+                        {review.fake_signals && review.fake_signals.length > 0 && (
+                          <span className="ml-1 opacity-80">Reasons: {review.fake_signals.join(', ')}.</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {review.review_text && (
-                    <p className="mb-4 whitespace-pre-wrap text-sm">{review.review_text}</p>
+                    <p className="mb-2 whitespace-pre-wrap text-sm">{review.review_text}</p>
                   )}
 
                   {review.images && review.images.length > 0 && (
                     <div className="flex gap-2 mb-4 overflow-x-auto">
-                      {review.images.map((img, idx) => (
+                      {review.images.map((img: string, idx: number) => (
                         <img
                           key={idx}
                           src={img}
@@ -429,7 +552,7 @@ const RestaurantCommunity = () => {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-4 pt-4 border-t">
+                  <div className="flex items-center justify-between pt-4 border-t">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -438,6 +561,17 @@ const RestaurantCommunity = () => {
                       <MapPin className="w-4 h-4 mr-2" />
                       <span>Visit Restaurant</span>
                     </Button>
+                    {isSuperAdmin && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleDeleteReview(review)}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete Review
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>

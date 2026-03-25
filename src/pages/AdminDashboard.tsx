@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { Store, Menu, Star, AlertCircle, Plus, TrendingUp, Pencil, X, Check, PlusCircle } from 'lucide-react';
+import { Store, Menu, Star, AlertCircle, Plus, TrendingUp, Pencil, X, Check, PlusCircle, Bell, BellRing, ThumbsDown, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MenuItemManagement from '@/components/admin/MenuItemManagement';
 import ReviewManagement from '@/components/admin/ReviewManagement';
@@ -27,6 +27,10 @@ const AdminDashboard = () => {
     averageRating: 0,
     reportedReviews: 0
   });
+
+  // Notifications
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // Password state
   const [newPassword, setNewPassword] = useState('');
@@ -97,6 +101,12 @@ const AdminDashboard = () => {
         averageRating: avgRating,
         reportedReviews: [...data.reviews, ...data.menu_reviews].filter((r: any) => r.is_reported).length
       });
+      // Fetch notifications
+      try {
+        const notifData = await mongoClient.request('/restaurants/admin/notifications');
+        setNotifications(Array.isArray(notifData) ? notifData : []);
+      } catch {}
+
     } catch (error: any) {
       console.error('Fetch restaurant data error:', error);
       toast({
@@ -187,6 +197,16 @@ const AdminDashboard = () => {
       ...prev,
       cuisine_types: prev.cuisine_types.filter((c: string) => c !== cuisine),
     }));
+  };
+
+  const markAllRead = async () => {
+    try {
+      await mongoClient.request('/restaurants/admin/notifications/read', {
+        method: 'PATCH',
+        body: JSON.stringify({ notification_ids: [] })
+      });
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    } catch {}
   };
 
   // A reusable inline-edit row
@@ -553,6 +573,79 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Notifications Panel */}
+      {notifications.length > 0 && (
+        <div className="mb-6">
+          <button
+            onClick={() => setShowNotifications(v => !v)}
+            className="w-full flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              {notifications.some(n => !n.is_read) ? (
+                <BellRing className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <Bell className="w-5 h-5 text-muted-foreground" />
+              )}
+              <span className="font-semibold">
+                Recommendations & Alerts
+              </span>
+              {notifications.filter(n => !n.is_read).length > 0 && (
+                <span className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5">
+                  {notifications.filter(n => !n.is_read).length} new
+                </span>
+              )}
+            </div>
+            {showNotifications ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+
+          {showNotifications && (
+            <div className="mt-2 space-y-3 border rounded-lg p-4 bg-card">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm text-muted-foreground">{notifications.length} notification{notifications.length !== 1 ? 's' : ''}</span>
+                {notifications.some(n => !n.is_read) && (
+                  <button
+                    onClick={markAllRead}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Mark all as read
+                  </button>
+                )}
+              </div>
+              {notifications.map((notif) => (
+                <div
+                  key={notif._id}
+                  className={`flex gap-3 p-3 rounded-lg border ${
+                    notif.is_read
+                      ? 'bg-background border-border opacity-70'
+                      : 'bg-yellow-50 border-yellow-200'
+                  }`}
+                >
+                  <div className="shrink-0 mt-0.5">
+                    <ThumbsDown className={`w-4 h-4 ${notif.is_read ? 'text-muted-foreground' : 'text-yellow-600'}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-semibold mb-0.5 ${notif.is_read ? '' : 'text-yellow-900'}`}>
+                      {notif.title}
+                    </p>
+                    <p className={`text-sm ${notif.is_read ? 'text-muted-foreground' : 'text-yellow-800'}`}>
+                      {notif.message}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {new Date(notif.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                  {!notif.is_read && (
+                    <div className="shrink-0">
+                      <span className="inline-block w-2 h-2 rounded-full bg-yellow-500 mt-1" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="menu" className="space-y-6">

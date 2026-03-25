@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { mongoClient } from '@/lib/mongodb-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
-import { Star, Flag, AlertTriangle } from 'lucide-react';
+import { Star, Flag, AlertTriangle, Trash2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,8 @@ interface ReviewManagementProps {
 }
 
 const ReviewManagement = ({ restaurantId, reviews, menuReviews, onUpdate }: ReviewManagementProps) => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.email === 'alinarafiq0676@gmail.com';
   const [reportingReview, setReportingReview] = useState<any>(null);
   const [reportReason, setReportReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -71,6 +74,20 @@ const ReviewManagement = ({ restaurantId, reviews, menuReviews, onUpdate }: Revi
     }
   };
 
+  const handleDeleteReview = async (review: any) => {
+    if (!confirm('Delete this review permanently? This cannot be undone.')) return;
+    try {
+      const endpoint = review.menu_item_id
+        ? `/restaurants/superadmin/community-menu-reviews/${review._id}`
+        : `/restaurants/superadmin/community-reviews/${review._id}`;
+      await mongoClient.request(endpoint, { method: 'DELETE' });
+      toast({ title: 'Deleted', description: 'Review removed successfully' });
+      onUpdate();
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message || 'Failed to delete review', variant: 'destructive' });
+    }
+  };
+
   const ReviewCard = ({ review, isMenuItem = false }: { review: any; isMenuItem?: boolean }) => (
     <Card className={review.is_reported ? 'border-yellow-500' : ''}>
       <CardContent className="p-4">
@@ -108,21 +125,34 @@ const ReviewManagement = ({ restaurantId, reviews, menuReviews, onUpdate }: Revi
               </div>
             )}
           </div>
-          {review.is_reported ?  (
-            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
-              <AlertTriangle className="w-3 h-3 mr-1" />
-              Reported
-            </Badge>
-          ) : (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setReportingReview(review)}
-            >
-              <Flag className="w-4 h-4 mr-1" />
-              Report
-            </Button>
-          )}
+          <div className="flex items-center gap-2 flex-col">
+            {review.is_reported ? (
+              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
+                <AlertTriangle className="w-3 h-3 mr-1" />
+                Reported
+              </Badge>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setReportingReview(review)}
+              >
+                <Flag className="w-4 h-4 mr-1" />
+                Report
+              </Button>
+            )}
+            {isSuperAdmin && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                onClick={() => handleDeleteReview(review)}
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                Delete
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
