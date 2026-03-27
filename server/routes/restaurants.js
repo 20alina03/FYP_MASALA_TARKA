@@ -169,8 +169,46 @@ router.get('/discover', async (req, res) => {
       delivery_fee: r.minimum_delivery_fee,
       url_key: r.url_key
     }));
+
+    const restaurantIds = restaurants.map(r => r._id);
+    const menuItems = await MenuItem.find({
+      restaurant_id: { $in: restaurantIds },
+      is_available: true
+    })
+      .select('_id restaurant_id name price rating review_count')
+      .lean();
+
+    const menuItemsByRestaurant = new Map();
+    for (const item of menuItems) {
+      const restaurantId = item.restaurant_id?.toString();
+      if (!restaurantId) continue;
+
+      if (!menuItemsByRestaurant.has(restaurantId)) {
+        menuItemsByRestaurant.set(restaurantId, []);
+      }
+
+      menuItemsByRestaurant.get(restaurantId).push({
+        _id: item._id,
+        name: item.name,
+        price: item.price,
+        rating: item.rating || 0,
+        review_count: item.review_count || 0,
+      });
+    }
+
+    restaurants = restaurants.map(restaurant => {
+      const previewItems = (menuItemsByRestaurant.get(restaurant._id.toString()) || [])
+        .sort((a, b) => a.price - b.price || b.rating - a.rating)
+        .slice(0, 40);
+
+      return {
+        ...restaurant,
+        menu_items_preview: previewItems,
+        min_item_price: previewItems.length ? previewItems[0].price : null,
+      };
+    });
     
-    const { latitude, longitude, radius = 10, cuisine, city } = req.query;
+    const { latitude, longitude, radius = 10, cuisine, city, budget } = req.query;
     
     if (latitude && longitude) {
       const userLat = parseFloat(latitude);
@@ -199,6 +237,23 @@ router.get('/discover', async (req, res) => {
       restaurants = restaurants.filter(r => 
         r.city?.toLowerCase().includes(city.toLowerCase())
       );
+    }
+
+    if (budget && !Number.isNaN(parseFloat(budget))) {
+      const budgetValue = parseFloat(budget);
+      restaurants = restaurants
+        .map(r => {
+          const matchingItems = (r.menu_items_preview || [])
+            .filter(item => item.price <= budgetValue)
+            .sort((a, b) => a.price - b.price || b.rating - a.rating)
+            .slice(0, 3);
+
+          return {
+            ...r,
+            matched_menu_items: matchingItems,
+          };
+        })
+        .filter(r => r.matched_menu_items.length > 0);
     }
     
     console.log(`✅ Returning ${restaurants.length} restaurants`);

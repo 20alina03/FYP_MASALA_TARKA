@@ -281,6 +281,38 @@ const RestaurantDiscovery = () => {
       console.log('After cuisine filter:', filtered.length);
     }
 
+    // Filter by budget and prepare live card preview items
+    const budgetValue = parseFloat(budget);
+    const hasBudgetFilter = budget.trim() !== '' && !isNaN(budgetValue) && budgetValue > 0;
+
+    filtered = filtered
+      .map((restaurant: any) => {
+        const allMenuItems = Array.isArray(restaurant.menu_items_preview)
+          ? restaurant.menu_items_preview
+          : [];
+
+        const itemsUnderBudget = hasBudgetFilter
+          ? allMenuItems
+              .filter((item: any) => item.price <= budgetValue)
+              .sort((a: any, b: any) => a.price - b.price || (b.rating || 0) - (a.rating || 0))
+          : allMenuItems
+              .slice()
+              .sort((a: any, b: any) => a.price - b.price || (b.rating || 0) - (a.rating || 0));
+
+        return {
+          ...restaurant,
+          matched_menu_items: itemsUnderBudget.slice(0, 3),
+        };
+      })
+      .filter((restaurant: any) => {
+        if (!hasBudgetFilter) return true;
+        return (restaurant.matched_menu_items?.length || 0) > 0;
+      });
+
+    if (hasBudgetFilter) {
+      console.log('After budget filter:', filtered.length);
+    }
+
     console.log('Final filtered count:', filtered.length);
     setFilteredRestaurants(filtered);
 
@@ -575,6 +607,28 @@ const RestaurantDiscovery = () => {
                       <Badge variant="outline">+{restaurant.cuisine_types.length - 3}</Badge>
                     )}
                   </div>
+
+                  {restaurant.matched_menu_items?.length > 0 && (
+                    <div className="mt-4 pt-3 border-t">
+                      <p className="text-xs font-medium text-muted-foreground mb-2">
+                        {budget.trim() ? `Items under Rs. ${budget}:` : 'Popular budget items:'}
+                      </p>
+                      <div className="space-y-2">
+                        {restaurant.matched_menu_items.map((item: any) => (
+                          <div key={item._id || `${item.name}-${item.price}`} className="flex items-center justify-between gap-3 text-sm">
+                            <div className="min-w-0">
+                              <p className="truncate font-medium">{item.name}</p>
+                              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                                {(item.rating || 0).toFixed(1)}
+                              </p>
+                            </div>
+                            <Badge variant="secondary">Rs. {Number(item.price).toLocaleString()}</Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}

@@ -264,6 +264,17 @@ const RestaurantDetail = () => {
                     <p className="text-xs text-muted-foreground">{restaurant.review_count} reviews</p>
                   </div>
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    navigate(
+                      `/restaurant-community?restaurantId=${restaurant._id}&restaurantName=${encodeURIComponent(restaurant.name)}`
+                    )
+                  }
+                >
+                  View Community Reviews
+                </Button>
                 {user && (
                   <Button onClick={() => setShowReviewModal(true)} size="sm">
                     Write Review

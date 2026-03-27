@@ -90,6 +90,17 @@ const RestaurantMap = ({ restaurants, userLocation, onRestaurantClick }: Restaur
       const marker = L.marker([restaurant.latitude, restaurant.longitude], { icon: restaurantIcon })
         .addTo(mapInstanceRef. current);
 
+      // Lightweight hover card (name + rating) for quick scan on map
+      marker.bindTooltip(
+        `<div style="padding: 6px 8px; min-width: 150px;"><div style="font-weight: 600; font-size: 13px; margin-bottom: 2px;">${restaurant.name}</div><div style="font-size: 12px; color: #374151;">★ ${restaurant.rating?.toFixed(1) || '0.0'}</div></div>`,
+        {
+          direction: 'top',
+          offset: [0, -10],
+          opacity: 1,
+          sticky: true,
+        }
+      );
+
       const popupContent = `
         <div style="padding: 8px; min-width: 200px;">
           <h3 style="margin: 0 0 8px 0; font-weight: bold; font-size: 16px;">${restaurant.name}</h3>
@@ -110,6 +121,14 @@ const RestaurantMap = ({ restaurants, userLocation, onRestaurantClick }: Restaur
       `;
 
       marker.bindPopup(popupContent);
+
+      marker.on('mouseover', () => {
+        marker.openTooltip();
+      });
+
+      marker.on('mouseout', () => {
+        marker.closeTooltip();
+      });
 
       // Store click handler
       marker.on('click', () => {

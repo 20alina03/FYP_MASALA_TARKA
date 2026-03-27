@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { MapPin, Star, Search, UtensilsCrossed, Store, ThumbsUp, ThumbsDown, Minus, AlertTriangle, Trash2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import RestaurantNavigation from '@/components/RestaurantNavigation';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Select,
   SelectContent,
@@ -46,6 +46,9 @@ const RestaurantCommunity = () => {
   const { user } = useAuth();
   const isSuperAdmin = user?.email === 'alinarafiq0676@gmail.com';
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const linkedRestaurantId = searchParams.get('restaurantId') || '';
+  const linkedRestaurantName = searchParams.get('restaurantName') || '';
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [restaurantSearch, setRestaurantSearch] = useState('');
@@ -60,6 +63,12 @@ const RestaurantCommunity = () => {
   useEffect(() => {
     fetchReviews();
   }, []);
+
+  useEffect(() => {
+    if (linkedRestaurantName) {
+      setRestaurantSearch(linkedRestaurantName);
+    }
+  }, [linkedRestaurantName]);
 
   // Reset menu item search when restaurant search is cleared
   useEffect(() => {
@@ -174,6 +183,12 @@ const RestaurantCommunity = () => {
   };
 
   const filteredReviews = reviews.filter(review => {
+    const reviewRestaurantId = (review.restaurant_id?._id || review.restaurant_id || '').toString();
+
+    if (linkedRestaurantId && reviewRestaurantId !== linkedRestaurantId) {
+      return false;
+    }
+
     const restaurantSearchLower = restaurantSearch.trim().toLowerCase();
     const menuItemSearchLower = menuItemSearch.trim().toLowerCase();
 
@@ -375,9 +390,21 @@ const RestaurantCommunity = () => {
         </Card>
 
         {/* Active Search Summary */}
-        {(restaurantSearch.trim() || menuItemSearch.trim()) && (
+        {(restaurantSearch.trim() || menuItemSearch.trim() || linkedRestaurantId) && (
           <div className="mb-4 flex items-center gap-2 flex-wrap">
             <span className="text-sm text-muted-foreground">Active filters:</span>
+            {linkedRestaurantId && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Store className="w-3 h-3" />
+                Restaurant only: {linkedRestaurantName || 'Selected restaurant'}
+                <button
+                  onClick={() => navigate('/restaurant-community')}
+                  className="ml-1 hover:text-destructive transition-colors"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
             {restaurantSearch.trim() && (
               <Badge variant="secondary" className="flex items-center gap-1">
                 <Store className="w-3 h-3" />
