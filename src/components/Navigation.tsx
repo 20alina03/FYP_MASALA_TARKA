@@ -92,7 +92,7 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           <Link to="/home" className="flex items-center space-x-3">
             <img 
-              src="/noodles. png" 
+              src="/noodles.png" 
               alt="Masala Tarka Logo" 
               className="w-8 h-8 object-contain" 
             />

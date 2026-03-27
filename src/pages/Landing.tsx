@@ -42,13 +42,13 @@ const Landing = () => {
         />
         <div className="absolute inset-0 bg-black/60" />
         
-        <div className="relative container mx-auto px-4 py-24">
+        <div className="relative container mx-auto px-4 py-24 z-10">
           {/* Logo */}
-          <div className="absolute top-8 left-8 flex items-center space-x-3">
+          <div className="absolute top-8 left-8 flex items-center space-x-3 z-20">
             <img 
               src="/noodles.png" 
               alt="Masala Tarka Logo" 
-              className="w-8 h-8 object-contain" 
+              className="w-10 h-10 object-contain" 
             />
             <span className="text-xl font-bold text-white">
               Masala Tarka
