@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Upload, X, Plus } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { mongoClient } from '@/lib/mongodb-client';
 import { toast } from '@/hooks/use-toast';
 
 const CreateRecipe = () => {
@@ -73,23 +73,6 @@ const CreateRecipe = () => {
     setInstructions(updated);
   };
 
-  const uploadImage = async (file: File) => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${user!.id}-${Date.now()}.${fileExt}`;
-    
-    const { error: uploadError } = await supabase.storage
-      .from('recipe-images')
-      .upload(fileName, file);
-
-    if (uploadError) throw uploadError;
-
-    const { data } = supabase.storage
-      .from('recipe-images')
-      .getPublicUrl(fileName);
-
-    return data.publicUrl;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -105,11 +88,7 @@ const CreateRecipe = () => {
     setIsSubmitting(true);
 
     try {
-      let imageUrl = null;
-      
-      if (imageFile) {
-        imageUrl = await uploadImage(imageFile);
-      }
+      const imageUrl = imagePreview || null;
 
       const recipeData = {
         title,
@@ -125,9 +104,7 @@ const CreateRecipe = () => {
         author_id: user.id,
       };
 
-      const { error } = await supabase
-        .from('recipes')
-        .insert(recipeData);
+      const { error } = await mongoClient.from('recipes').insert(recipeData);
 
       if (error) throw error;
 

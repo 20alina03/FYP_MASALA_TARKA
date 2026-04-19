@@ -14,8 +14,14 @@ const { authenticateToken } = require('../middleware/auth');
 const User = require('../models/User');
 const { analyzeReview } = require('../services/sentimentService');
 const Notification = require('../models/Notification');
+const { buildOptimizedMenu } = require('../services/optimizedMenuService');
 
 const router = express.Router();
+
+// Optional auth middleware (allow unauthenticated access for discovery)
+const optionalAuth = (req, res, next) => {
+  next();
+};
 
 // ============= THRESHOLD NOTIFICATION CHECKER =============
 // Thresholds
@@ -1644,7 +1650,117 @@ router.delete('/superadmin/community-reviews/:reviewId', authenticateToken, asyn
     res.status(500).json({ error: error.message });
   }
 });
+/**
+ * Optimized Menu Route
+ * POST /api/restaurants/optimized-menu
+ * Body: { budget: number, restaurantIds?: string[] }
+ *
+ * GET  /api/restaurants/optimized-menu?budget=2000
+ */
 
+/**
+ * POST /api/restaurants/optimized-menu
+ * Body: { budget: number, restaurantIds?: ObjectId[] }
+ */
+router.post('/optimized-menu', optionalAuth, async (req, res) => {
+  try {
+    const { budget, restaurantIds, includeCourses } = req.body;
+
+    if (!budget || isNaN(budget) || budget <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid budget (positive number in PKR)',
+      });
+    }
+
+    if (budget < 300) {
+      return res.status(400).json({
+        success: false,
+        message: 'Minimum budget is Rs. 300',
+      });
+    }
+
+    if (budget > 1000000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Maximum budget is Rs. 10,00,000',
+      });
+    }
+
+    const allowedCourses = ['main', 'side', 'drink', 'dessert', 'starter'];
+    const normalizedCourses = Array.isArray(includeCourses)
+      ? includeCourses.filter(c => allowedCourses.includes(c))
+      : null;
+
+    const result = await buildOptimizedMenu(
+      Number(budget),
+      restaurantIds || null,
+      normalizedCourses && normalizedCourses.length ? normalizedCourses : null
+    );
+
+    if (!result.success) {
+      return res.status(404).json(result);
+    }
+
+    return res.json(result);
+  } catch (error) {
+    console.error('❌ Optimized menu error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to generate optimized menu',
+    });
+  }
+});
+
+/**
+ * GET /api/restaurants/optimized-menu?budget=2000
+ * Convenience GET version
+ */
+router.get('/optimized-menu', optionalAuth, async (req, res) => {
+  try {
+    const budget = parseFloat(req.query.budget);
+    const includeCourses = typeof req.query.includeCourses === 'string'
+      ? req.query.includeCourses.split(',').map(c => c.trim()).filter(Boolean)
+      : null;
+
+    if (!budget || isNaN(budget) || budget <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Provide ?budget=<amount> in PKR',
+      });
+    }
+
+    if (budget < 300) {
+      return res.status(400).json({
+        success: false,
+        message: 'Minimum budget is Rs. 300',
+      });
+    }
+
+    const allowedCourses = ['main', 'side', 'drink', 'dessert', 'starter'];
+    const normalizedCourses = Array.isArray(includeCourses)
+      ? includeCourses.filter(c => allowedCourses.includes(c))
+      : null;
+
+    const result = await buildOptimizedMenu(
+      budget,
+      null,
+      normalizedCourses && normalizedCourses.length ? normalizedCourses : null
+    );
+
+    if (!result.success) {
+      return res.status(404).json(result);
+    }
+
+    return res.json(result);
+  } catch (error) {
+    console.error('❌ Optimized menu GET error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to generate optimized menu',
+    });
+  }
+});
 // Delete a menu item review (super admin only)
 router.delete('/superadmin/community-menu-reviews/:reviewId', authenticateToken, async (req, res) => {
   try {
