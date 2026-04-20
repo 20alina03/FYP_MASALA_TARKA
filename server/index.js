@@ -38,14 +38,16 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📊 MongoDB URI: ${process.env.MONGODB_URI || 'mongodb://localhost:27017/recipe-finder'}`);
-  console.log('✅ Available routes:');
-  console.log('  - /api/auth/* - Authentication');
-  console.log('  - /api/recipes - Recipe management');
-  console.log('  - /api/restaurants - Restaurant API');
-  console.log('  - /api/health - Health check');
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📊 MongoDB URI: ${process.env.MONGODB_URI || 'mongodb://localhost:27017/recipe-finder'}`);
+    console.log('✅ Available routes:');
+    console.log('  - /api/auth/* - Authentication');
+    console.log('  - /api/recipes - Recipe management');
+    console.log('  - /api/restaurants - Restaurant API');
+    console.log('  - /api/health - Health check');
+  });
+}
 
 module.exports = app;

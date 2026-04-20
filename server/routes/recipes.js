@@ -562,6 +562,14 @@ router.get('/generated_recipes', authenticateToken, async (req, res) => {
 // Create generated recipe
 router.post('/generated_recipes', authenticateToken, async (req, res) => {
   try {
+    const { ingredients } = req.body;
+
+    if (!ingredients || ingredients.length < 3) {
+      return res.status(400).json({
+        error: 'Please enter more ingredients as no recipe can be generated from the given inputs.'
+      });
+    }
+
     const recipe = new GeneratedRecipe({
       ...req.body,
       user_id: req.user.id
