@@ -1,26 +1,27 @@
-# Use Node.js 18 as base image
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Install dependencies for both frontend and backend
+# Copy root package files
 COPY package*.json ./
+
+# Install root dependencies
 RUN npm ci
 
-# Copy server files
+# Copy server directory
 COPY server ./server
 
 # Install server dependencies
 WORKDIR /app/server
 RUN npm ci
 
-# Set environment variables
+# Set production environment
 ENV NODE_ENV=production
 ENV PORT=5000
-ENV MONGODB_URI=mongodb://mongo:27017/recipe-finder
 
-# Expose port
 EXPOSE 5000
 
-# Start the server
-CMD ["npm", "start"]
+# Start from app directory
+WORKDIR /app
+
+CMD ["node", "server/index.js"]
