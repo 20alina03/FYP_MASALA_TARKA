@@ -1,0 +1,15 @@
+.git
+.gitignore
+node_modules
+npm-debug.log
+.env
+.env.local
+README.md
+.DS_Store
+.vscode
+.idea
+src
+public
+vite.config.ts
+tsconfig.json
+package-lock.json
