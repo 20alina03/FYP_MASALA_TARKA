@@ -79,6 +79,7 @@ const Home = () => {
     }
   };
 
+  const isSuperAdmin = user?.email === 'alinarafiq0676@gmail.com';
   const btn = getButtonConfig();
 
   const handleRecipeGenerate = async (params: any) => {
@@ -216,24 +217,26 @@ const Home = () => {
                 Discover Restaurants
               </Button>
 
-              {/* Dynamic restaurant admin button */}
-              <div className="flex flex-col items-center gap-1">
-                <Button
-                  size="lg"
-                  className={`transition-all duration-500 px-8 py-6 text-lg font-bold ${btn.className}`}
-                  onClick={btn.onClick}
-                  disabled={btn.disabled}
-                >
-                  {btn.icon}
-                  {btn.label}
-                </Button>
-                {/* Show hint under rejected button */}
-                {adminStatus?.status === 'rejected' && (
-                  <p className="text-xs text-white/70">
-                    Your previous request was rejected. You can resubmit.
-                  </p>
-                )}
-              </div>
+              {/* Dynamic restaurant admin button - hidden for super admin */}
+              {!isSuperAdmin && (
+                <div className="flex flex-col items-center gap-1">
+                  <Button
+                    size="lg"
+                    className={`transition-all duration-500 px-8 py-6 text-lg font-bold ${btn.className}`}
+                    onClick={btn.onClick}
+                    disabled={btn.disabled}
+                  >
+                    {btn.icon}
+                    {btn.label}
+                  </Button>
+                  {/* Show hint under rejected button */}
+                  {adminStatus?.status === 'rejected' && (
+                    <p className="text-xs text-white/70">
+                      Your previous request was rejected. You can resubmit.
+                    </p>
+                  )}
+                </div>
+              )}
 
               <Button 
                 size="lg"

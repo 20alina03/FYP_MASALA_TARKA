@@ -53,7 +53,13 @@ const restaurantAdminSchema = new mongoose.Schema({
   approved_by: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  rejected_at: Date,
+  rejected_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  rejection_reason: String
 });
 
 module.exports = mongoose.model('RestaurantAdmin', restaurantAdminSchema);

@@ -1241,6 +1241,12 @@ router.post('/superadmin/reject/:requestId', authenticateToken, async (req, res)
       return res.status(403).json({ error: 'Not authorized' });
     }
     
+    const { rejection_reason } = req.body;
+    
+    if (!rejection_reason || rejection_reason.trim() === '') {
+      return res.status(400).json({ error: 'Rejection reason is required' });
+    }
+    
     const adminRequest = await RestaurantAdmin.findById(req.params.requestId);
     if (!adminRequest) {
       return res.status(404).json({ error: 'Request not found' });
@@ -1263,11 +1269,26 @@ router.post('/superadmin/reject/:requestId', authenticateToken, async (req, res)
       status: 'rejected',
       created_at: adminRequest.created_at || new Date(),
       rejected_at: new Date(),
+      rejected_by: req.user.id,
+      rejection_reason: rejection_reason,
       approved_at: adminRequest.approved_at,
       approved_by: adminRequest.approved_by,
     });
 
     await rejectedDoc.save();
+    
+    // Create notification for the admin
+    await Notification.create({
+      user_id: adminRequest.user_id,
+      restaurant_id: adminRequest.restaurant_id || new mongoose.Types.ObjectId(),
+      type: 'admin_request_rejected',
+      title: '❌ Your Restaurant Admin Request Was Rejected',
+      message: `Your restaurant admin request for "${adminRequest.restaurant_name}" has been rejected.`,
+      meta: {
+        rejection_reason: rejection_reason
+      }
+    });
+    
     await RestaurantAdmin.findByIdAndDelete(req.params.requestId);
 
     res.json({ message: 'Admin request rejected' });
@@ -1337,6 +1358,72 @@ router.post('/superadmin/reports/:reportId/resolve', authenticateToken, async (r
     res.json({ message: 'Report resolved successfully' });
   } catch (error) {
     console.error('Resolve report error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/superadmin/reports/:reportId/dismiss', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.email !== 'alinarafiq0676@gmail.com') {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+    
+    const { dismissal_reason } = req.body;
+    
+    if (!dismissal_reason || dismissal_reason.trim() === '') {
+      return res.status(400).json({ error: 'Dismissal reason is required' });
+    }
+    
+    const report = await Report.findById(req.params.reportId);
+    
+    if (!report) {
+      return res.status(404).json({ error: 'Report not found' });
+    }
+    
+    // Get restaurant admin user to find their user_id for notification
+    let adminUserId = null;
+    if (report.report_type === 'restaurant_review') {
+      const review = await RestaurantReview.findById(report.review_id).lean();
+      if (review) {
+        const restaurant = await Restaurant.findById(report.restaurant_id).lean();
+        if (restaurant) {
+          adminUserId = restaurant.admin_id;
+        }
+      }
+    } else {
+      const review = await MenuItemReview.findById(report.review_id).lean();
+      if (review) {
+        const restaurant = await Restaurant.findById(report.restaurant_id).lean();
+        if (restaurant) {
+          adminUserId = restaurant.admin_id;
+        }
+      }
+    }
+    
+    // Update report status to dismissed
+    report.status = 'dismissed';
+    report.dismissed_by = req.user.id;
+    report.dismissal_reason = dismissal_reason;
+    await report.save();
+    
+    // Create notification for the restaurant admin
+    if (adminUserId) {
+      await Notification.create({
+        user_id: adminUserId,
+        restaurant_id: report.restaurant_id,
+        type: 'report_dismissed',
+        title: '📋 Report Dismissed',
+        message: `A report against your restaurant has been dismissed by the admin.`,
+        meta: {
+          dismissal_reason: dismissal_reason,
+          report_id: report._id.toString()
+        }
+      });
+    }
+    
+    res.json({ message: 'Report dismissed successfully' });
+  } catch (error) {
+    console.error('Dismiss report error:', error);
     res.status(500).json({ error: error.message });
   }
 });

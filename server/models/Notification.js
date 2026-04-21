@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   restaurant_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Restaurant',
@@ -13,6 +17,8 @@ const notificationSchema = new mongoose.Schema({
       'bad_ratings_threshold',    // too many low star ratings
       'dish_bad_reviews',         // specific dish getting bad reviews
       'dish_bad_ratings',         // specific dish getting bad ratings
+      'admin_request_rejected',   // admin request rejection with reason
+      'report_dismissed',         // report dismissed with reason
     ],
     required: true
   },
@@ -29,6 +35,8 @@ const notificationSchema = new mongoose.Schema({
     bad_review_count:  Number,
     bad_rating_count:  Number,
     threshold_hit:     String,
+    rejection_reason:  String,
+    dismissal_reason:  String,
   },
   created_at: { type: Date, default: Date.now }
 });

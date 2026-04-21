@@ -32,6 +32,8 @@ const restaurantAdminRejectedSchema = new mongoose.Schema(
     approved_at: Date,
     approved_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     rejected_at: { type: Date, default: Date.now },
+    rejected_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    rejection_reason: String,
   },
   { strict: false },
 );

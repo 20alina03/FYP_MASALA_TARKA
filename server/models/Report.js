@@ -26,7 +26,7 @@ const reportSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'resolved', 'rejected'],
+    enum: ['pending', 'resolved', 'dismissed'],
     default: 'pending'
   },
   resolved_by: {
@@ -34,6 +34,11 @@ const reportSchema = new mongoose.Schema({
     ref: 'User'
   },
   resolution_note: String,
+  dismissal_reason: String,
+  dismissed_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   created_at: {
     type: Date,
     default: Date.now

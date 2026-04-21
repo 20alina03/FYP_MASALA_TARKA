@@ -3,8 +3,16 @@ import { mongoClient } from '@/lib/mongodb-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { CheckCircle, XCircle, Clock, MapPin, Phone, Mail } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface AdminRequestsManagementProps {
   onUpdate: () => void;
@@ -13,6 +21,9 @@ interface AdminRequestsManagementProps {
 const AdminRequestsManagement = ({ onUpdate }: AdminRequestsManagementProps) => {
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [rejectingRequest, setRejectingRequest] = useState<any>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchRequests();
@@ -60,19 +71,33 @@ const AdminRequestsManagement = ({ onUpdate }: AdminRequestsManagementProps) => 
     }
   };
 
-  const handleReject = async (requestId: string) => {
-    if (!confirm('Are you sure you want to reject this admin request?')) return;
+  const handleReject = async () => {
+    if (!rejectionReason.trim()) {
+      toast({
+        title: "Error",
+        description: "Please provide a rejection reason",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
-      await mongoClient.request(`/restaurants/superadmin/reject/${requestId}`, {
-        method: 'POST'
+      await mongoClient.request(`/restaurants/superadmin/reject/${rejectingRequest._id}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          rejection_reason: rejectionReason
+        })
       });
 
       toast({
-        title:  "Success",
-        description: "Admin request rejected"
+        title: "Success",
+        description: "Admin request rejected and notification sent to admin"
       });
 
+      setRejectingRequest(null);
+      setRejectionReason('');
       fetchRequests();
       onUpdate();
     } catch (error: any) {
@@ -82,7 +107,14 @@ const AdminRequestsManagement = ({ onUpdate }: AdminRequestsManagementProps) => 
         description: error.message || "Failed to reject request",
         variant: "destructive"
       });
+    } finally {
+      setSubmitting(false);
     }
+  };
+
+  const handleOpenRejectDialog = (request: any) => {
+    setRejectingRequest(request);
+    setRejectionReason('');
   };
 
   if (loading) {
@@ -175,7 +207,7 @@ const AdminRequestsManagement = ({ onUpdate }: AdminRequestsManagementProps) => 
                   <div className="flex gap-4 pt-4">
                     <Button
                       variant="outline"
-                      onClick={() => handleReject(request._id)}
+                      onClick={() => handleOpenRejectDialog(request)}
                       className="flex-1 border-red-200 hover:bg-red-50"
                     >
                       <XCircle className="w-4 h-4 mr-2" />
@@ -259,6 +291,68 @@ const AdminRequestsManagement = ({ onUpdate }: AdminRequestsManagementProps) => 
           <p className="text-muted-foreground">No admin requests found</p>
         </Card>
       )}
+
+      {/* Reject Dialog */}
+      <Dialog open={!!rejectingRequest} onOpenChange={() => setRejectingRequest(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Reject Admin Request</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-muted p-4 rounded-lg">
+              <p className="text-sm font-semibold mb-2">Request Details:</p>
+              <p className="text-sm mb-2">
+                <strong>Restaurant:</strong> {rejectingRequest?.restaurant_name}
+              </p>
+              <p className="text-sm mb-2">
+                <strong>Requested by:</strong> {rejectingRequest?.user_id?.email}
+              </p>
+              <p className="text-sm">
+                <strong>City:</strong> {rejectingRequest?.city}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rejection-reason">Rejection Reason</Label>
+              <Textarea
+                id="rejection-reason"
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Explain why this request is being rejected (this will be sent to the admin)..."
+                rows={4}
+                className="resize-none"
+              />
+            </div>
+
+            <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+              <p className="text-sm text-red-800 font-semibold mb-2">
+                ⚠️ Important
+              </p>
+              <p className="text-sm text-red-700">
+                The admin will receive a notification with your rejection reason.
+              </p>
+            </div>
+
+            <div className="flex gap-4">
+              <Button
+                variant="outline"
+                onClick={() => setRejectingRequest(null)}
+                className="flex-1"
+                disabled={submitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleReject}
+                disabled={submitting || !rejectionReason.trim()}
+                className="flex-1 bg-red-600 hover:bg-red-700"
+              >
+                {submitting ? 'Rejecting...' : 'Reject Request'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
