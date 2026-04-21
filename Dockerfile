@@ -2,26 +2,23 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy root package files
+# Copy package files
 COPY package*.json ./
 
-# Install root dependencies
+# Install dependencies
 RUN npm ci
 
-# Copy server directory
+# Copy server folder
 COPY server ./server
 
-# Install server dependencies
-WORKDIR /app/server
-RUN npm ci
+# Install server dependencies  
+RUN cd server && npm ci && cd ..
 
-# Set production environment
+# Set NODE_ENV
 ENV NODE_ENV=production
 ENV PORT=5000
 
 EXPOSE 5000
 
-# Start from app directory
-WORKDIR /app
-
+# Start server
 CMD ["node", "server/index.js"]
