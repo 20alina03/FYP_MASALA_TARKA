@@ -1,0 +1,6 @@
+﻿[build]
+builder = "nixpacks"
+buildCommand = "npm ci"
+
+[start]
+cmd = "node server/index.js"
