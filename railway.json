@@ -1,9 +1,4 @@
 {
-  "build": {
-    "builder": "nixpacks"
-  },
-  "deploy": {
-    "startCommand": "npm start",
-    "restartPolicyMaxRetries": 5
-  }
+  "buildCommand": "",
+  "startCommand": "cd server && npm ci && node index.js"
 }
