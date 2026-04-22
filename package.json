@@ -1,12 +1,10 @@
 ﻿{
-    "version":  "0.0.0",
-    "name":  "vite_react_shadcn_ts",
-    "scripts":  {
-                    "start":  "cd server \u0026\u0026 npm ci \u0026\u0026 npm start"
-                },
-    "type":  "commonjs",
-    "dependencies":  {
-
-                     },
-    "private":  true
+  "name": "vite_react_shadcn_ts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "start": "cd server && npm ci && npm start"
+  },
+  "dependencies": {}
 }
