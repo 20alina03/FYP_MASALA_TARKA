@@ -1,2 +1,4 @@
-﻿#!/bin/bash
-node server/index.js
+#!/bin/bash
+cd server
+npm ci
+npm start
