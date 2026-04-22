@@ -13,16 +13,22 @@ dotenv.config();
 
 const app = express();
 
-// Load backup data
+// Detect if running on Railway
+const isRailway = process.env.RAILWAY_ENVIRONMENT_NAME !== undefined;
+console.log(`🌐 Environment: ${isRailway ? 'RAILWAY' : 'LOCAL'}`);
+
+// Load backup data ONLY on Railway
 let backupData = null;
-try {
-  const backupPath = path.join(__dirname, 'backup.json');
-  if (fs.existsSync(backupPath)) {
-    backupData = JSON.parse(fs.readFileSync(backupPath, 'utf8'));
-    console.log('✅ Backup data loaded');
+if (isRailway) {
+  try {
+    const backupPath = path.join(__dirname, 'backup.json');
+    if (fs.existsSync(backupPath)) {
+      backupData = JSON.parse(fs.readFileSync(backupPath, 'utf8'));
+      console.log('✅ Backup data loaded for Railway');
+    }
+  } catch (err) {
+    console.warn('⚠️ Could not load backup.json:', err.message);
   }
-} catch (err) {
-  console.warn('⚠️ Could not load backup.json:', err.message);
 }
 
 // Middleware
@@ -32,6 +38,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Store backup data in app context
 app.locals.backupData = backupData;
+app.locals.isRailway = isRailway;
 
 // Connect to MongoDB (non-blocking)
 let mongoConnected = false;
@@ -41,7 +48,7 @@ connectDB().then(conn => {
     app.locals.mongoConnected = true;
     console.log('✅ MongoDB connected');
   } else {
-    console.warn('⚠️ Using backup data mode');
+    console.warn('⚠️ MongoDB not available');
     app.locals.mongoConnected = false;
   }
 }).catch(err => {
@@ -49,8 +56,12 @@ connectDB().then(conn => {
   app.locals.mongoConnected = false;
 });
 
-// Backup data API endpoint (when MongoDB is down)
+// Backup data API endpoint (ONLY on Railway when MongoDB is down)
 app.get('/api/backup/:collection', (req, res) => {
+  if (!isRailway) {
+    return res.status(403).json({ error: 'Backup API only available on Railway' });
+  }
+  
   if (!app.locals.backupData) {
     return res.status(503).json({ error: 'No backup data available' });
   }
@@ -73,6 +84,7 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     message: 'Server is running',
+    environment: isRailway ? 'Railway' : 'Local',
     mongoConnected: app.locals.mongoConnected,
     backupAvailable: !!app.locals.backupData
   });
@@ -92,7 +104,9 @@ app.listen(PORT, () => {
   console.log('  - /api/auth/* - Authentication');
   console.log('  - /api/recipes - Recipe management');
   console.log('  - /api/restaurants - Restaurant API');
-  console.log('  - /api/backup/:collection - Backup data');
+  if (isRailway) {
+    console.log('  - /api/backup/:collection - Backup data (Railway only)');
+  }
   console.log('  - /api/health - Health check');
 });
 
