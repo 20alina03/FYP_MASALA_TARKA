@@ -1,6 +1,8 @@
 ﻿const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const fs = require('fs');
+const path = require('path');
 const connectDB = require('./config/mongodb');
 const authRoutes = require('./routes/auth');
 const googleAuthRoutes = require('./routes/googleAuth');
@@ -11,14 +13,53 @@ dotenv.config();
 
 const app = express();
 
+// Load backup data
+let backupData = null;
+try {
+  const backupPath = path.join(__dirname, 'backup.json');
+  if (fs.existsSync(backupPath)) {
+    backupData = JSON.parse(fs.readFileSync(backupPath, 'utf8'));
+    console.log('✅ Backup data loaded');
+  }
+} catch (err) {
+  console.warn('⚠️ Could not load backup.json:', err.message);
+}
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
+// Store backup data in app context
+app.locals.backupData = backupData;
+
 // Connect to MongoDB (non-blocking)
-connectDB().catch(err => {
+let mongoConnected = false;
+connectDB().then(conn => {
+  if (conn) {
+    mongoConnected = true;
+    app.locals.mongoConnected = true;
+    console.log('✅ MongoDB connected');
+  } else {
+    console.warn('⚠️ Using backup data mode');
+    app.locals.mongoConnected = false;
+  }
+}).catch(err => {
   console.error('Failed to connect to MongoDB:', err.message);
+  app.locals.mongoConnected = false;
+});
+
+// Backup data API endpoint (when MongoDB is down)
+app.get('/api/backup/:collection', (req, res) => {
+  if (!app.locals.backupData) {
+    return res.status(503).json({ error: 'No backup data available' });
+  }
+  
+  const collectionName = req.params.collection;
+  const data = app.locals.backupData[collectionName] || [];
+  
+  console.log(`📦 Serving ${data.length} items from backup.${collectionName}`);
+  res.json(data);
 });
 
 // Routes
@@ -29,7 +70,12 @@ app.use('/api/restaurants', restaurantRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Server is running' });
+  res.json({ 
+    status: 'ok', 
+    message: 'Server is running',
+    mongoConnected: app.locals.mongoConnected,
+    backupAvailable: !!app.locals.backupData
+  });
 });
 
 // Error handling middleware
@@ -46,6 +92,7 @@ app.listen(PORT, () => {
   console.log('  - /api/auth/* - Authentication');
   console.log('  - /api/recipes - Recipe management');
   console.log('  - /api/restaurants - Restaurant API');
+  console.log('  - /api/backup/:collection - Backup data');
   console.log('  - /api/health - Health check');
 });
 
