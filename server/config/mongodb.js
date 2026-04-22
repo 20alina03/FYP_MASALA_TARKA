@@ -1,15 +1,18 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/recipe-finder', {
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/recipe-finder';
+    console.log('Attempting to connect to MongoDB at:', mongoUri.replace(/mongodb\+srv:\/\/.*:.*@/, 'mongodb+srv://***:***@'));
+    
+    const conn = await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
     });
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     
-    // Initialize collections if they don't exist
     const db = conn.connection.db;
     const collections = await db.listCollections().toArray();
     const collectionNames = collections.map(col => col.name);
@@ -35,8 +38,9 @@ const connectDB = async () => {
     
     return conn;
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    console.error(`MongoDB Error: ${error.message}`);
+    console.warn('Server starting without MongoDB connection.');
+    return null;
   }
 };
 
