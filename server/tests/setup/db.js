@@ -10,7 +10,7 @@ beforeAll(async () => {
   await mongoose.connect(mongoServer.getUri(), {
     dbName: 'masala-tarka-test',
   });
-});
+}, 60000); // 60 second timeout for MongoMemoryServer startup
 
 afterEach(async () => {
   const collections = mongoose.connection.collections;

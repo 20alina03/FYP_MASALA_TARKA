@@ -1,4 +1,4 @@
-jest.mock('../../config/mongodb', () => jest.fn());
+jest.mock('../../config/mongodb', () => jest.fn().mockResolvedValue(null));
 
 jest.mock('../../services/sentimentService', () => ({
   analyzeReview: jest.fn().mockResolvedValue({

@@ -109,7 +109,7 @@ describe('Restaurant Registration + Super Admin + Menu Management White-Box Test
     const rejectResponse = await request(app)
       .post(`/api/restaurants/superadmin/reject/${requestId}`)
       .set('Authorization', `Bearer ${superToken}`)
-      .send({});
+      .send({ rejection_reason: 'Does not meet requirements' });
 
     expect(rejectResponse.status).toBe(200);
 
